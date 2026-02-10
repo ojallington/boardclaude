@@ -16,7 +16,7 @@ export interface AgentCardProps {
   weaknesses: string[];
   critical_issues: string[];
   verdict: Verdict;
-  one_line: string;
+  one_line?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -288,9 +288,11 @@ export function AgentCard({
         </div>
 
         {/* ── One-line Summary ────────────────────────────────── */}
-        <p className="text-sm italic text-gray-400 border-t border-gray-800 pt-4">
-          {one_line}
-        </p>
+        {one_line && (
+          <p className="text-sm italic text-gray-400 border-t border-gray-800 pt-4">
+            {one_line}
+          </p>
+        )}
       </div>
     </motion.article>
   );

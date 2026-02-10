@@ -63,7 +63,7 @@ describe("validateAgentEvaluation", () => {
   it("rejects non-object input", () => {
     const result = validateAgentEvaluation("not an object");
     expect(result.valid).toBe(false);
-    expect(result.errors[0].field).toBe("root");
+    expect(result.errors[0]?.field).toBe("root");
   });
 
   it("rejects missing agent name", () => {
@@ -136,7 +136,7 @@ describe("parseAgentEvaluation", () => {
   it("rejects invalid JSON", () => {
     const result = parseAgentEvaluation("not json {{{");
     expect(result.valid).toBe(false);
-    expect(result.errors[0].message).toContain("Invalid JSON");
+    expect(result.errors[0]?.message).toContain("Invalid JSON");
   });
 
   it("rejects valid JSON with invalid schema", () => {
