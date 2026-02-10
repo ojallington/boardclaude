@@ -1,0 +1,144 @@
+# BoardClaude Panel: Hackathon Judges
+# Anthropic "Build with Claude" Hackathon (Feb 10-16, 2026)
+# 6 agents modeled on publicly-known evaluator perspectives
+
+name: hackathon-judges
+type: professional
+version: "1.0.0"
+description: >
+  Anthropic Build with Claude hackathon evaluation panel.
+  Six agents each embody a specific evaluator perspective sourced
+  from public statements, talks, blog posts, and professional background.
+  These are interpretations, not impersonations.
+
+agents:
+  - name: boris
+    role: "Architecture & Verification"
+    weight: 0.20
+    model: opus
+    effort: max
+    veto_power: false
+    prompt_file: "agents/boris.md"
+    criteria:
+      - name: architecture
+        weight: 0.40
+        description: "System decomposition, separation of concerns, parallel-friendly design, clean data flow"
+      - name: verification
+        weight: 0.30
+        description: "Verification loops, automated quality gates, feedback loops, self-checking output"
+      - name: compound_learning
+        weight: 0.20
+        description: "CLAUDE.md usage, knowledge accumulation, mistake capture, iterative improvement"
+      - name: simplicity
+        weight: 0.10
+        description: "Appropriate simplicity, no over-engineering, clear naming, works out of the box"
+
+  - name: cat
+    role: "Product & User Impact"
+    weight: 0.18
+    model: opus
+    effort: high
+    veto_power: false
+    prompt_file: "agents/cat.md"
+    criteria:
+      - name: user_value
+        weight: 0.35
+        description: "Solves a real user problem, clear before/after improvement, willingness to pay/share"
+      - name: adoption_path
+        weight: 0.25
+        description: "Time to first value, dependency count, learning curve, progressive disclosure"
+      - name: narrative
+        weight: 0.20
+        description: "One-sentence pitch clarity, README storytelling, demo shows value not features"
+      - name: market_fit
+        weight: 0.20
+        description: "Target user base size, must-have vs nice-to-have, competitive landscape"
+
+  - name: thariq
+    role: "AI Innovation & Intelligence"
+    weight: 0.18
+    model: opus
+    effort: max
+    veto_power: false
+    prompt_file: "agents/thariq.md"
+    criteria:
+      - name: ai_innovation
+        weight: 0.35
+        description: "Genuine novelty in AI usage, creative agent architecture, beyond wrapper-level integration"
+      - name: opus_usage
+        weight: 0.30
+        description: "Agent Teams, 1M context, adaptive thinking, 128K output used meaningfully not just checked off"
+      - name: emergent_behavior
+        weight: 0.20
+        description: "Multi-agent insights beyond prompts, debate producing novel findings, system surprise factor"
+      - name: efficiency
+        weight: 0.15
+        description: "Smart model routing, cost-aware token usage, caching and batching where appropriate"
+
+  - name: lydia
+    role: "Frontend/DX & Code Quality"
+    weight: 0.18
+    model: opus
+    effort: high
+    veto_power: false
+    prompt_file: "agents/lydia.md"
+    criteria:
+      - name: code_quality
+        weight: 0.30
+        description: "TypeScript strict mode, no any types, naming conventions, file structure, error boundaries"
+      - name: developer_experience
+        weight: 0.25
+        description: "Onboarding ease, script quality, consistent patterns, good abstractions, exported types"
+      - name: performance
+        weight: 0.25
+        description: "Lighthouse 90+, Core Web Vitals, bundle size, lazy loading, Server Components usage"
+      - name: patterns
+        weight: 0.20
+        description: "Modern React patterns (RSC, Suspense, Hooks), design patterns from patterns.dev, no anti-patterns"
+
+  - name: ado
+    role: "DevRel/Docs & Accessibility"
+    weight: 0.13
+    model: sonnet
+    effort: medium
+    veto_power: false
+    prompt_file: "agents/ado.md"
+    criteria:
+      - name: documentation
+        weight: 0.35
+        description: "README quality, inline comments, API docs, changelog, screenshots/GIFs"
+      - name: accessibility
+        weight: 0.25
+        description: "WCAG 2.1 AA, keyboard navigation, screen reader support, color contrast, focus management"
+      - name: examples
+        weight: 0.25
+        description: "Working demo, example configs, clone-and-run in <5 minutes, common use cases covered"
+      - name: community
+        weight: 0.15
+        description: "LICENSE, CONTRIBUTING.md, issue templates, code of conduct, visible CI/CD"
+
+  - name: jason
+    role: "Community Impact & Integration"
+    weight: 0.13
+    model: sonnet
+    effort: medium
+    veto_power: false
+    prompt_file: "agents/jason.md"
+    criteria:
+      - name: community_impact
+        weight: 0.30
+        description: "Broad accessibility, community adoption potential, serves non-experts, shareable configs"
+      - name: narrative
+        weight: 0.25
+        description: "One-sentence pitch clarity, README storytelling, demo quality, compelling before/after"
+      - name: integration
+        weight: 0.25
+        description: "Plugin architecture, standard interfaces, CI/CD support, error handling, production readiness"
+      - name: internationalization
+        weight: 0.20
+        description: "Extracted strings, locale-aware formatting, RTL awareness, inclusive design, WCAG basics"
+
+scoring:
+  scale: 100
+  passing_threshold: 70
+  iteration_target: 85
