@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { messages } from "@/lib/messages";
 
 // ─── Page metadata ──────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Audit Detail - BoardClaude",
-  description: "Detailed audit report with per-agent scores and analysis.",
+  title: messages.auditDetail.title,
+  description: messages.auditDetail.description,
 };
 
 // ─── Page Component ─────────────────────────────────────────────────────────
@@ -26,23 +27,22 @@ export default async function AuditDetailPage({
           href="/results"
           className="text-sm text-gray-500 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
         >
-          &larr; Back to Results
+          {messages.auditDetail.backToResults}
         </Link>
       </nav>
 
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-800 bg-gray-900/40 px-6 py-24">
         <h1 className="text-2xl font-bold text-gray-100">
-          Audit detail coming soon
+          {messages.auditDetail.comingSoon}
         </h1>
         <p className="mt-2 text-sm text-gray-500">
-          Detailed view for{" "}
+          {messages.auditDetail.detailedViewFor}{" "}
           <code className="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-xs text-gray-300">
             {auditId}
           </code>
         </p>
         <p className="mt-6 max-w-md text-center text-sm text-gray-600">
-          This page will display per-agent scores, radar chart, divergent
-          opinions, action items, and the full synthesis report.
+          {messages.auditDetail.comingSoonDescription}
         </p>
       </div>
     </main>

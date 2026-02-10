@@ -1,12 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import type { Grade, Verdict } from "@/lib/types";
+import { messages } from "@/lib/messages";
 
 // ─── Page metadata ──────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: "Audit Results - BoardClaude",
-  description: "Browse all BoardClaude audit results and score progressions.",
+  title: messages.results.title,
+  description: messages.results.description,
 };
 
 // ─── Demo data (placeholder until real audits are available) ────────────────
@@ -102,7 +103,9 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
             <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
               {panel}
             </span>
-            <span className="text-xs text-gray-500">Iteration {iteration}</span>
+            <span className="text-xs text-gray-500">
+              {messages.results.iterationLabel} {iteration}
+            </span>
           </div>
         </div>
 
@@ -126,7 +129,7 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
 
       {/* Hover indicator */}
       <div className="mt-4 flex items-center gap-1 text-xs text-gray-600 transition-colors group-hover:text-indigo-400">
-        <span>View details</span>
+        <span>{messages.results.viewDetails}</span>
         <svg
           className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
           fill="none"
@@ -157,11 +160,11 @@ export default function ResultsPage() {
             href="/"
             className="text-sm text-gray-500 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
           >
-            &larr; Home
+            {messages.results.backHome}
           </Link>
         </nav>
         <h1 className="text-3xl font-bold tracking-tight text-gray-100">
-          Audit Results
+          {messages.results.heading}
         </h1>
         <p className="text-gray-400">
           {audits.length} audit{audits.length !== 1 ? "s" : ""} across{" "}
@@ -176,7 +179,7 @@ export default function ResultsPage() {
           <p className="text-sm text-gray-500">
             No audits yet. Run your first audit with{" "}
             <code className="rounded bg-gray-800 px-1.5 py-0.5 text-xs">
-              /bc:review
+              {messages.results.emptyCommand}
             </code>
           </p>
         </div>
