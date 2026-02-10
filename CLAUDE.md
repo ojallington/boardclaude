@@ -33,7 +33,7 @@ Claude Code plugin: configurable AI agent panels for multi-perspective project e
 
 ## Agent System
 
-- 6 judge agents + 1 synthesis agent per hackathon panel
+- 6 judge agents + 1 synthesis agent per evaluation panel
 - Each agent has: persona prompt (`.md`), evaluation criteria, weighted scoring
 - Model routing: Opus for Boris/Cat/Thariq/Lydia, Sonnet for Ado/Jason/Synthesis
 - Agent Teams for parallel evaluation with debate capability
@@ -61,7 +61,7 @@ Milestone-based, continuous agent-team execution across parallel tracks.
 - **M4 (36-52h):** Self-Improvement Proof — 3+ audit cycles, composite 85+
 - **M5 (52-72h):** Framework + Polish — Templates, plugin installable, README
 - **M6 (72-84h):** Demo Ready — All data cached, video script rehearsed
-- **M7 (84-120h):** Record + Submit — Video, submission, deployed
+- **M7 (84-100h):** Public Launch — Video, GitHub release, community posts, deployed to boardclaude.com
 
 ### Focus Rule
 
@@ -79,7 +79,7 @@ If it doesn't advance the current milestone, it goes in BACKLOG.md.
 
 - Don't put components in `.claude-plugin/` -- only `plugin.json` goes there
 - Panel agent weights must sum to 1.0
-- Audit JSON must match TypeScript types in `dashboard/lib/types.ts`
+- Audit JSON must match TypeScript types in `dashboard/src/lib/types.ts`
 - Always run prettier after editing dashboard files
 - Check `.boardclaude/` exists before writing state
 - Don't use `useEffect` for data fetching -- use server components
