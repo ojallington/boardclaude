@@ -7,6 +7,7 @@ import type {
   ActionItemsLedger,
   AuditSummary,
 } from "./types";
+import { parseSynthesisReport } from "./validate";
 
 const BOARDCLAUDE_DIR = path.join(process.cwd(), "..", ".boardclaude");
 
@@ -68,7 +69,15 @@ export async function getAudit(
       path.join(BOARDCLAUDE_DIR, "audits", filename),
       "utf-8",
     );
-    return JSON.parse(raw) as SynthesisReport;
+    const result = parseSynthesisReport(raw);
+    if (!result.valid) {
+      console.warn(
+        `[audit-loader] Invalid synthesis report "${auditId}":`,
+        result.errors,
+      );
+      return null;
+    }
+    return result.data;
   } catch {
     return null;
   }
