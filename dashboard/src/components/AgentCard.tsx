@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { AGENT_COLORS, type Verdict } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
@@ -215,12 +215,17 @@ export function AgentCard({
 }: AgentCardProps) {
   const accentColor = AGENT_COLORS[agent] ?? "#6b7280";
   const scoreEntries = Object.entries(scores);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 16 }}
+      initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut" }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: 0.35, ease: "easeOut" }
+      }
       className="rounded-xl bg-gray-900 border border-gray-800 overflow-hidden"
       style={{ borderLeftWidth: 4, borderLeftColor: accentColor }}
       aria-label={`Evaluation by ${agent}`}
