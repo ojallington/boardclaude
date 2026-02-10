@@ -9,14 +9,24 @@ import type {
 } from "./types";
 import { parseSynthesisReport } from "./validate";
 
-const BOARDCLAUDE_DIR = path.join(process.cwd(), "..", ".boardclaude");
+// Local dev: .boardclaude/ at repo root (gitignored, live data)
+const LOCAL_DIR = path.join(process.cwd(), "..", ".boardclaude");
+// Production/Vercel: committed snapshot in dashboard/data/
+const COMMITTED_DIR = path.join(process.cwd(), "data");
+
+async function resolveDataDir(): Promise<string> {
+  try {
+    await fs.access(path.join(LOCAL_DIR, "state.json"));
+    return LOCAL_DIR;
+  } catch {
+    return COMMITTED_DIR;
+  }
+}
 
 export async function getProjectState(): Promise<ProjectState | null> {
   try {
-    const raw = await fs.readFile(
-      path.join(BOARDCLAUDE_DIR, "state.json"),
-      "utf-8",
-    );
+    const dir = await resolveDataDir();
+    const raw = await fs.readFile(path.join(dir, "state.json"), "utf-8");
     return JSON.parse(raw) as ProjectState;
   } catch {
     return null;
@@ -25,10 +35,8 @@ export async function getProjectState(): Promise<ProjectState | null> {
 
 export async function getTimeline(): Promise<Timeline | null> {
   try {
-    const raw = await fs.readFile(
-      path.join(BOARDCLAUDE_DIR, "timeline.json"),
-      "utf-8",
-    );
+    const dir = await resolveDataDir();
+    const raw = await fs.readFile(path.join(dir, "timeline.json"), "utf-8");
     return JSON.parse(raw) as Timeline;
   } catch {
     return null;
@@ -37,8 +45,9 @@ export async function getTimeline(): Promise<Timeline | null> {
 
 export async function getActionItems(): Promise<ActionItemsLedger | null> {
   try {
+    const dir = await resolveDataDir();
     const raw = await fs.readFile(
-      path.join(BOARDCLAUDE_DIR, "action-items.json"),
+      path.join(dir, "action-items.json"),
       "utf-8",
     );
     return JSON.parse(raw) as ActionItemsLedger;
@@ -49,7 +58,8 @@ export async function getActionItems(): Promise<ActionItemsLedger | null> {
 
 export async function listAudits(): Promise<string[]> {
   try {
-    const auditsDir = path.join(BOARDCLAUDE_DIR, "audits");
+    const dir = await resolveDataDir();
+    const auditsDir = path.join(dir, "audits");
     const files = await fs.readdir(auditsDir);
     return files
       .filter((f) => f.endsWith(".json"))
@@ -64,9 +74,10 @@ export async function getAudit(
   auditId: string,
 ): Promise<SynthesisReport | null> {
   try {
+    const dir = await resolveDataDir();
     const filename = auditId.endsWith(".json") ? auditId : `${auditId}.json`;
     const raw = await fs.readFile(
-      path.join(BOARDCLAUDE_DIR, "audits", filename),
+      path.join(dir, "audits", filename),
       "utf-8",
     );
     const result = parseSynthesisReport(raw);
