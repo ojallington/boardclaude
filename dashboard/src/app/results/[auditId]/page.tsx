@@ -271,7 +271,8 @@ export default async function AuditDetailPage({
                   <p className="text-sm text-gray-200">{item.action}</p>
                   <div className="mt-1 flex items-center gap-3">
                     <span className="text-xs text-gray-500">
-                      from {item.source_agents.join(", ")}
+                      from{" "}
+                      {item.source_agents?.join(", ") ?? "unknown"}
                     </span>
                     <span className="text-xs text-gray-500">
                       effort: {item.effort}
