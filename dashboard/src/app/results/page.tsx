@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { Grade, Verdict } from "@/lib/types";
+import type { AuditSummary, Verdict } from "@/lib/types";
 import { messages } from "@/lib/messages";
+import { getAllAuditSummaries } from "@/lib/audit-loader";
 
 // ─── Page metadata ──────────────────────────────────────────────────────────
 
@@ -9,44 +10,6 @@ export const metadata: Metadata = {
   title: messages.results.title,
   description: messages.results.description,
 };
-
-// ─── Demo data (placeholder until real audits are available) ────────────────
-
-interface AuditSummary {
-  audit_id: string;
-  timestamp: string;
-  panel: string;
-  composite: {
-    score: number;
-    grade: Grade;
-    verdict: Verdict;
-  };
-  iteration: number;
-}
-
-const DEMO_AUDITS: AuditSummary[] = [
-  {
-    audit_id: "audit-20260210-180000",
-    timestamp: "2026-02-10T18:00:00Z",
-    panel: "hackathon-judges",
-    composite: { score: 62, grade: "C", verdict: "MARGINAL" },
-    iteration: 0,
-  },
-  {
-    audit_id: "audit-20260210-223000",
-    timestamp: "2026-02-10T22:30:00Z",
-    panel: "hackathon-judges",
-    composite: { score: 71, grade: "B-", verdict: "PASS" },
-    iteration: 1,
-  },
-  {
-    audit_id: "audit-20260211-040000",
-    timestamp: "2026-02-11T04:00:00Z",
-    panel: "hackathon-judges",
-    composite: { score: 78, grade: "B+", verdict: "PASS" },
-    iteration: 2,
-  },
-];
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -147,9 +110,9 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
 
 // ─── Page Component ─────────────────────────────────────────────────────────
 
-export default function ResultsPage() {
-  // Sort audits by iteration descending (most recent first)
-  const audits = [...DEMO_AUDITS].sort((a, b) => b.iteration - a.iteration);
+export default async function ResultsPage() {
+  const audits = await getAllAuditSummaries();
+  const sorted = [...audits].sort((a, b) => b.iteration - a.iteration);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
@@ -167,14 +130,14 @@ export default function ResultsPage() {
           {messages.results.heading}
         </h1>
         <p className="text-gray-400">
-          {audits.length} audit{audits.length !== 1 ? "s" : ""} across{" "}
-          {new Set(audits.map((a) => a.panel)).size} panel
-          {new Set(audits.map((a) => a.panel)).size !== 1 ? "s" : ""}
+          {sorted.length} audit{sorted.length !== 1 ? "s" : ""} across{" "}
+          {new Set(sorted.map((a) => a.panel)).size} panel
+          {new Set(sorted.map((a) => a.panel)).size !== 1 ? "s" : ""}
         </p>
       </div>
 
       {/* Audit list */}
-      {audits.length === 0 ? (
+      {sorted.length === 0 ? (
         <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-800">
           <p className="text-sm text-gray-500">
             No audits yet. Run your first audit with{" "}
@@ -185,7 +148,7 @@ export default function ResultsPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {audits.map((audit) => (
+          {sorted.map((audit) => (
             <AuditCard key={audit.audit_id} audit={audit} />
           ))}
         </div>

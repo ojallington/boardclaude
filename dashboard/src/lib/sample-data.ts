@@ -192,7 +192,7 @@ export const SAMPLE_AUDIT: SynthesisReport = {
       priority: 1,
       action:
         "Complete dashboard components (AgentCard, RadarChart, ScoreProgression) to render audit data visually",
-      source_agent: "lydia",
+      source_agents: ["lydia"],
       impact: "code_quality +8, performance +5",
       effort: "medium",
     },
@@ -200,7 +200,7 @@ export const SAMPLE_AUDIT: SynthesisReport = {
       priority: 2,
       action:
         "Run first real audit cycle to generate actual data and validate the pipeline",
-      source_agent: "boris",
+      source_agents: ["boris"],
       impact: "verification +15, compound_learning +10",
       effort: "medium",
     },
@@ -208,7 +208,7 @@ export const SAMPLE_AUDIT: SynthesisReport = {
       priority: 3,
       action:
         "Add CI/CD with GitHub Actions (typecheck, lint, build) and create CONTRIBUTING.md",
-      source_agent: "jason",
+      source_agents: ["jason"],
       impact: "integration +12, community +8",
       effort: "low",
     },
@@ -216,7 +216,7 @@ export const SAMPLE_AUDIT: SynthesisReport = {
       priority: 4,
       action:
         "Add screenshots and GIF demos to README showing the dashboard and audit flow",
-      source_agent: "ado",
+      source_agents: ["ado"],
       impact: "documentation +10, examples +8",
       effort: "low",
     },
@@ -224,7 +224,7 @@ export const SAMPLE_AUDIT: SynthesisReport = {
       priority: 5,
       action:
         "Implement error boundaries and loading states in dashboard components",
-      source_agent: "lydia",
+      source_agents: ["lydia"],
       impact: "code_quality +5, patterns +5",
       effort: "low",
     },
@@ -245,7 +245,16 @@ export const SAMPLE_STATE: ProjectState = {
   audit_count: 1,
   latest_audit: "audit-20260210-180000",
   latest_score: 65,
-  score_history: [65],
+  score_history: [
+    {
+      audit_id: "20260210-180000",
+      iteration: 0,
+      score: 65,
+      grade: "C+",
+      verdict: "MARGINAL",
+      timestamp: "2026-02-10T18:00:00Z",
+    },
+  ],
   worktrees: [],
   status: "active",
 };

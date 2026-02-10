@@ -5,6 +5,7 @@ import type {
   ProjectState,
   Timeline,
   ActionItemsLedger,
+  AuditSummary,
 } from "./types";
 
 const BOARDCLAUDE_DIR = path.join(process.cwd(), "..", ".boardclaude");
@@ -73,15 +74,7 @@ export async function getAudit(
   }
 }
 
-export async function getAllAuditSummaries(): Promise<
-  Array<{
-    audit_id: string;
-    timestamp: string;
-    panel: string;
-    iteration: number;
-    composite: { score: number; grade: string; verdict: string };
-  }>
-> {
+export async function getAllAuditSummaries(): Promise<AuditSummary[]> {
   const files = await listAudits();
   const summaries = [];
 

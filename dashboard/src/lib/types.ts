@@ -138,7 +138,7 @@ export interface Highlights {
 export interface SynthesisActionItem {
   priority: number;
   action: string;
-  source_agent: string;
+  source_agents: string[];
   impact: string;
   effort: EffortLevel;
 }
@@ -164,7 +164,26 @@ export interface SynthesisReport {
   iteration_delta: IterationDelta;
 }
 
+// ─── Audit Summary (for listing) ────────────────────────────────────
+
+export interface AuditSummary {
+  audit_id: string;
+  timestamp: string;
+  panel: string;
+  iteration: number;
+  composite: { score: number; grade: Grade; verdict: Verdict };
+}
+
 // ─── Project State ───────────────────────────────────────────────────
+
+export interface ScoreHistoryEntry {
+  audit_id: string;
+  iteration: number;
+  score: number;
+  grade: Grade;
+  verdict: Verdict;
+  timestamp: string;
+}
 
 export interface ProjectState {
   project: string;
@@ -173,7 +192,7 @@ export interface ProjectState {
   audit_count: number;
   latest_audit: string | null;
   latest_score: number | null;
-  score_history: number[];
+  score_history: ScoreHistoryEntry[];
   worktrees: string[];
   status: "idle" | "active" | "auditing";
 }

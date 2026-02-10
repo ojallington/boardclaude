@@ -56,6 +56,7 @@ function ScoreTooltip({ active, payload }: CustomTooltipProps) {
   }
 
   const entry = payload[0];
+  if (!entry) return null;
   const { score, grade, timestamp, iteration } = entry.payload;
 
   return (
@@ -176,7 +177,7 @@ export function ScoreProgression({
     <div
       className="w-full"
       role="img"
-      aria-label={`Score progression chart showing ${data.length} iterations. Latest score: ${data[data.length - 1].score}. Target: ${target}.`}
+      aria-label={`Score progression chart showing ${data.length} iterations. Latest score: ${data[data.length - 1]?.score ?? 0}. Target: ${target}.`}
     >
       <ResponsiveContainer width="100%" height={320}>
         <LineChart
