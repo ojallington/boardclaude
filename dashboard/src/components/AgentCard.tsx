@@ -38,9 +38,7 @@ const VERDICT_LABELS: Record<Verdict, string> = {
 };
 
 function formatCriterionLabel(key: string): string {
-  return key
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
 function scoreBarColor(score: number): string {
@@ -67,7 +65,10 @@ function VerdictBadge({ verdict }: { verdict: Verdict }) {
 function ScoreBar({ label, score }: { label: string; score: number }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-36 shrink-0 text-sm text-gray-400 truncate" title={label}>
+      <span
+        className="w-36 shrink-0 text-sm text-gray-400 truncate"
+        title={label}
+      >
         {label}
       </span>
       <div className="flex-1 h-2 rounded-full bg-gray-800 overflow-hidden">
@@ -103,7 +104,10 @@ function ListSection({
       </h4>
       <ul className="space-y-1.5">
         {items.map((item, idx) => (
-          <li key={idx} className="flex items-start gap-2 text-sm text-gray-300">
+          <li
+            key={idx}
+            className="flex items-start gap-2 text-sm text-gray-300"
+          >
             <span className={`mt-0.5 shrink-0 ${iconColor}`}>{icon}</span>
             <span>{item}</span>
           </li>

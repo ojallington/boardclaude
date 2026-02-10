@@ -34,27 +34,33 @@ const STEPS = [
 const FEATURES = [
   {
     title: "Multi-Agent Evaluation",
-    description: "6 specialized agents run in parallel, each with calibrated criteria and weights.",
+    description:
+      "6 specialized agents run in parallel, each with calibrated criteria and weights.",
   },
   {
     title: "Closed-Loop Fix Pipeline",
-    description: "Audit \u2192 Fix \u2192 Re-audit until scores improve. Tracked action items across iterations.",
+    description:
+      "Audit \u2192 Fix \u2192 Re-audit until scores improve. Tracked action items across iterations.",
   },
   {
     title: "Real Validation Data",
-    description: "TypeScript errors, test results, lint output, and performance metrics fed directly to agents.",
+    description:
+      "TypeScript errors, test results, lint output, and performance metrics fed directly to agents.",
   },
   {
     title: "Configurable Panels",
-    description: "YAML configs for any evaluation scenario \u2014 code review, startup pitch, hackathon judging.",
+    description:
+      "YAML configs for any evaluation scenario \u2014 code review, startup pitch, hackathon judging.",
   },
   {
     title: "Dual Runtime",
-    description: "CLI plugin and web dashboard share the same config format and evaluation engine.",
+    description:
+      "CLI plugin and web dashboard share the same config format and evaluation engine.",
   },
   {
     title: "Score Progression",
-    description: "Track improvement across iterations with delta scoring and regression detection.",
+    description:
+      "Track improvement across iterations with delta scoring and regression detection.",
   },
 ];
 
@@ -99,11 +105,7 @@ export default function HomePage() {
       {/* Video */}
       <section id="demo" className="px-6 pb-24 max-w-5xl mx-auto scroll-mt-8">
         <div className="rounded-2xl overflow-hidden border border-gray-800 shadow-[0_0_60px_-15px_rgba(99,102,241,0.3)]">
-          <video
-            controls
-            preload="metadata"
-            className="w-full"
-          >
+          <video controls preload="metadata" className="w-full">
             <source src="/demo.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
@@ -111,7 +113,10 @@ export default function HomePage() {
       </section>
 
       {/* Install */}
-      <section id="install" className="px-6 pb-24 max-w-3xl mx-auto text-center">
+      <section
+        id="install"
+        className="px-6 pb-24 max-w-3xl mx-auto text-center"
+      >
         <h2 className="text-3xl font-bold mb-4">Get Started</h2>
         <p className="text-gray-400 mb-8 text-lg">
           Install the BoardClaude plugin for Claude Code in one command.
@@ -197,7 +202,9 @@ export default function HomePage() {
       <footer className="border-t border-gray-800 py-12 text-center text-gray-500 text-sm">
         <p>
           Built for the{" "}
-          <span className="text-gray-300">&ldquo;Built with Opus 4.6&rdquo;</span>{" "}
+          <span className="text-gray-300">
+            &ldquo;Built with Opus 4.6&rdquo;
+          </span>{" "}
           Hackathon
         </p>
         <a

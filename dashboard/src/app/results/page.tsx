@@ -96,17 +96,13 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
       <div className="flex items-start justify-between gap-4">
         {/* Left: audit info */}
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="truncate font-mono text-sm text-gray-400">
-            {audit_id}
-          </p>
+          <p className="truncate font-mono text-sm text-gray-400">{audit_id}</p>
           <p className="text-xs text-gray-500">{formatTimestamp(timestamp)}</p>
           <div className="flex items-center gap-2 pt-1">
             <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
               {panel}
             </span>
-            <span className="text-xs text-gray-500">
-              Iteration {iteration}
-            </span>
+            <span className="text-xs text-gray-500">Iteration {iteration}</span>
           </div>
         </div>
 
@@ -139,11 +135,7 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
           strokeWidth={2}
           aria-hidden="true"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M9 5l7 7-7 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </div>
     </Link>
@@ -154,9 +146,7 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
 
 export default function ResultsPage() {
   // Sort audits by iteration descending (most recent first)
-  const audits = [...DEMO_AUDITS].sort(
-    (a, b) => b.iteration - a.iteration,
-  );
+  const audits = [...DEMO_AUDITS].sort((a, b) => b.iteration - a.iteration);
 
   return (
     <main className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">

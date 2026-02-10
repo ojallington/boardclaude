@@ -1,12 +1,20 @@
 import { promises as fs } from "fs";
 import path from "path";
-import type { SynthesisReport, ProjectState, Timeline, ActionItemsLedger } from "./types";
+import type {
+  SynthesisReport,
+  ProjectState,
+  Timeline,
+  ActionItemsLedger,
+} from "./types";
 
 const BOARDCLAUDE_DIR = path.join(process.cwd(), "..", ".boardclaude");
 
 export async function getProjectState(): Promise<ProjectState | null> {
   try {
-    const raw = await fs.readFile(path.join(BOARDCLAUDE_DIR, "state.json"), "utf-8");
+    const raw = await fs.readFile(
+      path.join(BOARDCLAUDE_DIR, "state.json"),
+      "utf-8",
+    );
     return JSON.parse(raw) as ProjectState;
   } catch {
     return null;
@@ -15,7 +23,10 @@ export async function getProjectState(): Promise<ProjectState | null> {
 
 export async function getTimeline(): Promise<Timeline | null> {
   try {
-    const raw = await fs.readFile(path.join(BOARDCLAUDE_DIR, "timeline.json"), "utf-8");
+    const raw = await fs.readFile(
+      path.join(BOARDCLAUDE_DIR, "timeline.json"),
+      "utf-8",
+    );
     return JSON.parse(raw) as Timeline;
   } catch {
     return null;
@@ -24,7 +35,10 @@ export async function getTimeline(): Promise<Timeline | null> {
 
 export async function getActionItems(): Promise<ActionItemsLedger | null> {
   try {
-    const raw = await fs.readFile(path.join(BOARDCLAUDE_DIR, "action-items.json"), "utf-8");
+    const raw = await fs.readFile(
+      path.join(BOARDCLAUDE_DIR, "action-items.json"),
+      "utf-8",
+    );
     return JSON.parse(raw) as ActionItemsLedger;
   } catch {
     return null;
@@ -44,10 +58,15 @@ export async function listAudits(): Promise<string[]> {
   }
 }
 
-export async function getAudit(auditId: string): Promise<SynthesisReport | null> {
+export async function getAudit(
+  auditId: string,
+): Promise<SynthesisReport | null> {
   try {
     const filename = auditId.endsWith(".json") ? auditId : `${auditId}.json`;
-    const raw = await fs.readFile(path.join(BOARDCLAUDE_DIR, "audits", filename), "utf-8");
+    const raw = await fs.readFile(
+      path.join(BOARDCLAUDE_DIR, "audits", filename),
+      "utf-8",
+    );
     return JSON.parse(raw) as SynthesisReport;
   } catch {
     return null;
