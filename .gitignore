@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Next.js
+dashboard/.next/
+dashboard/out/
+
+# Production
+dashboard/build/
+
+# Environment
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# BoardClaude runtime state
+.boardclaude/
+
+# Misc
+*.tsbuildinfo
+next-env.d.ts

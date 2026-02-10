@@ -1,0 +1,32 @@
+{
+  "name": "boardclaude",
+  "version": "1.0.0",
+  "description": "Assemble a board of AI agents that evaluate your project from multiple expert perspectives. Configure panels of evaluator personas, run parallel audits, and track improvement over iterations. Triggers: board, panel, audit, evaluate, review, score, judge.",
+  "author": {
+    "name": "Oscar",
+    "url": "https://boardclaude.com"
+  },
+  "homepage": "https://boardclaude.com",
+  "repository": "https://github.com/ojallington/boardclaude",
+  "license": "MIT",
+  "keywords": [
+    "evaluation",
+    "code-review",
+    "multi-agent",
+    "panels",
+    "audit",
+    "agent-teams",
+    "personas"
+  ],
+  "commands": "./commands/",
+  "agents": "./agents/",
+  "skills": [
+    "./skills/audit-runner",
+    "./skills/persona-builder",
+    "./skills/timeline-manager",
+    "./skills/validation-runner",
+    "./skills/fix-implementer",
+    "./skills/accessibility-auditor"
+  ],
+  "hooks": "./hooks/hooks.json"
+}
