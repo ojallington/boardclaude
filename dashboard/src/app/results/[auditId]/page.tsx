@@ -16,7 +16,6 @@ const RadarChart = dynamic(
       default: mod.RadarChart,
     })),
   {
-    ssr: false,
     loading: () => (
       <div className="h-[350px] w-[350px] animate-pulse rounded-full bg-gray-800/40" />
     ),
@@ -29,7 +28,6 @@ const ScoreProgression = dynamic(
       default: mod.ScoreProgression,
     })),
   {
-    ssr: false,
     loading: () => (
       <div className="h-64 animate-pulse rounded-lg bg-gray-800/40" />
     ),
