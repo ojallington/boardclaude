@@ -30,6 +30,12 @@ Thumbs.db
 # BoardClaude runtime state
 .boardclaude/
 
+# Large media files
+*.mp4
+
+# Vercel
+.vercel/
+
 # Misc
 *.tsbuildinfo
 next-env.d.ts
