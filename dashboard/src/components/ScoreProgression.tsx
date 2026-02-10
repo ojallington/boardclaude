@@ -60,9 +60,7 @@ function ScoreTooltip({ active, payload }: CustomTooltipProps) {
 
   return (
     <div className="rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 shadow-xl">
-      <p className="text-sm font-medium text-gray-300">
-        Iteration {iteration}
-      </p>
+      <p className="text-sm font-medium text-gray-300">Iteration {iteration}</p>
       <p className="mt-1 text-2xl font-bold text-indigo-400">{score}</p>
       <div className="mt-1 flex items-center gap-2">
         <span className="rounded bg-gray-800 px-2 py-0.5 text-xs font-semibold text-gray-200">
@@ -149,10 +147,7 @@ export function ScoreProgression({
   }, [data, target]);
 
   // Stable tick formatter to avoid anonymous function re-creation
-  const formatXTick = useCallback(
-    (value: number) => `#${value}`,
-    [],
-  );
+  const formatXTick = useCallback((value: number) => `#${value}`, []);
 
   if (data.length === 0) {
     return (

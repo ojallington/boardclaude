@@ -46,6 +46,19 @@ npm run dev
 # Open http://localhost:3000
 ```
 
+## Example Output
+
+BoardClaude's first self-audit scored **68.4 / 100 (C+, MARGINAL)** with 6 agents finding real issues:
+
+- **Boris** (Architecture): "Strong architecture with real feedback loops, but zero tests and 20% format compliance"
+- **Cat** (Product): "Genuinely novel feedback loop, but adoption path is too steep"
+- **Thariq** (AI Innovation): "Smart multi-agent architecture, but emergent behavior is still theoretical"
+- **Lydia** (Code Quality): "Clean TypeScript interfaces, but zero test coverage and missing performance optimizations"
+- **Ado** (Docs/A11y): "Outstanding README, but not community-ready -- no CONTRIBUTING.md"
+- **Jason** (Community): "Strong narrative, but hardcoded English strings limit global reach"
+
+See the full audit JSON: [`examples/audit-example.json`](examples/audit-example.json)
+
 ## Architecture
 
 ```

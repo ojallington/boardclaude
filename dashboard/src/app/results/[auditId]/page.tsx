@@ -14,7 +14,9 @@ interface AuditDetailPageProps {
   params: Promise<{ auditId: string }>;
 }
 
-export default async function AuditDetailPage({ params }: AuditDetailPageProps) {
+export default async function AuditDetailPage({
+  params,
+}: AuditDetailPageProps) {
   const { auditId } = await params;
 
   return (

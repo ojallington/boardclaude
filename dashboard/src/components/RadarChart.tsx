@@ -110,12 +110,14 @@ export function RadarChart({ data, size = 400 }: RadarChartProps) {
       aria-label="Radar chart showing scores for Architecture, Product, Innovation, Code Quality, Documentation, and Integration"
     >
       <ResponsiveContainer width="100%" height="100%">
-        <RechartsRadarChart cx="50%" cy="50%" outerRadius="75%" data={chartData}>
+        <RechartsRadarChart
+          cx="50%"
+          cy="50%"
+          outerRadius="75%"
+          data={chartData}
+        >
           <PolarGrid stroke="#374151" /* gray-700 */ />
-          <PolarAngleAxis
-            dataKey="axis"
-            tick={renderAxisTick}
-          />
+          <PolarAngleAxis dataKey="axis" tick={renderAxisTick} />
           <Radar
             name="Score"
             dataKey="value"
