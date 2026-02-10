@@ -1,0 +1,75 @@
+{
+  "items": [
+    {
+      "id": "ai-011",
+      "source_audit": "20260210-201200",
+      "iteration": 1,
+      "priority": 1,
+      "action": "Wire audit-loader.ts into results/page.tsx (replace DEMO_AUDITS with getAllAuditSummaries), import AgentCard/RadarChart into audit detail page with real data.",
+      "source_agents": ["boris", "cat", "thariq", "lydia"],
+      "impact": "Closes the dashboard data pipeline gap -- the #1 weakness cited by 4 of 6 agents",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-10T20:35:00.000Z",
+      "resolution": "Replaced DEMO_AUDITS with getAllAuditSummaries() in results/page.tsx. Built full audit detail page with RadarChart, ScoreProgression, AgentCard grid, highlights, divergent opinions, and action items. Added AuditSummary and ScoreHistoryEntry types. Updated audit-loader return types."
+    },
+    {
+      "id": "ai-012",
+      "source_audit": "20260210-201200",
+      "iteration": 1,
+      "priority": 2,
+      "action": "Add error.tsx, loading.tsx, and not-found.tsx in app/ and app/results/ for graceful error handling.",
+      "source_agents": ["boris", "lydia"],
+      "impact": "Prevents raw Next.js error pages, improves resilience for demos",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-10T20:35:00.000Z",
+      "resolution": "Created 7 boundary files: app/error.tsx, app/loading.tsx, app/not-found.tsx, app/results/error.tsx, app/results/loading.tsx, app/results/[auditId]/not-found.tsx, app/results/[auditId]/loading.tsx. All with retry buttons and skeleton loaders."
+    },
+    {
+      "id": "ai-013",
+      "source_audit": "20260210-201200",
+      "iteration": 1,
+      "priority": 3,
+      "action": "Enable noUncheckedIndexedAccess and noImplicitReturns in tsconfig.json, fix resulting type errors.",
+      "source_agents": ["boris", "lydia"],
+      "impact": "Aligns implementation with own strict-mode philosophy, catches undefined access bugs",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-10T20:35:00.000Z",
+      "resolution": "Enabled both flags in tsconfig.json. Fixed 4 type errors: ScoreProgression payload[0] guard, data[length-1] optional chain, validate.test.ts errors[0] optional chains. All indexed access now properly handles undefined."
+    },
+    {
+      "id": "ai-014",
+      "source_audit": "20260210-201200",
+      "iteration": 1,
+      "priority": 4,
+      "action": "Wire validate.ts into audit-loader.ts: replace JSON.parse(raw) as T with parseSynthesisReport/validateAgentEvaluation.",
+      "source_agents": ["lydia"],
+      "impact": "Connects runtime validation to data loading -- validates before data enters the type system",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-10T21:00:00.000Z",
+      "resolution": "Replaced JSON.parse(raw) as SynthesisReport in getAudit() with parseSynthesisReport(raw). Invalid reports now log warnings and return null instead of passing bad data to the type system."
+    },
+    {
+      "id": "ai-015",
+      "source_audit": "20260210-201200",
+      "iteration": 1,
+      "priority": 5,
+      "action": "Add component tests for AgentCard and RadarChart using Vitest + React Testing Library.",
+      "source_agents": ["boris"],
+      "impact": "Current 19 tests only cover lib/ utilities; zero component coverage",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-10T21:00:00.000Z",
+      "resolution": "Added @testing-library/react, jsdom, @vitejs/plugin-react. Created vitest.config.ts with jsdom environment. Added 10 AgentCard tests (name, role, score, verdict, score bars, strengths, weaknesses, critical issues, one_line, aria-label) and 3 RadarChart tests (renders, aria-label, size prop). Total: 32 tests passing."
+    }
+  ],
+  "metadata": {
+    "total_items": 5,
+    "open": 0,
+    "resolved": 5,
+    "chronic": 0
+  }
+}
