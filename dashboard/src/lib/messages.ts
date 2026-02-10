@@ -27,9 +27,10 @@ export const messages = {
   install: {
     heading: "Get Started",
     description:
-      "Install the BoardClaude plugin for Claude Code in one command.",
+      "Install the BoardClaude plugin for Claude Code with the install script.",
     terminalLabel: "Terminal",
-    command: "claude plugin add boardclaude",
+    command:
+      "git clone https://github.com/ojallington/boardclaude.git && ./boardclaude/install.sh .",
     hint: "Then run {command} in any project to start your first evaluation.",
     hintCommand: "/bc:audit",
   },
@@ -135,6 +136,39 @@ export const messages = {
     detailedViewFor: "Detailed view for",
     comingSoonDescription:
       "This page will display per-agent scores, radar chart, divergent opinions, action items, and the full synthesis report.",
+  },
+
+  // ─── Error Boundaries ──────────────────────────────────────────────
+  errors: {
+    global: {
+      heading: "Something went wrong",
+      description: "An unexpected error occurred. Please try again.",
+      retry: "Try again",
+    },
+    results: {
+      heading: "Failed to load audit results",
+      description:
+        "Could not read audit data. Make sure .boardclaude/ exists and contains valid audit files.",
+      retry: "Try again",
+      goHome: "Go home",
+    },
+    auditDetail: {
+      heading: "Failed to load audit detail",
+      description:
+        "Could not read this audit report. The file may be missing or contain invalid data.",
+      retry: "Try again",
+      backToResults: "Back to results",
+    },
+    notFound: {
+      heading: "Page not found",
+      description: "The page you are looking for does not exist.",
+      goHome: "Go home",
+    },
+    auditNotFound: {
+      heading: "Audit not found",
+      description: "The requested audit does not exist or could not be loaded.",
+      backToResults: "Back to results",
+    },
   },
 
   // ─── Shared ────────────────────────────────────────────────────────

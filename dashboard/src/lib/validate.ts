@@ -1,4 +1,12 @@
-import type { AgentEvaluation, Verdict, SynthesisReport, Grade } from "./types";
+import type {
+  AgentEvaluation,
+  Verdict,
+  SynthesisReport,
+  Grade,
+  ProjectState,
+  Timeline,
+  ActionItemsLedger,
+} from "./types";
 
 // ─── Validation Errors ───────────────────────────────────────────────
 
@@ -320,6 +328,225 @@ export function parseSynthesisReport(
   try {
     const data = JSON.parse(raw);
     return validateSynthesisReport(data);
+  } catch (e) {
+    return {
+      valid: false,
+      data: null,
+      errors: [
+        {
+          field: "root",
+          message: `Invalid JSON: ${e instanceof Error ? e.message : "parse error"}`,
+        },
+      ],
+    };
+  }
+}
+
+// ─── Project State Validator ─────────────────────────────────────────
+
+const VALID_PROJECT_STATUSES = ["idle", "active", "auditing"] as const;
+
+export function validateProjectState(
+  data: unknown,
+): ValidationResult<ProjectState> {
+  const errors: ValidationError[] = [];
+
+  if (typeof data !== "object" || data === null) {
+    return {
+      valid: false,
+      data: null,
+      errors: [{ field: "root", message: "Expected an object" }],
+    };
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  for (const field of ["project", "panel", "branch"] as const) {
+    if (typeof obj[field] !== "string") {
+      errors.push({ field, message: "Must be a string" });
+    }
+  }
+
+  if (typeof obj.audit_count !== "number" || obj.audit_count < 0) {
+    errors.push({
+      field: "audit_count",
+      message: "Must be a non-negative number",
+    });
+  }
+
+  if (!Array.isArray(obj.score_history)) {
+    errors.push({ field: "score_history", message: "Must be an array" });
+  }
+
+  if (!Array.isArray(obj.worktrees)) {
+    errors.push({ field: "worktrees", message: "Must be an array" });
+  }
+
+  if (
+    typeof obj.status !== "string" ||
+    !(VALID_PROJECT_STATUSES as readonly string[]).includes(obj.status)
+  ) {
+    errors.push({
+      field: "status",
+      message: `Must be one of: ${VALID_PROJECT_STATUSES.join(", ")}`,
+    });
+  }
+
+  return {
+    valid: errors.length === 0,
+    data: errors.length === 0 ? (data as ProjectState) : null,
+    errors,
+  };
+}
+
+export function parseProjectState(raw: string): ValidationResult<ProjectState> {
+  try {
+    const data = JSON.parse(raw);
+    return validateProjectState(data);
+  } catch (e) {
+    return {
+      valid: false,
+      data: null,
+      errors: [
+        {
+          field: "root",
+          message: `Invalid JSON: ${e instanceof Error ? e.message : "parse error"}`,
+        },
+      ],
+    };
+  }
+}
+
+// ─── Timeline Validator ──────────────────────────────────────────────
+
+const VALID_EVENT_TYPES = ["audit", "fork", "merge", "rollback"] as const;
+
+export function validateTimeline(data: unknown): ValidationResult<Timeline> {
+  const errors: ValidationError[] = [];
+
+  if (typeof data !== "object" || data === null) {
+    return {
+      valid: false,
+      data: null,
+      errors: [{ field: "root", message: "Expected an object" }],
+    };
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  if (!Array.isArray(obj.events)) {
+    errors.push({ field: "events", message: "Must be an array" });
+  } else {
+    for (let i = 0; i < obj.events.length; i++) {
+      const event = obj.events[i] as Record<string, unknown>;
+      if (typeof event !== "object" || event === null) {
+        errors.push({ field: `events[${i}]`, message: "Must be an object" });
+        continue;
+      }
+      if (typeof event.id !== "string") {
+        errors.push({ field: `events[${i}].id`, message: "Must be a string" });
+      }
+      if (
+        typeof event.type !== "string" ||
+        !(VALID_EVENT_TYPES as readonly string[]).includes(event.type)
+      ) {
+        errors.push({
+          field: `events[${i}].type`,
+          message: `Must be one of: ${VALID_EVENT_TYPES.join(", ")}`,
+        });
+      }
+      if (typeof event.timestamp !== "string") {
+        errors.push({
+          field: `events[${i}].timestamp`,
+          message: "Must be a string",
+        });
+      }
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    data: errors.length === 0 ? (data as Timeline) : null,
+    errors,
+  };
+}
+
+export function parseTimeline(raw: string): ValidationResult<Timeline> {
+  try {
+    const data = JSON.parse(raw);
+    return validateTimeline(data);
+  } catch (e) {
+    return {
+      valid: false,
+      data: null,
+      errors: [
+        {
+          field: "root",
+          message: `Invalid JSON: ${e instanceof Error ? e.message : "parse error"}`,
+        },
+      ],
+    };
+  }
+}
+
+// ─── Action Items Ledger Validator ───────────────────────────────────
+
+export function validateActionItemsLedger(
+  data: unknown,
+): ValidationResult<ActionItemsLedger> {
+  const errors: ValidationError[] = [];
+
+  if (typeof data !== "object" || data === null) {
+    return {
+      valid: false,
+      data: null,
+      errors: [{ field: "root", message: "Expected an object" }],
+    };
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  if (!Array.isArray(obj.items)) {
+    errors.push({ field: "items", message: "Must be an array" });
+  } else {
+    for (let i = 0; i < obj.items.length; i++) {
+      const item = obj.items[i] as Record<string, unknown>;
+      if (typeof item !== "object" || item === null) {
+        errors.push({ field: `items[${i}]`, message: "Must be an object" });
+        continue;
+      }
+      if (typeof item.id !== "string") {
+        errors.push({
+          field: `items[${i}].id`,
+          message: "Must be a string",
+        });
+      }
+      if (typeof item.action !== "string") {
+        errors.push({
+          field: `items[${i}].action`,
+          message: "Must be a string",
+        });
+      }
+    }
+  }
+
+  if (typeof obj.metadata !== "object" || obj.metadata === null) {
+    errors.push({ field: "metadata", message: "Must be an object" });
+  }
+
+  return {
+    valid: errors.length === 0,
+    data: errors.length === 0 ? (data as ActionItemsLedger) : null,
+    errors,
+  };
+}
+
+export function parseActionItemsLedger(
+  raw: string,
+): ValidationResult<ActionItemsLedger> {
+  try {
+    const data = JSON.parse(raw);
+    return validateActionItemsLedger(data);
   } catch (e) {
     return {
       valid: false,

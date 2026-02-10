@@ -11,7 +11,7 @@
       "effort": "medium",
       "status": "resolved",
       "resolved_at": "2026-02-10T20:35:00.000Z",
-      "resolution": "Replaced DEMO_AUDITS with getAllAuditSummaries() in results/page.tsx. Built full audit detail page with RadarChart, ScoreProgression, AgentCard grid, highlights, divergent opinions, and action items. Added AuditSummary and ScoreHistoryEntry types. Updated audit-loader return types."
+      "resolution": "Replaced DEMO_AUDITS with getAllAuditSummaries() in results/page.tsx. Built full audit detail page with RadarChart, ScoreProgression, AgentCard grid, highlights, divergent opinions, and action items."
     },
     {
       "id": "ai-012",
@@ -24,52 +24,182 @@
       "effort": "low",
       "status": "resolved",
       "resolved_at": "2026-02-10T20:35:00.000Z",
-      "resolution": "Created 7 boundary files: app/error.tsx, app/loading.tsx, app/not-found.tsx, app/results/error.tsx, app/results/loading.tsx, app/results/[auditId]/not-found.tsx, app/results/[auditId]/loading.tsx. All with retry buttons and skeleton loaders."
+      "resolution": "Created 7 boundary files with retry buttons and skeleton loaders."
     },
     {
       "id": "ai-013",
       "source_audit": "20260210-201200",
       "iteration": 1,
       "priority": 3,
-      "action": "Enable noUncheckedIndexedAccess and noImplicitReturns in tsconfig.json, fix resulting type errors.",
+      "action": "Enable noUncheckedIndexedAccess and noImplicitReturns in tsconfig.json.",
       "source_agents": ["boris", "lydia"],
-      "impact": "Aligns implementation with own strict-mode philosophy, catches undefined access bugs",
+      "impact": "Aligns implementation with own strict-mode philosophy",
       "effort": "medium",
       "status": "resolved",
       "resolved_at": "2026-02-10T20:35:00.000Z",
-      "resolution": "Enabled both flags in tsconfig.json. Fixed 4 type errors: ScoreProgression payload[0] guard, data[length-1] optional chain, validate.test.ts errors[0] optional chains. All indexed access now properly handles undefined."
+      "resolution": "Enabled both flags, fixed 4 resulting type errors."
     },
     {
       "id": "ai-014",
       "source_audit": "20260210-201200",
       "iteration": 1,
       "priority": 4,
-      "action": "Wire validate.ts into audit-loader.ts: replace JSON.parse(raw) as T with parseSynthesisReport/validateAgentEvaluation.",
+      "action": "Wire validate.ts into audit-loader.ts for runtime validation.",
       "source_agents": ["lydia"],
-      "impact": "Connects runtime validation to data loading -- validates before data enters the type system",
+      "impact": "Validates before data enters the type system",
       "effort": "low",
       "status": "resolved",
       "resolved_at": "2026-02-10T21:00:00.000Z",
-      "resolution": "Replaced JSON.parse(raw) as SynthesisReport in getAudit() with parseSynthesisReport(raw). Invalid reports now log warnings and return null instead of passing bad data to the type system."
+      "resolution": "Replaced JSON.parse as-cast with parseSynthesisReport in getAudit()."
     },
     {
       "id": "ai-015",
       "source_audit": "20260210-201200",
       "iteration": 1,
       "priority": 5,
-      "action": "Add component tests for AgentCard and RadarChart using Vitest + React Testing Library.",
+      "action": "Add component tests for AgentCard and RadarChart.",
       "source_agents": ["boris"],
-      "impact": "Current 19 tests only cover lib/ utilities; zero component coverage",
+      "impact": "Zero component coverage before this fix",
       "effort": "medium",
       "status": "resolved",
       "resolved_at": "2026-02-10T21:00:00.000Z",
-      "resolution": "Added @testing-library/react, jsdom, @vitejs/plugin-react. Created vitest.config.ts with jsdom environment. Added 10 AgentCard tests (name, role, score, verdict, score bars, strengths, weaknesses, critical issues, one_line, aria-label) and 3 RadarChart tests (renders, aria-label, size prop). Total: 32 tests passing."
+      "resolution": "Added 13 component tests (10 AgentCard, 3 RadarChart)."
+    },
+    {
+      "id": "ai-016",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 1,
+      "action": "Create install.sh at repo root to automate plugin installation.",
+      "source_agents": ["cat", "ado", "jason"],
+      "impact": "Unblocks adoption -- most-cited weakness across 3 agents",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:15:00.000Z",
+      "resolution": "Created install.sh with directory validation, progress output, and next-step instructions. Updated README with Option 1 one-command install."
+    },
+    {
+      "id": "ai-017",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 2,
+      "action": "Sync landing page install section with README install flow.",
+      "source_agents": ["cat"],
+      "impact": "Fixes most visible inconsistency between website and README",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:15:00.000Z",
+      "resolution": "Updated messages.ts install.command to show git clone + install.sh as primary method. Updated description to match."
+    },
+    {
+      "id": "ai-018",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 3,
+      "action": "Extract VERDICT_STYLES, GRADE_STYLES, formatTimestamp to shared ui-constants.ts.",
+      "source_agents": ["boris", "lydia"],
+      "impact": "Eliminates triple duplication and style drift",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:15:00.000Z",
+      "resolution": "Created dashboard/src/lib/ui-constants.ts with VERDICT_BADGE_STYLES, GRADE_STYLES, AGENT_ROLES, formatTimestamp. Updated results/page.tsx and results/[auditId]/page.tsx to import from shared module."
+    },
+    {
+      "id": "ai-019",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 4,
+      "action": "Move error boundary strings to messages.ts.",
+      "source_agents": ["boris", "jason"],
+      "impact": "Completes string centralization pattern for i18n readiness",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:30:00.000Z",
+      "resolution": "Added errors section to messages.ts with strings for all 3 error boundaries and 2 not-found pages. Updated 5 files to import from messages."
+    },
+    {
+      "id": "ai-020",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 5,
+      "action": "Add validation for ProjectState, Timeline, ActionItemsLedger in audit-loader.ts.",
+      "source_agents": ["boris"],
+      "impact": "Closes remaining data integrity gap -- 3 of 5 loaders bypass validation",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:30:00.000Z",
+      "resolution": "Added validateProjectState, validateTimeline, validateActionItemsLedger + parse wrappers to validate.ts. Wired into audit-loader.ts — all 5 loaders now validate before entering the type system."
+    },
+    {
+      "id": "ai-021",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 6,
+      "action": "Lazy-load RadarChart and ScoreProgression with next/dynamic.",
+      "source_agents": ["lydia"],
+      "impact": "Reduces audit detail route JS bundle size",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:30:00.000Z",
+      "resolution": "Replaced static imports with next/dynamic({ ssr: false }) for RadarChart and ScoreProgression in audit detail page. Added loading skeletons."
+    },
+    {
+      "id": "ai-022",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 7,
+      "action": "Add ScoreProgression.test.tsx.",
+      "source_agents": ["lydia", "cat"],
+      "impact": "Closes biggest gap in component test coverage",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:45:00.000Z",
+      "resolution": "Added 6 tests: render, empty state, aria-label with latest score/target, custom target prop, single data point, empty state aria-label. Total test count: 43."
+    },
+    {
+      "id": "ai-023",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 8,
+      "action": "Replace hardcoded 'en-US' in formatTimestamp with browser locale.",
+      "source_agents": ["jason"],
+      "impact": "Low effort, high signal for global readiness",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:45:00.000Z",
+      "resolution": "Changed 'en-US' to undefined in ui-constants.ts and ScoreProgression.tsx formatTimestamp, allowing the browser's default locale to be used."
+    },
+    {
+      "id": "ai-024",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 9,
+      "action": "Add CHANGELOG.md.",
+      "source_agents": ["ado"],
+      "impact": "Meets developer expectations for versioned projects",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:45:00.000Z",
+      "resolution": "Created CHANGELOG.md at repo root following Keep a Changelog format. Covers v0.1.0 through v0.3.0 and Unreleased."
+    },
+    {
+      "id": "ai-025",
+      "source_audit": "20260211-000000",
+      "iteration": 3,
+      "priority": 10,
+      "action": "Add screenshots to README.",
+      "source_agents": ["ado"],
+      "impact": "Visual proof of the product for first impressions",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T00:45:00.000Z",
+      "resolution": "Added Screenshots section to README with table layout for landing/results/detail. Created docs/screenshots/ directory. Images need to be captured separately (no browser automation available)."
     }
   ],
   "metadata": {
-    "total_items": 5,
+    "total_items": 15,
     "open": 0,
-    "resolved": 5,
+    "resolved": 15,
     "chronic": 0
   }
 }

@@ -1,41 +1,40 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getAudit, getProjectState } from "@/lib/audit-loader";
 import { AgentCard } from "@/components/AgentCard";
-import { RadarChart } from "@/components/RadarChart";
-import { ScoreProgression } from "@/components/ScoreProgression";
-import type { Verdict } from "@/lib/types";
+import {
+  VERDICT_BADGE_STYLES,
+  AGENT_ROLES,
+  formatTimestamp,
+} from "@/lib/ui-constants";
 
-// ─── Constants ──────────────────────────────────────────────────────────────
+const RadarChart = dynamic(
+  () =>
+    import("@/components/RadarChart").then((mod) => ({
+      default: mod.RadarChart,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[350px] w-[350px] animate-pulse rounded-full bg-gray-800/40" />
+    ),
+  },
+);
 
-const AGENT_ROLES: Record<string, string> = {
-  boris: "Architecture & Type Safety",
-  cat: "Product & UX Design",
-  thariq: "Innovation & Simplicity",
-  lydia: "DX & Documentation",
-  ado: "Community & Integration",
-  jason: "Community Impact",
-};
-
-const VERDICT_STYLES: Record<Verdict, string> = {
-  STRONG_PASS: "bg-emerald-900/40 text-emerald-400 border-emerald-800",
-  PASS: "bg-blue-900/40 text-blue-400 border-blue-800",
-  MARGINAL: "bg-amber-900/40 text-amber-400 border-amber-800",
-  FAIL: "bg-red-900/40 text-red-400 border-red-800",
-};
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function formatTimestamp(iso: string): string {
-  return new Date(iso).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const ScoreProgression = dynamic(
+  () =>
+    import("@/components/ScoreProgression").then((mod) => ({
+      default: mod.ScoreProgression,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 animate-pulse rounded-lg bg-gray-800/40" />
+    ),
+  },
+);
 
 // ─── Metadata ───────────────────────────────────────────────────────────────
 
@@ -112,7 +111,7 @@ export default async function AuditDetailPage({
               {composite.grade}
             </span>
             <span
-              className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold ${VERDICT_STYLES[composite.verdict]}`}
+              className={`rounded-md border px-2.5 py-0.5 text-xs font-semibold ${VERDICT_BADGE_STYLES[composite.verdict]}`}
             >
               {composite.verdict}
             </span>

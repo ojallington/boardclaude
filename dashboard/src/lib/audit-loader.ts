@@ -7,7 +7,12 @@ import type {
   ActionItemsLedger,
   AuditSummary,
 } from "./types";
-import { parseSynthesisReport } from "./validate";
+import {
+  parseSynthesisReport,
+  parseProjectState,
+  parseTimeline,
+  parseActionItemsLedger,
+} from "./validate";
 
 // Local dev: .boardclaude/ at repo root (gitignored, live data)
 const LOCAL_DIR = path.join(process.cwd(), "..", ".boardclaude");
@@ -27,7 +32,12 @@ export async function getProjectState(): Promise<ProjectState | null> {
   try {
     const dir = await resolveDataDir();
     const raw = await fs.readFile(path.join(dir, "state.json"), "utf-8");
-    return JSON.parse(raw) as ProjectState;
+    const result = parseProjectState(raw);
+    if (!result.valid) {
+      console.warn("[audit-loader] Invalid project state:", result.errors);
+      return null;
+    }
+    return result.data;
   } catch {
     return null;
   }
@@ -37,7 +47,12 @@ export async function getTimeline(): Promise<Timeline | null> {
   try {
     const dir = await resolveDataDir();
     const raw = await fs.readFile(path.join(dir, "timeline.json"), "utf-8");
-    return JSON.parse(raw) as Timeline;
+    const result = parseTimeline(raw);
+    if (!result.valid) {
+      console.warn("[audit-loader] Invalid timeline:", result.errors);
+      return null;
+    }
+    return result.data;
   } catch {
     return null;
   }
@@ -47,7 +62,15 @@ export async function getActionItems(): Promise<ActionItemsLedger | null> {
   try {
     const dir = await resolveDataDir();
     const raw = await fs.readFile(path.join(dir, "action-items.json"), "utf-8");
-    return JSON.parse(raw) as ActionItemsLedger;
+    const result = parseActionItemsLedger(raw);
+    if (!result.valid) {
+      console.warn(
+        "[audit-loader] Invalid action items ledger:",
+        result.errors,
+      );
+      return null;
+    }
+    return result.data;
   } catch {
     return null;
   }
