@@ -8,6 +8,12 @@ import type {
   ActionItemsLedger,
 } from "./types";
 
+// ─── Type Guard ─────────────────────────────────────────────────────
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 // ─── Validation Errors ───────────────────────────────────────────────
 
 export interface ValidationError {
@@ -42,9 +48,10 @@ const VALID_GRADES: Grade[] = [
 export function validateAgentEvaluation(
   data: unknown,
 ): ValidationResult<AgentEvaluation> {
+  const raw = data;
   const errors: ValidationError[] = [];
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return {
       valid: false,
       data: null,
@@ -52,7 +59,7 @@ export function validateAgentEvaluation(
     };
   }
 
-  const obj = data as Record<string, unknown>;
+  const obj = data;
 
   // Required string fields
   if (typeof obj.agent !== "string" || obj.agent.length === 0) {
@@ -64,11 +71,10 @@ export function validateAgentEvaluation(
   }
 
   // Scores
-  if (typeof obj.scores !== "object" || obj.scores === null) {
+  if (!isRecord(obj.scores)) {
     errors.push({ field: "scores", message: "Must be an object" });
   } else {
-    const scores = obj.scores as Record<string, unknown>;
-    for (const [key, value] of Object.entries(scores)) {
+    for (const [key, value] of Object.entries(obj.scores)) {
       if (typeof value !== "number" || value < 0 || value > 100) {
         errors.push({
           field: `scores.${key}`,
@@ -121,20 +127,27 @@ export function validateAgentEvaluation(
     errors.push({ field: "action_items", message: "Must be an array" });
   } else {
     for (let i = 0; i < obj.action_items.length; i++) {
-      const item = obj.action_items[i] as Record<string, unknown>;
-      if (typeof item.priority !== "number") {
+      const rawItem: unknown = obj.action_items[i];
+      if (!isRecord(rawItem)) {
+        errors.push({
+          field: `action_items[${i}]`,
+          message: "Must be an object",
+        });
+        continue;
+      }
+      if (typeof rawItem.priority !== "number") {
         errors.push({
           field: `action_items[${i}].priority`,
           message: "Must be a number",
         });
       }
-      if (typeof item.action !== "string") {
+      if (typeof rawItem.action !== "string") {
         errors.push({
           field: `action_items[${i}].action`,
           message: "Must be a string",
         });
       }
-      if (typeof item.impact !== "string") {
+      if (typeof rawItem.impact !== "string") {
         errors.push({
           field: `action_items[${i}].impact`,
           message: "Must be a string",
@@ -153,7 +166,7 @@ export function validateAgentEvaluation(
 
   return {
     valid: errors.length === 0,
-    data: errors.length === 0 ? (data as AgentEvaluation) : null,
+    data: errors.length === 0 ? (raw as AgentEvaluation) : null,
     errors,
   };
 }
@@ -163,9 +176,10 @@ export function validateAgentEvaluation(
 export function validateSynthesisReport(
   data: unknown,
 ): ValidationResult<SynthesisReport> {
+  const raw = data;
   const errors: ValidationError[] = [];
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return {
       valid: false,
       data: null,
@@ -173,7 +187,7 @@ export function validateSynthesisReport(
     };
   }
 
-  const obj = data as Record<string, unknown>;
+  const obj = data;
 
   // Required string fields
   for (const field of ["audit_id", "panel", "target", "timestamp"] as const) {
@@ -197,29 +211,27 @@ export function validateSynthesisReport(
     errors.push({ field: "agents", message: "Must have at least one agent" });
   } else {
     for (let i = 0; i < obj.agents.length; i++) {
-      const agent = obj.agents[i] as Record<string, unknown>;
-      if (typeof agent !== "object" || agent === null) {
+      const rawAgent: unknown = obj.agents[i];
+      if (!isRecord(rawAgent)) {
         errors.push({
           field: `agents[${i}]`,
           message: "Must be an object",
         });
         continue;
       }
-      if (typeof agent.agent !== "string" || agent.agent.length === 0) {
+      if (typeof rawAgent.agent !== "string" || rawAgent.agent.length === 0) {
         errors.push({
           field: `agents[${i}].agent`,
           message: "Must be a non-empty string",
         });
       }
-      if (typeof agent.scores !== "object" || agent.scores === null) {
+      if (!isRecord(rawAgent.scores)) {
         errors.push({
           field: `agents[${i}].scores`,
           message: "Must be an object",
         });
       } else {
-        for (const [key, value] of Object.entries(
-          agent.scores as Record<string, unknown>,
-        )) {
+        for (const [key, value] of Object.entries(rawAgent.scores)) {
           if (typeof value !== "number" || value < 0 || value > 100) {
             errors.push({
               field: `agents[${i}].scores.${key}`,
@@ -229,16 +241,16 @@ export function validateSynthesisReport(
         }
       }
       if (
-        typeof agent.composite !== "number" ||
-        agent.composite < 0 ||
-        agent.composite > 100
+        typeof rawAgent.composite !== "number" ||
+        rawAgent.composite < 0 ||
+        rawAgent.composite > 100
       ) {
         errors.push({
           field: `agents[${i}].composite`,
           message: "Must be a number between 0 and 100",
         });
       }
-      if (!VALID_VERDICTS.includes(agent.verdict as Verdict)) {
+      if (!VALID_VERDICTS.includes(rawAgent.verdict as Verdict)) {
         errors.push({
           field: `agents[${i}].verdict`,
           message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -248,10 +260,10 @@ export function validateSynthesisReport(
   }
 
   // Composite
-  if (typeof obj.composite !== "object" || obj.composite === null) {
+  if (!isRecord(obj.composite)) {
     errors.push({ field: "composite", message: "Must be an object" });
   } else {
-    const comp = obj.composite as Record<string, unknown>;
+    const comp = obj.composite;
     if (typeof comp.score !== "number" || comp.score < 0 || comp.score > 100) {
       errors.push({
         field: "composite.score",
@@ -270,13 +282,13 @@ export function validateSynthesisReport(
         message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
       });
     }
-    if (typeof comp.radar !== "object" || comp.radar === null) {
+    if (!isRecord(comp.radar)) {
       errors.push({ field: "composite.radar", message: "Must be an object" });
     }
   }
 
   // Highlights
-  if (typeof obj.highlights !== "object" || obj.highlights === null) {
+  if (!isRecord(obj.highlights)) {
     errors.push({ field: "highlights", message: "Must be an object" });
   }
 
@@ -286,7 +298,7 @@ export function validateSynthesisReport(
   }
 
   // Iteration delta
-  if (typeof obj.iteration_delta !== "object" || obj.iteration_delta === null) {
+  if (!isRecord(obj.iteration_delta)) {
     errors.push({
       field: "iteration_delta",
       message: "Must be an object",
@@ -295,7 +307,7 @@ export function validateSynthesisReport(
 
   return {
     valid: errors.length === 0,
-    data: errors.length === 0 ? (data as SynthesisReport) : null,
+    data: errors.length === 0 ? (raw as SynthesisReport) : null,
     errors,
   };
 }
@@ -349,9 +361,10 @@ const VALID_PROJECT_STATUSES = ["idle", "active", "auditing"] as const;
 export function validateProjectState(
   data: unknown,
 ): ValidationResult<ProjectState> {
+  const raw = data;
   const errors: ValidationError[] = [];
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return {
       valid: false,
       data: null,
@@ -359,7 +372,7 @@ export function validateProjectState(
     };
   }
 
-  const obj = data as Record<string, unknown>;
+  const obj = data;
 
   for (const field of ["project", "panel", "branch"] as const) {
     if (typeof obj[field] !== "string") {
@@ -394,7 +407,7 @@ export function validateProjectState(
 
   return {
     valid: errors.length === 0,
-    data: errors.length === 0 ? (data as ProjectState) : null,
+    data: errors.length === 0 ? (raw as ProjectState) : null,
     errors,
   };
 }
@@ -422,9 +435,10 @@ export function parseProjectState(raw: string): ValidationResult<ProjectState> {
 const VALID_EVENT_TYPES = ["audit", "fork", "merge", "rollback"] as const;
 
 export function validateTimeline(data: unknown): ValidationResult<Timeline> {
+  const raw = data;
   const errors: ValidationError[] = [];
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return {
       valid: false,
       data: null,
@@ -432,30 +446,30 @@ export function validateTimeline(data: unknown): ValidationResult<Timeline> {
     };
   }
 
-  const obj = data as Record<string, unknown>;
+  const obj = data;
 
   if (!Array.isArray(obj.events)) {
     errors.push({ field: "events", message: "Must be an array" });
   } else {
     for (let i = 0; i < obj.events.length; i++) {
-      const event = obj.events[i] as Record<string, unknown>;
-      if (typeof event !== "object" || event === null) {
+      const rawEvent: unknown = obj.events[i];
+      if (!isRecord(rawEvent)) {
         errors.push({ field: `events[${i}]`, message: "Must be an object" });
         continue;
       }
-      if (typeof event.id !== "string") {
+      if (typeof rawEvent.id !== "string") {
         errors.push({ field: `events[${i}].id`, message: "Must be a string" });
       }
       if (
-        typeof event.type !== "string" ||
-        !(VALID_EVENT_TYPES as readonly string[]).includes(event.type)
+        typeof rawEvent.type !== "string" ||
+        !(VALID_EVENT_TYPES as readonly string[]).includes(rawEvent.type)
       ) {
         errors.push({
           field: `events[${i}].type`,
           message: `Must be one of: ${VALID_EVENT_TYPES.join(", ")}`,
         });
       }
-      if (typeof event.timestamp !== "string") {
+      if (typeof rawEvent.timestamp !== "string") {
         errors.push({
           field: `events[${i}].timestamp`,
           message: "Must be a string",
@@ -466,7 +480,7 @@ export function validateTimeline(data: unknown): ValidationResult<Timeline> {
 
   return {
     valid: errors.length === 0,
-    data: errors.length === 0 ? (data as Timeline) : null,
+    data: errors.length === 0 ? (raw as Timeline) : null,
     errors,
   };
 }
@@ -494,9 +508,10 @@ export function parseTimeline(raw: string): ValidationResult<Timeline> {
 export function validateActionItemsLedger(
   data: unknown,
 ): ValidationResult<ActionItemsLedger> {
+  const raw = data;
   const errors: ValidationError[] = [];
 
-  if (typeof data !== "object" || data === null) {
+  if (!isRecord(data)) {
     return {
       valid: false,
       data: null,
@@ -504,24 +519,24 @@ export function validateActionItemsLedger(
     };
   }
 
-  const obj = data as Record<string, unknown>;
+  const obj = data;
 
   if (!Array.isArray(obj.items)) {
     errors.push({ field: "items", message: "Must be an array" });
   } else {
     for (let i = 0; i < obj.items.length; i++) {
-      const item = obj.items[i] as Record<string, unknown>;
-      if (typeof item !== "object" || item === null) {
+      const rawItem: unknown = obj.items[i];
+      if (!isRecord(rawItem)) {
         errors.push({ field: `items[${i}]`, message: "Must be an object" });
         continue;
       }
-      if (typeof item.id !== "string") {
+      if (typeof rawItem.id !== "string") {
         errors.push({
           field: `items[${i}].id`,
           message: "Must be a string",
         });
       }
-      if (typeof item.action !== "string") {
+      if (typeof rawItem.action !== "string") {
         errors.push({
           field: `items[${i}].action`,
           message: "Must be a string",
@@ -530,13 +545,13 @@ export function validateActionItemsLedger(
     }
   }
 
-  if (typeof obj.metadata !== "object" || obj.metadata === null) {
+  if (!isRecord(obj.metadata)) {
     errors.push({ field: "metadata", message: "Must be an object" });
   }
 
   return {
     valid: errors.length === 0,
-    data: errors.length === 0 ? (data as ActionItemsLedger) : null,
+    data: errors.length === 0 ? (raw as ActionItemsLedger) : null,
     errors,
   };
 }

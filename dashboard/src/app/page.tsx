@@ -7,7 +7,7 @@ export default function HomePage() {
     messages;
 
   return (
-    <main className="min-h-screen bg-gray-950 text-gray-100">
+    <main id="main-content" className="min-h-screen bg-gray-950 text-gray-100">
       {/* Hero */}
       <section className="flex flex-col items-center justify-center px-6 pt-32 pb-20 text-center">
         <h1 className="text-6xl sm:text-7xl font-bold tracking-tight">
@@ -44,7 +44,7 @@ export default function HomePage() {
       {/* Video */}
       <section id="demo" className="px-6 pb-24 max-w-5xl mx-auto scroll-mt-8">
         <div className="rounded-2xl overflow-hidden border border-gray-800 shadow-[0_0_60px_-15px_rgba(99,102,241,0.3)]">
-          <video controls preload="metadata" className="w-full">
+          <video controls preload="metadata" poster="/demo-poster.jpg" className="w-full">
             <source src="/demo.mp4" type="video/mp4" />
             {video.fallback}
           </video>

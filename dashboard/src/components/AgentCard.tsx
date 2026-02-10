@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { AGENT_COLORS, type Verdict } from "@/lib/types";
+import { VERDICT_BADGE_STYLES } from "@/lib/ui-constants";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -22,13 +23,6 @@ export interface AgentCardProps {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-const VERDICT_STYLES: Record<Verdict, string> = {
-  STRONG_PASS: "bg-emerald-500/20 text-emerald-400 ring-emerald-500/30",
-  PASS: "bg-green-500/20 text-green-400 ring-green-500/30",
-  MARGINAL: "bg-amber-500/20 text-amber-400 ring-amber-500/30",
-  FAIL: "bg-red-500/20 text-red-400 ring-red-500/30",
-};
 
 const VERDICT_LABELS: Record<Verdict, string> = {
   STRONG_PASS: "STRONG PASS",
@@ -55,7 +49,7 @@ function scoreBarColor(score: number): string {
 function VerdictBadge({ verdict }: { verdict: Verdict }) {
   return (
     <span
-      className={`inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${VERDICT_STYLES[verdict]}`}
+      className={`inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold ${VERDICT_BADGE_STYLES[verdict]}`}
     >
       {VERDICT_LABELS[verdict]}
     </span>
@@ -64,14 +58,21 @@ function VerdictBadge({ verdict }: { verdict: Verdict }) {
 
 function ScoreBar({ label, score }: { label: string; score: number }) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3" aria-live="polite">
       <span
         className="w-36 shrink-0 text-sm text-gray-400 truncate"
         title={label}
       >
         {label}
       </span>
-      <div className="flex-1 h-2 rounded-full bg-gray-800 overflow-hidden">
+      <div
+        className="flex-1 h-2 rounded-full bg-gray-800 overflow-hidden"
+        role="progressbar"
+        aria-valuenow={score}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`${label}: ${score} out of 100`}
+      >
         <div
           className={`h-full rounded-full transition-all duration-500 ${scoreBarColor(score)}`}
           style={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
