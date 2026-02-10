@@ -1,0 +1,42 @@
+"use client";
+
+import { useEffect } from "react";
+import Link from "next/link";
+
+export default function AuditDetailError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  useEffect(() => {
+    console.error("Audit detail error:", error);
+  }, [error]);
+
+  return (
+    <div className="mx-auto flex min-h-[60vh] max-w-4xl flex-col items-center justify-center px-4">
+      <h2 className="text-2xl font-bold text-gray-100">
+        Failed to load audit detail
+      </h2>
+      <p className="mt-2 text-sm text-gray-400">
+        Could not read this audit report. The file may be missing or contain
+        invalid data.
+      </p>
+      <div className="mt-6 flex gap-3">
+        <button
+          onClick={reset}
+          className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+        >
+          Try again
+        </button>
+        <Link
+          href="/results"
+          className="rounded-lg border border-gray-700 px-4 py-2 text-sm font-medium text-gray-300 transition-colors hover:border-gray-600 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+        >
+          Back to results
+        </Link>
+      </div>
+    </div>
+  );
+}

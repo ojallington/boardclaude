@@ -182,11 +182,61 @@ export function validateSynthesisReport(
     });
   }
 
-  // Agents array
+  // Agents array -- validate each entry
   if (!Array.isArray(obj.agents)) {
     errors.push({ field: "agents", message: "Must be an array" });
   } else if (obj.agents.length === 0) {
     errors.push({ field: "agents", message: "Must have at least one agent" });
+  } else {
+    for (let i = 0; i < obj.agents.length; i++) {
+      const agent = obj.agents[i] as Record<string, unknown>;
+      if (typeof agent !== "object" || agent === null) {
+        errors.push({
+          field: `agents[${i}]`,
+          message: "Must be an object",
+        });
+        continue;
+      }
+      if (typeof agent.agent !== "string" || agent.agent.length === 0) {
+        errors.push({
+          field: `agents[${i}].agent`,
+          message: "Must be a non-empty string",
+        });
+      }
+      if (typeof agent.scores !== "object" || agent.scores === null) {
+        errors.push({
+          field: `agents[${i}].scores`,
+          message: "Must be an object",
+        });
+      } else {
+        for (const [key, value] of Object.entries(
+          agent.scores as Record<string, unknown>,
+        )) {
+          if (typeof value !== "number" || value < 0 || value > 100) {
+            errors.push({
+              field: `agents[${i}].scores.${key}`,
+              message: `Must be a number between 0 and 100, got ${value}`,
+            });
+          }
+        }
+      }
+      if (
+        typeof agent.composite !== "number" ||
+        agent.composite < 0 ||
+        agent.composite > 100
+      ) {
+        errors.push({
+          field: `agents[${i}].composite`,
+          message: "Must be a number between 0 and 100",
+        });
+      }
+      if (!VALID_VERDICTS.includes(agent.verdict as Verdict)) {
+        errors.push({
+          field: `agents[${i}].verdict`,
+          message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
+        });
+      }
+    }
   }
 
   // Composite

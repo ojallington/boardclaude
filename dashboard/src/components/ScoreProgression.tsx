@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
+import { useReducedMotion } from "framer-motion";
 import {
   LineChart,
   Line,
@@ -150,16 +151,8 @@ export function ScoreProgression({
   // Stable tick formatter to avoid anonymous function re-creation
   const formatXTick = useCallback((value: number) => `#${value}`, []);
 
-  // Respect prefers-reduced-motion
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mq.matches);
-    const handler = (e: MediaQueryListEvent) =>
-      setPrefersReducedMotion(e.matches);
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
+  // Respect prefers-reduced-motion (consistent with AgentCard)
+  const prefersReducedMotion = useReducedMotion();
 
   if (data.length === 0) {
     return (

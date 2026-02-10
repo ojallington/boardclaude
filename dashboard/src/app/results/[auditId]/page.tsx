@@ -158,9 +158,9 @@ export default async function AuditDetailPage({
               Top Strengths
             </h3>
             <ul className="space-y-2">
-              {highlights.top_strengths.map((s, i) => (
+              {highlights.top_strengths.map((s) => (
                 <li
-                  key={i}
+                  key={s}
                   className="flex items-start gap-2 text-sm text-gray-300"
                 >
                   <span className="mt-0.5 shrink-0 text-emerald-400">
@@ -176,9 +176,9 @@ export default async function AuditDetailPage({
               Top Weaknesses
             </h3>
             <ul className="space-y-2">
-              {highlights.top_weaknesses.map((w, i) => (
+              {highlights.top_weaknesses.map((w) => (
                 <li
-                  key={i}
+                  key={w}
                   className="flex items-start gap-2 text-sm text-gray-300"
                 >
                   <span className="mt-0.5 shrink-0 text-amber-400">
@@ -199,9 +199,9 @@ export default async function AuditDetailPage({
             Divergent Opinions
           </h2>
           <div className="space-y-6">
-            {highlights.divergent_opinions.map((d, i) => (
+            {highlights.divergent_opinions.map((d) => (
               <div
-                key={i}
+                key={d.topic}
                 className="rounded-lg border border-gray-700 bg-gray-800/50 p-4"
               >
                 <h3 className="mb-3 font-medium text-gray-200">{d.topic}</h3>
@@ -261,7 +261,7 @@ export default async function AuditDetailPage({
           <div className="space-y-3">
             {action_items.map((item) => (
               <div
-                key={item.priority}
+                key={`${item.priority}-${item.action.slice(0, 30)}`}
                 className="flex items-start gap-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4"
               >
                 <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-900/50 text-xs font-bold text-indigo-400">
@@ -271,8 +271,7 @@ export default async function AuditDetailPage({
                   <p className="text-sm text-gray-200">{item.action}</p>
                   <div className="mt-1 flex items-center gap-3">
                     <span className="text-xs text-gray-500">
-                      from{" "}
-                      {item.source_agents?.join(", ") ?? "unknown"}
+                      from {item.source_agents?.join(", ") ?? "unknown"}
                     </span>
                     <span className="text-xs text-gray-500">
                       effort: {item.effort}

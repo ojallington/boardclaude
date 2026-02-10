@@ -15,10 +15,23 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## Quick Start
 
-### As a Claude Code Plugin
+### Install
 
 ```bash
-# In any project with Claude Code installed
+# Option 1: Clone and link manually
+git clone https://github.com/ojallington/boardclaude.git
+cp -r boardclaude/.claude-plugin boardclaude/agents boardclaude/commands \
+      boardclaude/skills boardclaude/panels boardclaude/hooks \
+      your-project/
+
+# Option 2: Plugin registry (when available)
+claude plugin add boardclaude
+```
+
+### Run Your First Audit
+
+```bash
+# In any project with the plugin installed
 /bc:init           # Setup wizard - choose a panel template
 /bc:audit          # Run full panel audit (6 agents + synthesis)
 /bc:fix            # Implement top action items from audit
