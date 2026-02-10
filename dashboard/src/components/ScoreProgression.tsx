@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -149,6 +149,17 @@ export function ScoreProgression({
   // Stable tick formatter to avoid anonymous function re-creation
   const formatXTick = useCallback((value: number) => `#${value}`, []);
 
+  // Respect prefers-reduced-motion
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) =>
+      setPrefersReducedMotion(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   if (data.length === 0) {
     return (
       <div
@@ -220,7 +231,7 @@ export function ScoreProgression({
             strokeWidth={2.5}
             dot={<ScoreDot />}
             activeDot={<ActiveScoreDot />}
-            animationDuration={600}
+            animationDuration={prefersReducedMotion ? 0 : 600}
             animationEasing="ease-out"
           />
         </LineChart>
