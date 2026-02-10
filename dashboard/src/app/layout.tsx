@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { messages } from "@/lib/messages";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,9 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "BoardClaude - Multi-Perspective Project Evaluation",
-  description:
-    "Assemble a board of AI agents that evaluate your project from multiple expert perspectives.",
+  title: messages.site.title,
+  description: messages.site.description,
 };
 
 export default function RootLayout({

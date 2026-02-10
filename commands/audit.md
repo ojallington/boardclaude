@@ -72,6 +72,7 @@ synthesis agent merges all findings into a unified report.
     - Top 3 action items
     - Iteration delta if applicable
     - Path to full report files
+    - Dashboard link: `To view in the dashboard, run: cd dashboard && npm run dev` then open `http://localhost:3000/results`
 
 ## Agent Report Schema
 

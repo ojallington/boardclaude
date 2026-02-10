@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  typecheck-and-build:
+  quality:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -29,6 +29,12 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Prettier check
+        run: npx prettier --check "src/**/*.{ts,tsx,json}"
+
+      - name: Tests
+        run: npm test
 
       - name: Build
         run: npm run build
