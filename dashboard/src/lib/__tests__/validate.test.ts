@@ -3,6 +3,9 @@ import {
   validateAgentEvaluation,
   validateSynthesisReport,
   parseAgentEvaluation,
+  validateProjectState,
+  validateTimeline,
+  validateActionItemsLedger,
 } from "../validate";
 
 // ─── Valid fixtures ──────────────────────────────────────────────────
@@ -219,5 +222,257 @@ describe("parseAgentEvaluation", () => {
   it("rejects valid JSON with invalid schema", () => {
     const result = parseAgentEvaluation(JSON.stringify({ agent: 123 }));
     expect(result.valid).toBe(false);
+  });
+});
+
+// ─── ProjectState validation ────────────────────────────────────────
+
+const validProjectState = {
+  project: "boardclaude",
+  panel: "hackathon-judges",
+  branch: "main",
+  audit_count: 4,
+  latest_audit: "audit-20260211-040000",
+  latest_score: 87.37,
+  score_history: [
+    {
+      audit_id: "audit-20260210-193000",
+      iteration: 0,
+      score: 68.4,
+      grade: "C+",
+      verdict: "MARGINAL",
+      timestamp: "2026-02-10T19:30:00.000Z",
+    },
+  ],
+  worktrees: [],
+  status: "idle",
+};
+
+describe("validateProjectState", () => {
+  it("accepts a valid project state", () => {
+    const result = validateProjectState(validProjectState);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.data).not.toBeNull();
+  });
+
+  it("rejects non-object input", () => {
+    const result = validateProjectState("not an object");
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.field).toBe("root");
+  });
+
+  it("rejects null input", () => {
+    const result = validateProjectState(null);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.field).toBe("root");
+  });
+
+  it("rejects missing project field", () => {
+    const { project: _, ...rest } = validProjectState;
+    const result = validateProjectState(rest);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "project")).toBe(true);
+  });
+
+  it("rejects negative audit_count", () => {
+    const result = validateProjectState({
+      ...validProjectState,
+      audit_count: -1,
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "audit_count")).toBe(true);
+  });
+
+  it("rejects non-array score_history", () => {
+    const result = validateProjectState({
+      ...validProjectState,
+      score_history: "not an array",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "score_history")).toBe(true);
+  });
+
+  it("rejects invalid status", () => {
+    const result = validateProjectState({
+      ...validProjectState,
+      status: "running",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "status")).toBe(true);
+  });
+
+  it("accepts all valid status values", () => {
+    for (const status of ["idle", "active", "auditing"]) {
+      const result = validateProjectState({ ...validProjectState, status });
+      expect(result.valid).toBe(true);
+    }
+  });
+});
+
+// ─── Timeline validation ────────────────────────────────────────────
+
+const validTimeline = {
+  events: [
+    {
+      id: "evt-001",
+      type: "audit",
+      timestamp: "2026-02-10T19:30:00.000Z",
+      parent: null,
+      status: "completed",
+      branch: "main",
+      panel: "hackathon-judges",
+      composite_score: 68.4,
+      agent_scores: { boris: 69 },
+      audit_file: "audit-20260210-193000.json",
+    },
+  ],
+};
+
+describe("validateTimeline", () => {
+  it("accepts a valid timeline", () => {
+    const result = validateTimeline(validTimeline);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.data).not.toBeNull();
+  });
+
+  it("rejects non-object input", () => {
+    const result = validateTimeline(42);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.field).toBe("root");
+  });
+
+  it("rejects non-array events", () => {
+    const result = validateTimeline({ events: "not an array" });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "events")).toBe(true);
+  });
+
+  it("rejects event with missing id", () => {
+    const result = validateTimeline({
+      events: [{ type: "audit", timestamp: "2026-01-01T00:00:00Z" }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "events[0].id")).toBe(true);
+  });
+
+  it("rejects event with invalid type", () => {
+    const result = validateTimeline({
+      events: [
+        { id: "evt-001", type: "unknown", timestamp: "2026-01-01T00:00:00Z" },
+      ],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "events[0].type")).toBe(true);
+  });
+
+  it("rejects event with missing timestamp", () => {
+    const result = validateTimeline({
+      events: [{ id: "evt-001", type: "audit" }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "events[0].timestamp")).toBe(
+      true,
+    );
+  });
+
+  it("accepts all valid event types", () => {
+    for (const type of ["audit", "fork", "merge", "rollback"]) {
+      const result = validateTimeline({
+        events: [
+          { id: "evt-001", type, timestamp: "2026-01-01T00:00:00Z" },
+        ],
+      });
+      expect(result.valid).toBe(true);
+    }
+  });
+
+  it("accepts empty events array", () => {
+    const result = validateTimeline({ events: [] });
+    expect(result.valid).toBe(true);
+  });
+});
+
+// ─── ActionItemsLedger validation ───────────────────────────────────
+
+const validLedger = {
+  items: [
+    {
+      id: "ai-001",
+      source_audit: "20260210-193000",
+      source_agent: "boris",
+      action: "Fix type errors",
+      file_refs: ["src/lib/types.ts"],
+      priority: 1,
+      effort: "low",
+      status: "open",
+      resolved_in_audit: null,
+      iterations_open: 0,
+      created_at: "2026-02-10T19:30:00.000Z",
+      updated_at: "2026-02-10T19:30:00.000Z",
+    },
+  ],
+  metadata: {
+    total_items: 1,
+    open: 1,
+    resolved: 0,
+    chronic: 0,
+  },
+};
+
+describe("validateActionItemsLedger", () => {
+  it("accepts a valid ledger", () => {
+    const result = validateActionItemsLedger(validLedger);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.data).not.toBeNull();
+  });
+
+  it("rejects non-object input", () => {
+    const result = validateActionItemsLedger([]);
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.field).toBe("root");
+  });
+
+  it("rejects non-array items", () => {
+    const result = validateActionItemsLedger({
+      items: "not an array",
+      metadata: {},
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "items")).toBe(true);
+  });
+
+  it("rejects item with missing id", () => {
+    const result = validateActionItemsLedger({
+      items: [{ action: "do something" }],
+      metadata: { total_items: 1, open: 1, resolved: 0, chronic: 0 },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "items[0].id")).toBe(true);
+  });
+
+  it("rejects item with missing action", () => {
+    const result = validateActionItemsLedger({
+      items: [{ id: "ai-001" }],
+      metadata: { total_items: 1, open: 1, resolved: 0, chronic: 0 },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "items[0].action")).toBe(true);
+  });
+
+  it("rejects missing metadata", () => {
+    const result = validateActionItemsLedger({ items: [] });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "metadata")).toBe(true);
+  });
+
+  it("accepts empty items array with valid metadata", () => {
+    const result = validateActionItemsLedger({
+      items: [],
+      metadata: { total_items: 0, open: 0, resolved: 0, chronic: 0 },
+    });
+    expect(result.valid).toBe(true);
   });
 });

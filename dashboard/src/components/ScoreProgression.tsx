@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import { formatTimestamp } from "@/lib/ui-constants";
 
 // ─── Props ──────────────────────────────────────────────────────────────────
 
@@ -39,16 +40,6 @@ interface CustomTooltipProps {
   active?: boolean;
   payload?: TooltipPayloadEntry[];
   label?: number;
-}
-
-function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  return date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
 
 function ScoreTooltip({ active, payload }: CustomTooltipProps) {

@@ -42,6 +42,16 @@ claude plugin add boardclaude
 /bc:audit          # Re-audit to measure improvement
 ```
 
+Expected output after a successful audit:
+
+```
+Audit complete: audit-20260210-193000
+  Composite: 68.4 / 100 (C+, MARGINAL)
+  Agents: boris=69.0, cat=71.2, thariq=71.0, lydia=68.1, ado=64.2, jason=62.4
+  Action items: 10 (5 low, 3 medium, 2 high)
+  Saved to: .boardclaude/audits/audit-20260210-193000.json
+```
+
 ### Available Commands
 
 | Command | Description |
