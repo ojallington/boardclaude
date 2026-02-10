@@ -32,6 +32,7 @@ Thumbs.db
 
 # Large media files
 *.mp4
+!dashboard/public/demo.mp4
 
 # Vercel
 .vercel/
