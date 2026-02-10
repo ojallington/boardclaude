@@ -103,9 +103,9 @@ function ListSection({
         {label}
       </h4>
       <ul className="space-y-1.5">
-        {items.map((item, idx) => (
+        {items.map((item) => (
           <li
-            key={idx}
+            key={item}
             className="flex items-start gap-2 text-sm text-gray-300"
           >
             <span className={`mt-0.5 shrink-0 ${iconColor}`}>{icon}</span>

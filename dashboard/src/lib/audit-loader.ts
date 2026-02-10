@@ -46,10 +46,7 @@ export async function getTimeline(): Promise<Timeline | null> {
 export async function getActionItems(): Promise<ActionItemsLedger | null> {
   try {
     const dir = await resolveDataDir();
-    const raw = await fs.readFile(
-      path.join(dir, "action-items.json"),
-      "utf-8",
-    );
+    const raw = await fs.readFile(path.join(dir, "action-items.json"), "utf-8");
     return JSON.parse(raw) as ActionItemsLedger;
   } catch {
     return null;
@@ -76,10 +73,7 @@ export async function getAudit(
   try {
     const dir = await resolveDataDir();
     const filename = auditId.endsWith(".json") ? auditId : `${auditId}.json`;
-    const raw = await fs.readFile(
-      path.join(dir, "audits", filename),
-      "utf-8",
-    );
+    const raw = await fs.readFile(path.join(dir, "audits", filename), "utf-8");
     const result = parseSynthesisReport(raw);
     if (!result.valid) {
       console.warn(

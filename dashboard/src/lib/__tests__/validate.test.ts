@@ -125,6 +125,83 @@ describe("validateSynthesisReport", () => {
   });
 });
 
+// ─── Agent-level validation in synthesis ─────────────────────────────
+
+describe("validateSynthesisReport agent-level checks", () => {
+  it("rejects agent with scores outside 0-100", () => {
+    const report = {
+      ...validReport,
+      agents: [
+        {
+          agent: "boris",
+          scores: { arch: 150 },
+          composite: 69,
+          verdict: "PASS",
+        },
+      ],
+    };
+    const result = validateSynthesisReport(report);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "agents[0].scores.arch")).toBe(
+      true,
+    );
+  });
+
+  it("rejects agent with missing name", () => {
+    const report = {
+      ...validReport,
+      agents: [{ agent: "", scores: {}, composite: 69, verdict: "PASS" }],
+    };
+    const result = validateSynthesisReport(report);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "agents[0].agent")).toBe(true);
+  });
+
+  it("rejects agent with invalid verdict", () => {
+    const report = {
+      ...validReport,
+      agents: [
+        { agent: "boris", scores: {}, composite: 69, verdict: "AMAZING" },
+      ],
+    };
+    const result = validateSynthesisReport(report);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "agents[0].verdict")).toBe(
+      true,
+    );
+  });
+
+  it("rejects agent with composite outside 0-100", () => {
+    const report = {
+      ...validReport,
+      agents: [{ agent: "boris", scores: {}, composite: -5, verdict: "PASS" }],
+    };
+    const result = validateSynthesisReport(report);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "agents[0].composite")).toBe(
+      true,
+    );
+  });
+
+  it("accepts multiple valid agents", () => {
+    const report = {
+      ...validReport,
+      agents: [
+        {
+          agent: "boris",
+          scores: { arch: 85 },
+          composite: 85,
+          verdict: "STRONG_PASS",
+        },
+        { agent: "cat", scores: { ux: 72 }, composite: 72, verdict: "PASS" },
+      ],
+    };
+    const result = validateSynthesisReport(report);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+  });
+});
+
 // ─── JSON parsing ────────────────────────────────────────────────────
 
 describe("parseAgentEvaluation", () => {
