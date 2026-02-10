@@ -3,7 +3,7 @@
   "panel": "hackathon-judges",
   "branch": "main",
   "audit_count": 5,
-  "latest_audit": "audit-20260211-040000.json",
+  "latest_audit": "audit-20260210-235500.json",
   "latest_score": 87.37,
   "score_history": [
     {
@@ -31,20 +31,20 @@
       "timestamp": "2026-02-10T22:30:00.000Z"
     },
     {
-      "audit_id": "20260211-000000",
+      "audit_id": "20260210-233000",
       "iteration": 3,
       "score": 86.2,
       "grade": "A-",
       "verdict": "STRONG_PASS",
-      "timestamp": "2026-02-11T00:00:00.000Z"
+      "timestamp": "2026-02-10T23:30:00.000Z"
     },
     {
-      "audit_id": "20260211-040000",
+      "audit_id": "20260210-235500",
       "iteration": 4,
       "score": 87.37,
       "grade": "A-",
       "verdict": "STRONG_PASS",
-      "timestamp": "2026-02-11T04:00:00.000Z"
+      "timestamp": "2026-02-10T23:55:00.000Z"
     }
   ],
   "worktrees": [],
