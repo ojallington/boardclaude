@@ -23,6 +23,30 @@
       "agents": 6,
       "verdict": "PASS",
       "description": "Self-Audit #1: Re-audit after resolving all 10 Iteration 0 action items. Score improved +12.3 points."
+    },
+    {
+      "id": "audit-20260210-223000",
+      "type": "audit",
+      "timestamp": "2026-02-10T22:30:00.000Z",
+      "branch": "main",
+      "composite": 83.5,
+      "iteration": 2,
+      "panel": "hackathon-judges",
+      "agents": 6,
+      "verdict": "PASS",
+      "description": "Self-Audit #2: Re-audit after resolving 7 Iteration 1 action items. Score improved +2.8 points."
+    },
+    {
+      "id": "audit-20260211-000000",
+      "type": "audit",
+      "timestamp": "2026-02-11T00:00:00.000Z",
+      "branch": "main",
+      "composite": 86.2,
+      "iteration": 3,
+      "panel": "hackathon-judges",
+      "agents": 6,
+      "verdict": "STRONG_PASS",
+      "description": "Self-Audit #3: All iter-2 action items resolved. First STRONG_PASS verdict. Score improved +2.7 points."
     }
   ]
 }

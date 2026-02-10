@@ -1,8 +1,13 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import type { AuditSummary, Verdict } from "@/lib/types";
+import type { AuditSummary } from "@/lib/types";
 import { messages } from "@/lib/messages";
 import { getAllAuditSummaries } from "@/lib/audit-loader";
+import {
+  VERDICT_BADGE_STYLES,
+  GRADE_STYLES,
+  formatTimestamp,
+} from "@/lib/ui-constants";
 
 // ─── Page metadata ──────────────────────────────────────────────────────────
 
@@ -11,45 +16,11 @@ export const metadata: Metadata = {
   description: messages.results.description,
 };
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
-
-function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-const VERDICT_STYLES: Record<Verdict, string> = {
-  STRONG_PASS: "bg-emerald-900/40 text-emerald-400 border-emerald-800",
-  PASS: "bg-blue-900/40 text-blue-400 border-blue-800",
-  MARGINAL: "bg-amber-900/40 text-amber-400 border-amber-800",
-  FAIL: "bg-red-900/40 text-red-400 border-red-800",
-};
-
-const GRADE_STYLES: Record<string, string> = {
-  "A+": "text-emerald-400",
-  A: "text-emerald-400",
-  "A-": "text-emerald-400",
-  "B+": "text-blue-400",
-  B: "text-blue-400",
-  "B-": "text-blue-400",
-  "C+": "text-amber-400",
-  C: "text-amber-400",
-  "C-": "text-amber-400",
-  D: "text-red-400",
-  F: "text-red-500",
-};
-
 // ─── Audit Card ─────────────────────────────────────────────────────────────
 
 function AuditCard({ audit }: { audit: AuditSummary }) {
   const { audit_id, timestamp, panel, composite, iteration } = audit;
-  const verdictStyle = VERDICT_STYLES[composite.verdict];
+  const verdictStyle = VERDICT_BADGE_STYLES[composite.verdict];
   const gradeColor = GRADE_STYLES[composite.grade] ?? "text-gray-400";
 
   return (

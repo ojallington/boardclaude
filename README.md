@@ -18,13 +18,17 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 ### Install
 
 ```bash
-# Option 1: Clone and link manually
+# Option 1: One-command install
+git clone https://github.com/ojallington/boardclaude.git
+./boardclaude/install.sh your-project/
+
+# Option 2: Manual copy
 git clone https://github.com/ojallington/boardclaude.git
 cp -r boardclaude/.claude-plugin boardclaude/agents boardclaude/commands \
       boardclaude/skills boardclaude/panels boardclaude/hooks \
       your-project/
 
-# Option 2: Plugin registry (when available)
+# Option 3: Plugin registry (when available)
 claude plugin add boardclaude
 ```
 
@@ -58,6 +62,14 @@ npm install
 npm run dev
 # Open http://localhost:3000
 ```
+
+## Screenshots
+
+| Landing Page | Audit Results | Audit Detail |
+|:---:|:---:|:---:|
+| ![Landing page](docs/screenshots/landing.png) | ![Results list](docs/screenshots/results.png) | ![Audit detail](docs/screenshots/detail.png) |
+
+> Live dashboard: [boardclaude.com](https://boardclaude.com)
 
 ## Example Output
 
