@@ -18,11 +18,26 @@ action-items.json <-- extract action items from synthesis
 /bc:fix --> read ledger --> filter actionable items
     |
     v
-implement fix --> validation-runner (verify each fix)
-    |  (pass)              |  (fail)
-    v                      v
-stage fix              revert changes
-mark in_progress       mark blocked
+dependency analysis --> build conflict graph --> partition into batches
+    |
+    +-- Batch 1 (independent items) ----+
+    |     |                             |
+    |     v                             v
+    |   Fix Worker A (parallel)   Fix Worker B (parallel)
+    |     |                             |
+    |     +-------- join ---------------+
+    |                 |
+    |                 v
+    |   centralized validation (tsc + vitest + lint)
+    |     |  (pass)              |  (fail)
+    |     v                      v
+    |   accept batch          revert batch
+    |   mark in_progress      retry items serially
+    |
+    +-- Batch 2 (single item or serial fallback) --+
+    |     |                                        |
+    |     v                                        |
+    |   implement fix --> validate --> accept/revert
     |
     v
 /bc:audit --> measure score delta --> reconcile ledger
@@ -33,7 +48,10 @@ items unchanged --> increment iterations_open
 items open 3+ iterations --> mark chronic
 ```
 
-**Key invariant:** Every fix is verified before it persists. The validation-runner acts as a gate between "fix attempted" and "fix accepted." If validation regresses, the fix is reverted and the item is marked `blocked`, not `resolved`.
+**Key invariants:**
+- Every fix is verified before it persists. The validation-runner acts as a gate between "fix attempted" and "fix accepted." If validation regresses, the fix is reverted and the item is marked `blocked`, not `resolved`.
+- Items sharing any file ref are never placed in the same parallel batch. Conservative conflict detection ensures no file clobbering.
+- Failed parallel batches gracefully fall back to serial execution — no work is lost.
 
 ---
 
