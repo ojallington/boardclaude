@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { TryPanelResult, Verdict, SynthesisActionItem } from "@/lib/types";
 import { getAgentColor } from "@/lib/types";
 import { VERDICT_BADGE_STYLES, GRADE_STYLES } from "@/lib/ui-constants";
@@ -18,6 +18,7 @@ const EFFORT_STYLES: Record<string, string> = {
 };
 
 export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
+  const shouldReduceMotion = useReducedMotion();
   const { composite, highlights, action_items } = result;
   const verdictStyle =
     VERDICT_BADGE_STYLES[composite.verdict as Verdict] ??
@@ -26,9 +27,9 @@ export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 12 }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.4 }}
       className="space-y-6"
     >
       {/* Composite Score Hero */}

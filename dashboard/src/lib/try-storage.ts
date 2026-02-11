@@ -1,6 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import type { TryPanelResult, TryResultSummary } from "./types";
+import { validateTryPanelResult } from "./validate";
 
 const COMMITTED_DIR = path.join(process.cwd(), "data", "try-results");
 const EPHEMERAL_DIR = "/tmp/try-results";
@@ -64,7 +65,9 @@ export async function listWebReviews(): Promise<TryResultSummary[]> {
 
         try {
           const raw = await fs.readFile(path.join(dir, file), "utf-8");
-          const data = JSON.parse(raw) as TryPanelResult;
+          const parsed = validateTryPanelResult(JSON.parse(raw));
+          if (!parsed.valid || !parsed.data) continue;
+          const data = parsed.data;
           summaries.push({
             audit_id: data.audit_id,
             repo: { owner: data.repo.owner, name: data.repo.name },
@@ -99,7 +102,8 @@ export async function getWebReview(
   for (const dir of dirs) {
     try {
       const raw = await fs.readFile(path.join(dir, filename), "utf-8");
-      return JSON.parse(raw) as TryPanelResult;
+      const parsed = validateTryPanelResult(JSON.parse(raw));
+      return parsed.valid ? parsed.data : null;
     } catch {
       // Try next dir
     }
