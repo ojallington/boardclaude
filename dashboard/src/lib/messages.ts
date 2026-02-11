@@ -217,6 +217,11 @@ export const messages = {
     delta: "Delta",
     noEvents: "No timeline events yet. Run your first audit with /bc:audit.",
     viewAudit: "View audit",
+    agentProgression: "Agent Score Progression",
+    agentProgressionDesc: "Individual agent scores across audit iterations.",
+    itemsCreated: "items created",
+    itemsResolved: "items resolved",
+    actionItems: "Action Items",
   },
 
   // ─── Boards / Template Gallery ────────────────────────────────────

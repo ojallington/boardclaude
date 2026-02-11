@@ -7,6 +7,7 @@ import type {
   ActionItemsLedger,
   AuditSummary,
   TimelineDisplay,
+  TimelineDisplayEvent,
 } from "./types";
 import {
   parseSynthesisReport,
@@ -132,6 +133,165 @@ export async function getAudit(
   } catch {
     return null;
   }
+}
+
+// ─── Enriched Timeline ──────────────────────────────────────────────────────
+
+export interface EnrichedTimelineEvent {
+  id: string;
+  iteration: number;
+  composite: number;
+  verdict: string;
+  timestamp: string;
+  description: string;
+  panel: string;
+  agents: number;
+  agentScores: Array<{ agent: string; composite: number; verdict: string }>;
+  itemsCreated: Array<{
+    id: string;
+    action: string;
+    priority: number;
+    source_agents: string[];
+  }>;
+  itemsResolved: Array<{
+    id: string;
+    action: string;
+    resolution: string;
+  }>;
+}
+
+export interface AgentScorePoint {
+  iteration: number;
+  timestamp: string;
+  [agentName: string]: number | string;
+}
+
+export interface EnrichedTimeline {
+  events: EnrichedTimelineEvent[];
+  agentProgression: AgentScorePoint[];
+  agentNames: string[];
+}
+
+/** Raw action item shape from action-items.json (superset of typed ActionItem) */
+interface RawActionItem {
+  id: string;
+  source_audit: string;
+  iteration?: number;
+  priority: number;
+  action: string;
+  source_agents?: string[];
+  source_agent?: string;
+  status: string;
+  resolved_at?: string;
+  resolution?: string;
+}
+
+async function getRawActionItems(): Promise<RawActionItem[]> {
+  try {
+    const dir = await resolveDataDir();
+    const raw = await fs.readFile(path.join(dir, "action-items.json"), "utf-8");
+    const parsed: unknown = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      "items" in parsed &&
+      Array.isArray((parsed as { items: unknown }).items)
+    ) {
+      return (parsed as { items: RawActionItem[] }).items;
+    }
+    return [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getTimelineEnriched(): Promise<EnrichedTimeline | null> {
+  const timeline = await getTimelineForDisplay();
+  if (!timeline || timeline.events.length === 0) return null;
+
+  const events = timeline.events;
+
+  // Load all audits and raw action items in parallel
+  const [audits, items] = await Promise.all([
+    Promise.all(events.map((e) => getAudit(e.id))),
+    getRawActionItems(),
+  ]);
+
+  const agentNamesSet = new Set<string>();
+
+  const enrichedEvents: EnrichedTimelineEvent[] = events.map(
+    (event: TimelineDisplayEvent, idx: number) => {
+      const audit = audits[idx];
+
+      // Extract per-agent scores from the audit
+      const agentScores = (audit?.agents ?? []).map((a) => {
+        agentNamesSet.add(a.agent);
+        return {
+          agent: a.agent,
+          composite: a.composite,
+          verdict: a.verdict,
+        };
+      });
+
+      // Items created by this audit (match by iteration)
+      const itemsCreated = items
+        .filter((item) => item.iteration === event.iteration)
+        .map((item) => ({
+          id: item.id,
+          action: item.action,
+          priority: item.priority,
+          source_agents:
+            item.source_agents ??
+            (item.source_agent ? [item.source_agent] : []),
+        }));
+
+      // Items resolved before this audit (resolved_at between previous and current timestamp)
+      const prevTimestamp = idx > 0 ? events[idx - 1]?.timestamp : null;
+      const currentTimestamp = event.timestamp;
+
+      const itemsResolved = items
+        .filter((item) => {
+          if (!item.resolved_at) return false;
+          if (prevTimestamp && item.resolved_at <= prevTimestamp) return false;
+          return item.resolved_at <= currentTimestamp;
+        })
+        .map((item) => ({
+          id: item.id,
+          action: item.action,
+          resolution: item.resolution ?? "",
+        }));
+
+      return {
+        id: event.id,
+        iteration: event.iteration,
+        composite: event.composite,
+        verdict: event.verdict,
+        timestamp: event.timestamp,
+        description: event.description,
+        panel: event.panel,
+        agents: event.agents,
+        agentScores,
+        itemsCreated,
+        itemsResolved,
+      };
+    },
+  );
+
+  const agentNames = Array.from(agentNamesSet).sort();
+
+  // Build agent progression: one point per iteration
+  const agentProgression: AgentScorePoint[] = enrichedEvents.map((event) => {
+    const point: AgentScorePoint = {
+      iteration: event.iteration,
+      timestamp: event.timestamp,
+    };
+    for (const agent of event.agentScores) {
+      point[agent.agent] = agent.composite;
+    }
+    return point;
+  });
+
+  return { events: enrichedEvents, agentProgression, agentNames };
 }
 
 export async function getAllAuditSummaries(): Promise<AuditSummary[]> {
