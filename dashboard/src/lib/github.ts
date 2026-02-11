@@ -119,6 +119,49 @@ const PRIORITY_FILES = [
   "CONTRIBUTING.md",
 ];
 
+const EXCLUDED_DIRS = [
+  "node_modules/",
+  "__pycache__/",
+  "vendor/",
+  "dist/",
+  "build/",
+  ".next/",
+  ".git/",
+  "coverage/",
+  ".cache/",
+];
+
+const ENTRY_NAMES = new Set([
+  "index",
+  "main",
+  "app",
+  "server",
+  "route",
+  "page",
+  "layout",
+  "mod",
+  "lib",
+]);
+
+const SOURCE_EXTS = /\.(ts|tsx|js|jsx|py|rs|go|java|rb|c|cpp|cs)$/;
+
+function scoreFile(e: GitHubTreeEntry): number {
+  let s = 0;
+  const basename =
+    e.path
+      .split("/")
+      .pop()
+      ?.replace(/\.[^.]+$/, "") ?? "";
+  if (ENTRY_NAMES.has(basename)) s += 10;
+  const depth = e.path.split("/").length;
+  if (depth <= 2) s += 5;
+  else if (depth <= 3) s += 3;
+  const size = e.size ?? 0;
+  if (size >= 500 && size <= 15000) s += 3;
+  if (/test|spec/.test(e.path)) s += 2;
+  return s;
+}
+
 function selectFiles(tree: GitHubTreeEntry[]): string[] {
   const selected: string[] = [];
   const paths = new Set(tree.map((e) => e.path));
@@ -130,24 +173,26 @@ function selectFiles(tree: GitHubTreeEntry[]): string[] {
     }
   }
 
-  // Source files: pick up to 3 from src/ or lib/ or app/
-  const sourceFiles = tree
-    .filter(
-      (e) =>
-        (e.path.startsWith("src/") ||
-          e.path.startsWith("lib/") ||
-          e.path.startsWith("app/")) &&
-        !e.path.includes("node_modules") &&
-        !e.path.includes("__pycache__") &&
-        (e.size ?? 0) < 50000 &&
-        /\.(ts|tsx|js|jsx|py|rs|go|java|rb|c|cpp|cs)$/.test(e.path),
-    )
-    .sort((a, b) => (a.size ?? 0) - (b.size ?? 0))
-    .slice(0, 3);
+  // Source files: pick up to 10, scored by relevance
+  const sourceFiles = tree.filter(
+    (e) =>
+      !EXCLUDED_DIRS.some((d) => e.path.includes(d)) &&
+      !e.path.includes(".min.") &&
+      (e.size ?? 0) < 50000 &&
+      (e.size ?? 0) > 100 &&
+      SOURCE_EXTS.test(e.path),
+  );
 
+  sourceFiles.sort(
+    (a, b) => scoreFile(b) - scoreFile(a) || (a.size ?? 0) - (b.size ?? 0),
+  );
+
+  let count = 0;
   for (const sf of sourceFiles) {
+    if (count >= 10) break;
     if (!selected.includes(sf.path)) {
       selected.push(sf.path);
+      count++;
     }
   }
 
@@ -156,7 +201,7 @@ function selectFiles(tree: GitHubTreeEntry[]): string[] {
 
 // ─── Main Fetch Function ────────────────────────────────────────────────────
 
-const MAX_TOTAL_CHARS = 30000;
+const MAX_TOTAL_CHARS = 80000;
 
 export interface FetchedRepo {
   meta: TryRepoMeta;

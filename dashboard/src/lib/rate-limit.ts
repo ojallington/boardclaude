@@ -3,7 +3,7 @@ interface RateLimitEntry {
   resetAt: number;
 }
 
-const store = new Map<string, RateLimitEntry>();
+const memoryStore = new Map<string, RateLimitEntry>();
 
 const LIMITS = {
   free: { max: 3, windowMs: 60 * 60 * 1000 },
@@ -18,16 +18,52 @@ export interface RateLimitResult {
   resetAt: number;
 }
 
-export function checkRateLimit(ip: string, tier: Tier): RateLimitResult {
-  const now = Date.now();
-  const limit = LIMITS[tier];
-  const key = `${tier}:${ip}`;
+// ─── Redis (Upstash) for durable rate limiting ──────────────────────────────
 
-  const entry = store.get(key);
+let redis: import("@upstash/redis").Redis | null = null;
+
+async function getRedis(): Promise<import("@upstash/redis").Redis | null> {
+  if (redis) return redis;
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return null;
+  const { Redis } = await import("@upstash/redis");
+  redis = new Redis({ url, token });
+  return redis;
+}
+
+// ─── Public API ─────────────────────────────────────────────────────────────
+
+export async function checkRateLimit(
+  ip: string,
+  tier: Tier,
+): Promise<RateLimitResult> {
+  const limit = LIMITS[tier];
+  const key = `ratelimit:${tier}:${ip}`;
+
+  const kv = await getRedis();
+  if (kv) {
+    const windowSeconds = Math.ceil(limit.windowMs / 1000);
+    const count = await kv.incr(key);
+    if (count === 1) {
+      await kv.expire(key, windowSeconds);
+    }
+    const ttl = await kv.ttl(key);
+    const resetAt = Date.now() + ttl * 1000;
+
+    if (count > limit.max) {
+      return { allowed: false, remaining: 0, resetAt };
+    }
+    return { allowed: true, remaining: limit.max - count, resetAt };
+  }
+
+  // In-memory fallback (local dev)
+  const now = Date.now();
+  const entry = memoryStore.get(key);
 
   if (!entry || now >= entry.resetAt) {
     const resetAt = now + limit.windowMs;
-    store.set(key, { count: 1, resetAt });
+    memoryStore.set(key, { count: 1, resetAt });
     return { allowed: true, remaining: limit.max - 1, resetAt };
   }
 
@@ -41,15 +77,4 @@ export function checkRateLimit(ip: string, tier: Tier): RateLimitResult {
     remaining: limit.max - entry.count,
     resetAt: entry.resetAt,
   };
-}
-
-// Clean up expired entries periodically (every 10 minutes)
-if (typeof globalThis !== "undefined") {
-  const cleanup = () => {
-    const now = Date.now();
-    for (const [key, entry] of store) {
-      if (now >= entry.resetAt) store.delete(key);
-    }
-  };
-  setInterval(cleanup, 10 * 60 * 1000).unref?.();
 }
