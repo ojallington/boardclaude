@@ -380,9 +380,7 @@ describe("validateTimeline", () => {
   it("accepts all valid event types", () => {
     for (const type of ["audit", "fork", "merge", "rollback"]) {
       const result = validateTimeline({
-        events: [
-          { id: "evt-001", type, timestamp: "2026-01-01T00:00:00Z" },
-        ],
+        events: [{ id: "evt-001", type, timestamp: "2026-01-01T00:00:00Z" }],
       });
       expect(result.valid).toBe(true);
     }
