@@ -15,6 +15,10 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 
 ## Quick Start
 
+<p align="center">
+  <img src="docs/quickstart-demo.svg" alt="BoardClaude quickstart: audit, fix, re-audit with score improvement from 68 to 84" width="700">
+</p>
+
 ### Install
 
 ```bash

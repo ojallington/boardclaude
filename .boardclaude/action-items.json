@@ -633,8 +633,21 @@
       "source_agents": ["thariq", "cat"],
       "impact": "Creates compound intelligence where each review builds on the last. emergent_behavior +8.",
       "effort": "medium",
-      "status": "open",
-      "iterations_open": 1
+      "status": "in_progress",
+      "iterations_open": 1,
+      "fix_attempts": [
+        {
+          "timestamp": "2026-02-11T22:42:00.000Z",
+          "files_changed": [
+            "dashboard/src/lib/try-storage.ts",
+            "dashboard/src/lib/try-prompt.ts",
+            "dashboard/src/app/api/try/route.ts"
+          ],
+          "validation_result": "pass",
+          "reverted": false,
+          "execution_mode": "serial"
+        }
+      ]
     },
     {
       "id": "ai-060",
@@ -671,8 +684,21 @@
       "source_agents": ["ado"],
       "impact": "Reduces time-to-comprehension from 3 minutes to 30 seconds.",
       "effort": "medium",
-      "status": "open",
-      "iterations_open": 1
+      "status": "in_progress",
+      "iterations_open": 1,
+      "fix_attempts": [
+        {
+          "timestamp": "2026-02-11T20:50:00.000Z",
+          "files_changed": [
+            "docs/quickstart-demo.svg",
+            "README.md"
+          ],
+          "validation_result": "pass",
+          "reverted": false,
+          "execution_mode": "serial",
+          "notes": "Created animated SVG terminal mockup showing audit->fix->re-audit workflow with score improvement (68.4->83.5). Added to README Quick Start section. SVG approach chosen over GIF as it is lightweight, renders natively in GitHub, and requires no external recording tools."
+        }
+      ]
     },
     {
       "id": "ai-063",
@@ -742,7 +768,8 @@
   ],
   "metadata": {
     "total_items": 58,
-    "open": 2,
+    "open": 0,
+    "in_progress": 2,
     "resolved": 56,
     "chronic": 0
   }

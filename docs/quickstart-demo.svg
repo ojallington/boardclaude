@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" width="800" height="520">
+  <style>
+    @keyframes typing1 { 0%,8% { width: 0 } 12%,100% { width: 180px } }
+    @keyframes typing2 { 0%,30% { width: 0 } 34%,100% { width: 130px } }
+    @keyframes typing3 { 0%,62% { width: 0 } 66%,100% { width: 180px } }
+    @keyframes show-result1 { 0%,14% { opacity: 0 } 16%,100% { opacity: 1 } }
+    @keyframes show-result2 { 0%,36% { opacity: 0 } 40%,100% { opacity: 1 } }
+    @keyframes show-result3 { 0%,68% { opacity: 0 } 72%,100% { opacity: 1 } }
+    @keyframes cursor-blink { 0%,49% { opacity: 1 } 50%,100% { opacity: 0 } }
+    @keyframes score-pulse { 0%,68% { fill: #f59e0b } 72%,100% { fill: #10b981 } }
+    .term-bg { fill: #1a1b26; rx: 12; }
+    .term-bar { fill: #24283b; rx: 12; }
+    .dot-red { fill: #f7768e; }
+    .dot-yellow { fill: #e0af68; }
+    .dot-green { fill: #9ece6a; }
+    .prompt { fill: #7aa2f7; font-family: 'Courier New', monospace; font-size: 14px; }
+    .cmd { fill: #c0caf5; font-family: 'Courier New', monospace; font-size: 14px; }
+    .output { fill: #a9b1d6; font-family: 'Courier New', monospace; font-size: 13px; }
+    .highlight { fill: #9ece6a; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; }
+    .score-bad { fill: #f7768e; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; }
+    .score-good { fill: #9ece6a; font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; }
+    .agent-name { font-family: 'Courier New', monospace; font-size: 13px; font-weight: bold; }
+    .dim { fill: #565f89; font-family: 'Courier New', monospace; font-size: 13px; }
+    .title { fill: #c0caf5; font-family: 'Courier New', monospace; font-size: 12px; }
+    .phase-label { fill: #bb9af7; font-family: 'Courier New', monospace; font-size: 12px; font-weight: bold; }
+    .arrow { fill: #7aa2f7; font-family: 'Courier New', monospace; font-size: 16px; }
+    .cmd-clip1 { animation: typing1 12s infinite; overflow: hidden; }
+    .cmd-clip2 { animation: typing2 12s infinite; overflow: hidden; }
+    .cmd-clip3 { animation: typing3 12s infinite; overflow: hidden; }
+    .result1 { animation: show-result1 12s infinite; }
+    .result2 { animation: show-result2 12s infinite; }
+    .result3 { animation: show-result3 12s infinite; }
+  </style>
+
+  <!-- Terminal background -->
+  <rect class="term-bg" x="0" y="0" width="800" height="520"/>
+
+  <!-- Title bar -->
+  <rect class="term-bar" x="0" y="0" width="800" height="36"/>
+  <circle class="dot-red" cx="20" cy="18" r="6"/>
+  <circle class="dot-yellow" cx="40" cy="18" r="6"/>
+  <circle class="dot-green" cx="60" cy="18" r="6"/>
+  <text class="title" x="370" y="22" text-anchor="middle">BoardClaude -- Quickstart</text>
+
+  <!-- Phase 1: /bc:audit -->
+  <text class="phase-label" x="20" y="62">STEP 1: Audit</text>
+  <text class="prompt" x="20" y="84">$</text>
+  <g class="cmd-clip1">
+    <text class="cmd" x="36" y="84">/bc:audit</text>
+  </g>
+
+  <g class="result1">
+    <text class="output" x="20" y="108">Running 6 agents in parallel...</text>
+    <text class="output" x="20" y="126">Audit complete: audit-20260211-120000</text>
+    <text class="output" x="20" y="148">  Composite:</text>
+    <text class="score-bad" x="132" y="148">68.4 / 100 (C+, MARGINAL)</text>
+    <text class="agent-name" x="20" y="168" style="fill: #7aa2f7">  boris=69.0</text>
+    <text class="agent-name" x="160" y="168" style="fill: #bb9af7">cat=71.2</text>
+    <text class="agent-name" x="270" y="168" style="fill: #2ac3de">thariq=71.0</text>
+    <text class="agent-name" x="400" y="168" style="fill: #e0af68">lydia=68.1</text>
+    <text class="agent-name" x="520" y="168" style="fill: #9ece6a">ado=64.2</text>
+    <text class="agent-name" x="630" y="168" style="fill: #f7768e">jason=62.4</text>
+    <text class="output" x="20" y="188">  Action items: 10 (5 critical, 3 medium, 2 low)</text>
+  </g>
+
+  <!-- Phase 2: /bc:fix -->
+  <g class="result2">
+    <text class="dim" x="20" y="212">-----------------------------------------------</text>
+    <text class="phase-label" x="20" y="232">STEP 2: Fix</text>
+  </g>
+  <g class="result1">
+    <text class="prompt" x="20" y="254">$</text>
+  </g>
+  <g class="cmd-clip2">
+    <text class="cmd" x="36" y="254">/bc:fix</text>
+  </g>
+
+  <g class="result2">
+    <text class="output" x="20" y="278">Fixing 5 action items...</text>
+    <text class="highlight" x="20" y="298">  [1/5] Add test coverage.............. done</text>
+    <text class="highlight" x="20" y="316">  [2/5] Fix TypeScript errors.......... done</text>
+    <text class="highlight" x="20" y="334">  [3/5] Add CONTRIBUTING.md............ done</text>
+    <text class="highlight" x="20" y="352">  [4/5] Improve error handling......... done</text>
+    <text class="highlight" x="20" y="370">  [5/5] Add validation gates........... done</text>
+    <text class="output" x="20" y="392">Validation: tsc OK, lint OK, tests 12/12 pass</text>
+  </g>
+
+  <!-- Phase 3: Re-audit -->
+  <g class="result2">
+    <text class="dim" x="20" y="412">-----------------------------------------------</text>
+    <text class="phase-label" x="20" y="432">STEP 3: Re-audit</text>
+  </g>
+  <g class="result2">
+    <text class="prompt" x="20" y="454">$</text>
+  </g>
+  <g class="cmd-clip3">
+    <text class="cmd" x="36" y="454">/bc:audit</text>
+  </g>
+
+  <g class="result3">
+    <text class="output" x="20" y="478">Audit complete: audit-20260211-130000</text>
+    <text class="output" x="20" y="498">  Composite:</text>
+    <text class="score-good" x="132" y="498">83.5 / 100 (B+, SOLID) +15.1</text>
+  </g>
+</svg>
