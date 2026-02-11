@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getTimelineForDisplay } from "@/lib/audit-loader";
+import { getTimelineEnriched } from "@/lib/audit-loader";
 import { getGrade } from "@/lib/types";
 import { messages } from "@/lib/messages";
+import { AgentScoreMiniBar } from "@/components/AgentScoreMiniBar";
+import { ActionItemSection } from "@/components/ActionItemSection";
+import { AgentScoreProgressionLoader } from "@/components/AgentScoreProgressionLoader";
 
 export const metadata: Metadata = {
   title: messages.timeline.title,
@@ -24,8 +27,8 @@ const VERDICT_DOT: Record<string, string> = {
 };
 
 export default async function TimelinePage() {
-  const timeline = await getTimelineForDisplay();
-  const events = timeline?.events ?? [];
+  const enriched = await getTimelineEnriched();
+  const events = enriched?.events ?? [];
 
   if (events.length === 0) {
     return (
@@ -79,6 +82,22 @@ export default async function TimelinePage() {
           </div>
         );
       })()}
+
+      {/* Agent Score Progression chart */}
+      {enriched && enriched.agentProgression.length > 1 && (
+        <div className="mb-10 rounded-xl border border-gray-800 bg-gray-900/50 p-5">
+          <h2 className="text-lg font-semibold">
+            {messages.timeline.agentProgression}
+          </h2>
+          <p className="mb-4 text-sm text-gray-400">
+            {messages.timeline.agentProgressionDesc}
+          </p>
+          <AgentScoreProgressionLoader
+            data={enriched.agentProgression}
+            agentNames={enriched.agentNames}
+          />
+        </div>
+      )}
 
       {/* Timeline */}
       <div className="relative">
@@ -135,9 +154,22 @@ export default async function TimelinePage() {
                     )}
                   </div>
 
+                  {/* Agent score mini bar */}
+                  {event.agentScores.length > 0 && (
+                    <div className="mt-3">
+                      <AgentScoreMiniBar scores={event.agentScores} />
+                    </div>
+                  )}
+
                   <p className="mt-2 text-sm leading-relaxed text-gray-400">
                     {event.description}
                   </p>
+
+                  {/* Action items */}
+                  <ActionItemSection
+                    itemsCreated={event.itemsCreated}
+                    itemsResolved={event.itemsResolved}
+                  />
 
                   <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
                     <time dateTime={event.timestamp}>
