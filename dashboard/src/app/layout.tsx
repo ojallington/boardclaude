@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Link from "next/link";
 import { messages } from "@/lib/messages";
 
 import "./globals.css";
@@ -13,6 +14,12 @@ export const metadata: Metadata = {
   title: messages.site.title,
   description: messages.site.description,
 };
+
+const NAV_LINKS = [
+  { href: "/results", label: messages.nav.results },
+  { href: "/timeline", label: messages.nav.timeline },
+  { href: "/boards", label: messages.nav.boards },
+] as const;
 
 export default function RootLayout({
   children,
@@ -30,6 +37,28 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
+        <header className="sticky top-0 z-40 border-b border-gray-800/60 bg-gray-950/80 backdrop-blur-md">
+          <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+            <Link
+              href="/"
+              className="text-lg font-bold tracking-tight text-gray-100 transition-colors hover:text-indigo-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
+            >
+              Board<span className="text-indigo-400">Claude</span>
+            </Link>
+            <ul className="flex items-center gap-1 sm:gap-2">
+              {NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </header>
         {children}
       </body>
     </html>

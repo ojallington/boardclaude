@@ -6,6 +6,7 @@ import type {
   Timeline,
   ActionItemsLedger,
   AuditSummary,
+  TimelineDisplay,
 } from "./types";
 import {
   parseSynthesisReport,
@@ -53,6 +54,28 @@ export async function getTimeline(): Promise<Timeline | null> {
       return null;
     }
     return result.data;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Returns timeline events in their actual JSON shape (composite, verdict, etc.)
+ * rather than the stricter TypeScript AuditTimelineEvent type.
+ */
+export async function getTimelineForDisplay(): Promise<TimelineDisplay | null> {
+  try {
+    const dir = await resolveDataDir();
+    const raw = await fs.readFile(path.join(dir, "timeline.json"), "utf-8");
+    const parsed = JSON.parse(raw);
+    if (
+      !parsed ||
+      typeof parsed !== "object" ||
+      !Array.isArray(parsed.events)
+    ) {
+      return null;
+    }
+    return parsed as TimelineDisplay;
   } catch {
     return null;
   }

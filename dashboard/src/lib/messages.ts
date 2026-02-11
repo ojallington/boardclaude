@@ -169,6 +169,19 @@ export const messages = {
       description: "The requested audit does not exist or could not be loaded.",
       backToResults: "Back to results",
     },
+    timeline: {
+      heading: "Failed to load timeline",
+      description:
+        "Could not read timeline data. Make sure .boardclaude/timeline.json exists.",
+      retry: "Try again",
+      goHome: "Go home",
+    },
+    boards: {
+      heading: "Failed to load templates",
+      description: "Could not load panel templates.",
+      retry: "Try again",
+      goHome: "Go home",
+    },
   },
 
   // ─── Agent Card ──────────────────────────────────────────────────────
@@ -184,6 +197,77 @@ export const messages = {
       weaknesses: "Weaknesses",
       criticalIssues: "Critical Issues",
     },
+  },
+
+  // ─── Navigation ────────────────────────────────────────────────────
+  nav: {
+    home: "BoardClaude",
+    results: "Results",
+    timeline: "Timeline",
+    boards: "Boards",
+  },
+
+  // ─── Timeline page ───────────────────────────────────────────────
+  timeline: {
+    title: "Audit Timeline - BoardClaude",
+    description: "Track the self-improvement journey across audit iterations.",
+    heading: "Audit Timeline",
+    subheading: "Self-improvement journey from first audit to current score.",
+    iteration: "Iteration",
+    delta: "Delta",
+    noEvents: "No timeline events yet. Run your first audit with /bc:audit.",
+    viewAudit: "View audit",
+  },
+
+  // ─── Boards / Template Gallery ────────────────────────────────────
+  boards: {
+    title: "Panel Templates - BoardClaude",
+    description:
+      "Browse and customize evaluation panel templates for multi-agent evaluation.",
+    heading: "Panel Templates",
+    subheading:
+      "Pre-built evaluation panels for common use cases. Customize any template or build your own.",
+    featured: "Featured",
+    professional: "Professional",
+    personal: "Personal",
+    agents: "agents",
+    customize: "Customize",
+    useCli: "Use via CLI",
+    buildCustom: "Build Custom Panel",
+  },
+
+  // ─── Board Builder ────────────────────────────────────────────────
+  builder: {
+    title: "Board Builder - BoardClaude",
+    description:
+      "Create a custom evaluation panel with configurable agents and criteria.",
+    heading: "Board Builder",
+    addAgent: "Add Agent",
+    removeAgent: "Remove",
+    agentName: "Name",
+    agentRole: "Role",
+    agentWeight: "Weight",
+    agentModel: "Model",
+    agentPrompt: "Prompt",
+    addCriterion: "Add Criterion",
+    removeCriterion: "Remove",
+    criterionName: "Name",
+    criterionWeight: "Weight",
+    criterionDescription: "Description",
+    exportYaml: "Export YAML",
+    saveLocal: "Save Locally",
+    saved: "Saved",
+    panelName: "Panel Name",
+    panelDescription: "Description",
+    panelType: "Type",
+    weightDistribution: "Weight Distribution",
+    startFromTemplate: "Start from Template",
+    startBlank: "Start Blank",
+    maxAgents: "Maximum 8 agents",
+    minAgents: "Minimum 2 agents",
+    passingThreshold: "Passing Threshold",
+    iterationTarget: "Iteration Target",
+    backToTemplates: "Templates",
   },
 
   // ─── Shared ────────────────────────────────────────────────────────

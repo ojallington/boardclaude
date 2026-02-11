@@ -39,6 +39,20 @@ export default function HomePage() {
             {hero.resultsCta}
           </Link>
         </div>
+        <div className="mt-4 flex flex-wrap gap-3 justify-center">
+          <Link
+            href="/timeline"
+            className="text-sm text-gray-500 hover:text-gray-300 transition-colors rounded px-3 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          >
+            Timeline
+          </Link>
+          <Link
+            href="/boards"
+            className="text-sm text-gray-500 hover:text-gray-300 transition-colors rounded px-3 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+          >
+            Panel Templates
+          </Link>
+        </div>
       </section>
 
       {/* Video */}
