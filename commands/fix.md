@@ -57,12 +57,14 @@ and verify improvements through the validation-runner and re-audit pipeline.
 
 ## Notes
 
-- This command depends on the fix-implementer skill, validation-runner skill, and fix-worker agent
+- This command **always delegates** to an Agent Team — even for a single item
+- The fix-implementer skill is a thin launcher: it loads data, filters items, then spawns a fix-lead orchestrator
+- The fix-lead orchestrates fix-workers, runs centralized validation, handles retries, and updates the ledger
+- `--serial` means workers run one-at-a-time (still delegated via team, not inline)
+- `--dry-run` causes the lead to report its batch plan without spawning workers or modifying files
+- `--no-reaudit` skips the re-audit step — fixes are applied and validated but no score delta is calculated
 - Items open for 3+ iterations are flagged as "chronic" and prioritized
-- Use `--dry-run` first to review proposed changes and the batch plan before applying
-- Use `--serial` to disable parallelization (original sequential behavior)
-- Use `--no-reaudit` to skip the re-audit step when you just want fixes applied and validated
-- Parallel execution uses Agent Teams -- the same mechanism as `/bc:audit`
 - The action items ledger persists across sessions in `.boardclaude/action-items.json`
+- Each item gets at most 2 attempts (batch + retry) before being marked as blocked
 
 $ARGUMENTS
