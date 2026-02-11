@@ -301,6 +301,6 @@ export function StreamingAgentCard({
     );
   }
 
-  // Error state handled by parent
+  // Idle / error state handled by parent
   return null;
 }

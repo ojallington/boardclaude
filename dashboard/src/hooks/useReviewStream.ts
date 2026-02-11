@@ -14,7 +14,7 @@ interface UseReviewStreamReturn {
 }
 
 export function useReviewStream(): UseReviewStreamReturn {
-  const [phase, setPhase] = useState<TryStreamPhase>("validating");
+  const [phase, setPhase] = useState<TryStreamPhase>("idle");
   const [result, setResult] = useState<Partial<TryResult> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [repoInfo, setRepoInfo] = useState<{
@@ -26,7 +26,7 @@ export function useReviewStream(): UseReviewStreamReturn {
 
   const reset = useCallback(() => {
     if (abortRef.current) abortRef.current.abort();
-    setPhase("validating");
+    setPhase("idle");
     setResult(null);
     setError(null);
     setRepoInfo(null);

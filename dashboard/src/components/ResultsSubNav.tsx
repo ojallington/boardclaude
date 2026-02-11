@@ -2,7 +2,7 @@
 
 import { messages } from "@/lib/messages";
 
-export type ResultsView = "list" | "timeline";
+export type ResultsView = "list" | "timeline" | "web";
 
 interface ResultsSubNavProps {
   active: ResultsView;
@@ -31,6 +31,16 @@ export function ResultsSubNav({ active, onChange }: ResultsSubNavProps) {
         }`}
       >
         {messages.resultsSubNav.timeline}
+      </button>
+      <button
+        onClick={() => onChange("web")}
+        className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+          active === "web"
+            ? "bg-gray-800 text-gray-100"
+            : "text-gray-400 hover:text-gray-200"
+        }`}
+      >
+        {messages.resultsSubNav.web}
       </button>
     </div>
   );
