@@ -173,7 +173,7 @@ export interface EnrichedTimeline {
 }
 
 /** Raw action item shape from action-items.json (superset of typed ActionItem) */
-interface RawActionItem {
+export interface RawActionItem {
   id: string;
   source_audit: string;
   iteration?: number;
@@ -186,7 +186,7 @@ interface RawActionItem {
   resolution?: string;
 }
 
-async function getRawActionItems(): Promise<RawActionItem[]> {
+export async function getRawActionItems(): Promise<RawActionItem[]> {
   try {
     const dir = await resolveDataDir();
     const raw = await fs.readFile(path.join(dir, "action-items.json"), "utf-8");

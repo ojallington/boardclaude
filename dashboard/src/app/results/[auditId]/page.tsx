@@ -2,7 +2,12 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getAudit, getProjectState } from "@/lib/audit-loader";
+import {
+  getAudit,
+  getProjectState,
+  getRawActionItems,
+} from "@/lib/audit-loader";
+import type { RawActionItem } from "@/lib/audit-loader";
 import { AgentCard } from "@/components/AgentCard";
 import {
   VERDICT_BADGE_STYLES,
@@ -34,6 +39,22 @@ const ScoreProgression = dynamic(
   },
 );
 
+// ─── Action Item Status Matching ─────────────────────────────────────────────
+
+function findLedgerMatch(
+  actionText: string,
+  iteration: number,
+  ledger: RawActionItem[],
+): RawActionItem | undefined {
+  return ledger.find(
+    (item) =>
+      item.iteration === iteration &&
+      (item.action === actionText ||
+        actionText.includes(item.action.slice(0, 40)) ||
+        item.action.includes(actionText.slice(0, 40))),
+  );
+}
+
 // ─── Metadata ───────────────────────────────────────────────────────────────
 
 interface AuditDetailPageProps {
@@ -62,7 +83,10 @@ export default async function AuditDetailPage({
     notFound();
   }
 
-  const state = await getProjectState();
+  const [state, ledgerItems] = await Promise.all([
+    getProjectState(),
+    getRawActionItems(),
+  ]);
   const scoreHistory = (state?.score_history ?? []).map((entry) =>
     typeof entry === "object"
       ? {
@@ -259,28 +283,68 @@ export default async function AuditDetailPage({
             Action Items
           </h2>
           <div className="space-y-3">
-            {action_items.map((item) => (
-              <div
-                key={`${item.priority}-${item.action.slice(0, 30)}`}
-                className="flex items-start gap-4 rounded-lg border border-gray-700 bg-gray-800/50 p-4"
-              >
-                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-900/50 text-xs font-bold text-indigo-400">
-                  {item.priority}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm text-gray-200">{item.action}</p>
-                  <div className="mt-1 flex items-center gap-3">
-                    <span className="text-xs text-gray-400">
-                      from {item.source_agents?.join(", ") ?? "unknown"}
-                    </span>
-                    <span className="text-xs text-gray-400">
-                      effort: {item.effort}
-                    </span>
+            {action_items.map((item) => {
+              const match = findLedgerMatch(
+                item.action,
+                audit.iteration,
+                ledgerItems,
+              );
+              const isResolved = match?.status === "resolved";
+
+              return (
+                <div
+                  key={`${item.priority}-${item.action.slice(0, 30)}`}
+                  className={`flex items-start gap-4 rounded-lg border p-4 ${
+                    isResolved
+                      ? "border-emerald-800/50 bg-emerald-900/10"
+                      : "border-gray-700 bg-gray-800/50"
+                  }`}
+                >
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                      isResolved
+                        ? "bg-emerald-900/50 text-emerald-400"
+                        : "bg-indigo-900/50 text-indigo-400"
+                    }`}
+                  >
+                    {isResolved ? "\u2713" : item.priority}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <p
+                        className={`text-sm ${isResolved ? "text-gray-400 line-through" : "text-gray-200"}`}
+                      >
+                        {item.action}
+                      </p>
+                      {isResolved && (
+                        <span className="shrink-0 rounded-md border border-emerald-700/50 bg-emerald-900/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-emerald-400">
+                          Resolved
+                        </span>
+                      )}
+                      {match && !isResolved && (
+                        <span className="shrink-0 rounded-md border border-amber-700/50 bg-amber-900/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-400">
+                          Open
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-1 flex items-center gap-3">
+                      <span className="text-xs text-gray-400">
+                        from {item.source_agents?.join(", ") ?? "unknown"}
+                      </span>
+                      <span className="text-xs text-gray-400">
+                        effort: {item.effort}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-400">{item.impact}</p>
+                    {isResolved && match?.resolution && (
+                      <p className="mt-1.5 text-xs text-emerald-400/80">
+                        Resolution: {match.resolution}
+                      </p>
+                    )}
                   </div>
-                  <p className="mt-1 text-xs text-gray-400">{item.impact}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}
