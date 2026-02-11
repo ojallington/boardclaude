@@ -247,6 +247,25 @@ export interface Timeline {
   events: TimelineEvent[];
 }
 
+// ─── Timeline Display (matches actual timeline.json shape) ──────────
+
+export interface TimelineDisplayEvent {
+  id: string;
+  type: "audit";
+  timestamp: string;
+  branch: string;
+  composite: number;
+  iteration: number;
+  panel: string;
+  agents: number;
+  verdict: string;
+  description: string;
+}
+
+export interface TimelineDisplay {
+  events: TimelineDisplayEvent[];
+}
+
 // ─── Action Items Ledger ─────────────────────────────────────────────
 
 export interface ActionItem {
