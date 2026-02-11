@@ -370,6 +370,41 @@ export interface ValidationResult {
   summary: string;
 }
 
+// ─── Try-It-Now Types ───────────────────────────────────────────
+
+export interface TryRepoMeta {
+  owner: string;
+  name: string;
+  description: string | null;
+  language: string | null;
+  stars: number;
+}
+
+export interface TryResult {
+  repo: TryRepoMeta;
+  agent: string;
+  scores: Record<string, number>;
+  composite: number;
+  grade: Grade;
+  verdict: Verdict;
+  strengths: [string, string, string];
+  weaknesses: [string, string, string];
+  critical_issues: string[];
+  action_items: AgentActionItem[];
+  one_line: string;
+  radar: RadarData;
+  files_analyzed: number;
+  timestamp: string;
+  model_used: string;
+}
+
+export type TryStreamPhase =
+  | "validating"
+  | "fetching"
+  | "reviewing"
+  | "complete"
+  | "error";
+
 // ─── Design System Constants ─────────────────────────────────────────
 
 export const AGENT_COLORS = {
