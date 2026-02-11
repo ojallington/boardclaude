@@ -58,26 +58,32 @@ npx tsc --noEmit 2>&1 | tail -20
 
 ### 5. Report Results
 
-After completing your work, send a message to the team lead with your structured report.
+Send your report to the fix-lead via SendMessage with `recipient: "fix-lead"`.
+
+Use this exact structured format so the lead can parse your results:
 
 **On success:**
 ```
-FIX REPORT: {item_id}
+FIX_REPORT_START
+item_id: {item_id}
 status: done
-files_changed: [list of files you modified]
+files_changed: ["src/foo.ts", "src/bar.ts"]
 summary: [1-2 sentence description of what you changed and why]
 local_validation: pass
 notes: [any relevant observations, e.g., "pre-existing type errors in utils.ts"]
+FIX_REPORT_END
 ```
 
 **On failure:**
 ```
-FIX REPORT: {item_id}
+FIX_REPORT_START
+item_id: {item_id}
 status: cannot_fix
 files_changed: []
 summary: [why the fix could not be applied]
 local_validation: skipped
 notes: [detailed explanation — missing file, unclear requirement, architectural issue, etc.]
+FIX_REPORT_END
 ```
 
 ## Constraints
