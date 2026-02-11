@@ -71,7 +71,7 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
             <button
               type="button"
               onClick={() => setShowByok(!showByok)}
-              className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
+              className="text-sm text-gray-400 hover:text-gray-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
             >
               {showByok ? "Hide API key" : messages.tryIt.byokToggle}
             </button>

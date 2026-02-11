@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import type { TryAgentProgress, Verdict } from "@/lib/types";
 import { getAgentColor } from "@/lib/types";
 import { VERDICT_BADGE_STYLES, AGENT_ROLES } from "@/lib/ui-constants";
@@ -13,6 +13,7 @@ interface PanelAgentCardProps {
 
 export function PanelAgentCard({ progress }: PanelAgentCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const shouldReduceMotion = useReducedMotion();
   const { agent, status, result } = progress;
   const color = getAgentColor(agent);
   const role = AGENT_ROLES[agent] ?? agent;
@@ -99,16 +100,25 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 6 }}
+      initial={shouldReduceMotion ? false : { opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25 }}
-      className="rounded-xl border bg-gray-900/60 p-4 cursor-pointer transition-colors hover:bg-gray-900/80"
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.25 }}
+      className="rounded-xl border bg-gray-900/60 p-4 cursor-pointer transition-colors hover:bg-gray-900/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
       style={{
         borderColor: `${color}30`,
         borderLeftWidth: 3,
         borderLeftColor: color,
       }}
+      tabIndex={0}
+      role="button"
+      aria-expanded={expanded}
       onClick={() => setExpanded(!expanded)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setExpanded(!expanded);
+        }
+      }}
     >
       <div className="flex items-center justify-between">
         <div className="min-w-0 flex-1">
@@ -154,10 +164,12 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
       <AnimatePresence>
         {expanded && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
+            initial={shouldReduceMotion ? false : { height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+            transition={
+              shouldReduceMotion ? { duration: 0 } : { duration: 0.2 }
+            }
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3 border-t border-gray-800 pt-3">

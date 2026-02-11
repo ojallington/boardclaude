@@ -41,7 +41,7 @@ export function HeroTrySection() {
             <button
               key={repo.url}
               onClick={() => handleSubmit(repo.url)}
-              className="rounded-full border border-gray-800 bg-gray-900/50 px-4 py-2 text-sm text-gray-300 transition-colors hover:border-indigo-600/50 hover:text-gray-100"
+              className="rounded-full border border-gray-800 bg-gray-900/50 px-4 py-2 text-sm text-gray-300 transition-colors hover:border-indigo-600/50 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
             >
               <span className="font-medium">{repo.name}</span>
               <span className="ml-2 text-gray-500">{repo.desc}</span>

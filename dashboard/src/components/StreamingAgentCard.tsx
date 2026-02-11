@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { TryResult, TryStreamPhase, Verdict } from "@/lib/types";
 import { VERDICT_BADGE_STYLES } from "@/lib/ui-constants";
 import { messages } from "@/lib/messages";
@@ -32,6 +32,7 @@ function PulsingDot({ color }: { color: string }) {
 }
 
 function ScoreBar({ label, score }: { label: string; score: number }) {
+  const shouldReduceMotion = useReducedMotion();
   return (
     <div className="flex items-center gap-3">
       <span className="w-32 shrink-0 text-sm text-gray-400 truncate">
@@ -47,9 +48,13 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
       >
         <motion.div
           className={`h-full rounded-full ${scoreBarColor(score)}`}
-          initial={{ width: 0 }}
+          initial={shouldReduceMotion ? false : { width: 0 }}
           animate={{ width: `${Math.min(Math.max(score, 0), 100)}%` }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
+          transition={
+            shouldReduceMotion
+              ? { duration: 0 }
+              : { duration: 0.6, ease: "easeOut" }
+          }
         />
       </div>
       <span className="w-8 text-right text-sm font-medium text-gray-300 tabular-nums">
@@ -74,6 +79,7 @@ export function StreamingAgentCard({
   repoInfo,
   modelInfo,
 }: StreamingAgentCardProps) {
+  const shouldReduceMotion = useReducedMotion();
   // Waiting state
   if (phase === "validating" || phase === "fetching") {
     return (
@@ -130,9 +136,9 @@ export function StreamingAgentCard({
 
     return (
       <motion.div
-        initial={{ opacity: 0, y: 12 }}
+        initial={shouldReduceMotion ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.3 }}
         className="rounded-xl border border-gray-800 bg-gray-900 p-6"
         style={{ borderLeftWidth: 4, borderLeftColor: "#6366f1" }}
       >

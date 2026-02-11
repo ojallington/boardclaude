@@ -6,6 +6,7 @@ import type {
   ProjectState,
   Timeline,
   ActionItemsLedger,
+  TryPanelResult,
 } from "./types";
 
 // ─── Type Guard ─────────────────────────────────────────────────────
@@ -562,6 +563,141 @@ export function parseActionItemsLedger(
   try {
     const data = JSON.parse(raw);
     return validateActionItemsLedger(data);
+  } catch (e) {
+    return {
+      valid: false,
+      data: null,
+      errors: [
+        {
+          field: "root",
+          message: `Invalid JSON: ${e instanceof Error ? e.message : "parse error"}`,
+        },
+      ],
+    };
+  }
+}
+
+// ─── TryPanelResult Validator ────────────────────────────────────────
+
+const VALID_TIERS = ["free", "byok"] as const;
+
+export function validateTryPanelResult(
+  data: unknown,
+): ValidationResult<TryPanelResult> {
+  const raw = data;
+  const errors: ValidationError[] = [];
+
+  if (!isRecord(data)) {
+    return {
+      valid: false,
+      data: null,
+      errors: [{ field: "root", message: "Expected an object" }],
+    };
+  }
+
+  const obj = data;
+
+  // Required string fields
+  if (typeof obj.audit_id !== "string" || obj.audit_id.length === 0) {
+    errors.push({ field: "audit_id", message: "Must be a non-empty string" });
+  }
+
+  if (typeof obj.timestamp !== "string" || obj.timestamp.length === 0) {
+    errors.push({ field: "timestamp", message: "Must be a non-empty string" });
+  }
+
+  // Panel must be "web-judges"
+  if (obj.panel !== "web-judges") {
+    errors.push({ field: "panel", message: 'Must be "web-judges"' });
+  }
+
+  // Repo
+  if (!isRecord(obj.repo)) {
+    errors.push({ field: "repo", message: "Must be an object" });
+  } else {
+    if (typeof obj.repo.owner !== "string") {
+      errors.push({ field: "repo.owner", message: "Must be a string" });
+    }
+    if (typeof obj.repo.name !== "string") {
+      errors.push({ field: "repo.name", message: "Must be a string" });
+    }
+  }
+
+  // Agents array
+  if (!Array.isArray(obj.agents)) {
+    errors.push({ field: "agents", message: "Must be an array" });
+  }
+
+  // Composite
+  if (!isRecord(obj.composite)) {
+    errors.push({ field: "composite", message: "Must be an object" });
+  } else {
+    const comp = obj.composite;
+    if (typeof comp.score !== "number" || comp.score < 0 || comp.score > 100) {
+      errors.push({
+        field: "composite.score",
+        message: "Must be a number between 0 and 100",
+      });
+    }
+    if (!VALID_GRADES.includes(comp.grade as Grade)) {
+      errors.push({
+        field: "composite.grade",
+        message: `Must be one of: ${VALID_GRADES.join(", ")}`,
+      });
+    }
+    if (!VALID_VERDICTS.includes(comp.verdict as Verdict)) {
+      errors.push({
+        field: "composite.verdict",
+        message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
+      });
+    }
+    if (!isRecord(comp.radar)) {
+      errors.push({ field: "composite.radar", message: "Must be an object" });
+    }
+  }
+
+  // Highlights
+  if (!isRecord(obj.highlights)) {
+    errors.push({ field: "highlights", message: "Must be an object" });
+  }
+
+  // Action items
+  if (!Array.isArray(obj.action_items)) {
+    errors.push({ field: "action_items", message: "Must be an array" });
+  }
+
+  // files_analyzed
+  if (typeof obj.files_analyzed !== "number" || obj.files_analyzed < 0) {
+    errors.push({
+      field: "files_analyzed",
+      message: "Must be a non-negative number",
+    });
+  }
+
+  // Tier
+  if (
+    typeof obj.tier !== "string" ||
+    !(VALID_TIERS as readonly string[]).includes(obj.tier)
+  ) {
+    errors.push({
+      field: "tier",
+      message: `Must be one of: ${VALID_TIERS.join(", ")}`,
+    });
+  }
+
+  return {
+    valid: errors.length === 0,
+    data: errors.length === 0 ? (raw as TryPanelResult) : null,
+    errors,
+  };
+}
+
+export function parseTryPanelResult(
+  raw: string,
+): ValidationResult<TryPanelResult> {
+  try {
+    const data = JSON.parse(raw);
+    return validateTryPanelResult(data);
   } catch (e) {
     return {
       valid: false,
