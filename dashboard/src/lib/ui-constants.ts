@@ -27,12 +27,12 @@ export const GRADE_STYLES: Record<string, string> = {
 // ─── Agent Roles ────────────────────────────────────────────────────────────
 
 export const AGENT_ROLES: Record<string, string> = {
-  boris: "Architecture & Type Safety",
-  cat: "Product & UX Design",
-  thariq: "Innovation & Simplicity",
-  lydia: "DX & Documentation",
-  ado: "Community & Integration",
-  jason: "Community Impact",
+  boris: "Architecture & Verification",
+  cat: "Product & User Impact",
+  thariq: "AI Innovation & Systems",
+  lydia: "Frontend & Developer Experience",
+  ado: "Documentation & Developer Relations",
+  jason: "Community Impact & Integration",
 };
 
 // ─── Date Formatting ────────────────────────────────────────────────────────

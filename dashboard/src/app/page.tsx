@@ -4,11 +4,12 @@ import { messages } from "@/lib/messages";
 import { HeroTrySection } from "@/components/HeroTrySection";
 
 export default function HomePage() {
-  const { hero, install, howItWorks, panel, features, footer } = messages;
+  const { hero, story, install, howItWorks, panel, features, footer } =
+    messages;
 
   return (
     <main id="main-content" className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Hero + Try Input */}
+      {/* Hero */}
       <section className="flex flex-col items-center justify-center px-6 pt-24 pb-16 text-center">
         <h1 className="text-6xl sm:text-7xl font-bold tracking-tight">
           Board<span className="text-indigo-400">Claude</span>
@@ -19,9 +20,54 @@ export default function HomePage() {
         <p className="mt-6 max-w-2xl text-lg text-gray-400 leading-relaxed">
           {hero.description}
         </p>
-        <div className="mt-10 w-full">
-          <HeroTrySection />
+      </section>
+
+      {/* The Story */}
+      <section className="px-6 pb-20 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">{story.heading}</h2>
+        <div className="space-y-5">
+          {story.paragraphs.map((paragraph, i) => (
+            <p key={i} className="text-gray-400 leading-relaxed text-lg">
+              {paragraph}
+            </p>
+          ))}
         </div>
+      </section>
+
+      {/* The Panel */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
+        <h2 className="text-3xl font-bold mb-4">{panel.heading}</h2>
+        <p className="text-gray-400 mb-10 text-lg max-w-2xl mx-auto">
+          {panel.description}
+        </p>
+        <div className="flex flex-wrap justify-center gap-4">
+          {panel.agents.map((agent) => (
+            <div
+              key={agent.key}
+              className="flex items-center gap-3 rounded-full border border-gray-800 bg-gray-900/50 px-5 py-2.5"
+            >
+              <span
+                className="inline-block h-3 w-3 rounded-full shrink-0"
+                style={{ backgroundColor: getAgentColor(agent.key) }}
+              />
+              <span className="font-medium">{agent.fullName}</span>
+              <span className="text-sm text-gray-400">{agent.role}</span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-6 text-xs text-gray-500 max-w-xl mx-auto italic">
+          {panel.disclaimer}
+        </p>
+      </section>
+
+      {/* Try It Now */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
+        <h2 className="text-3xl font-bold mb-4">Try It Now</h2>
+        <p className="text-gray-400 mb-8 text-lg max-w-2xl mx-auto">
+          Paste a public GitHub repo URL and get an instant AI code review. No
+          install required.
+        </p>
+        <HeroTrySection />
       </section>
 
       {/* How It Works */}
@@ -42,31 +88,6 @@ export default function HomePage() {
               <p className="mt-3 text-gray-400 leading-relaxed">
                 {step.description}
               </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Agent Showcase */}
-      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-4">{panel.heading}</h2>
-        <p className="text-gray-400 mb-3 text-lg">{panel.description}</p>
-        <p className="text-sm text-gray-500 mb-10">
-          The web reviewer covers all six dimensions. Install the CLI to unlock
-          all six specialized judges.
-        </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          {panel.agents.map((agent) => (
-            <div
-              key={agent.key}
-              className="flex items-center gap-3 rounded-full border border-gray-800 bg-gray-900/50 px-5 py-2.5"
-            >
-              <span
-                className="inline-block h-3 w-3 rounded-full shrink-0"
-                style={{ backgroundColor: getAgentColor(agent.key) }}
-              />
-              <span className="font-medium">{agent.name}</span>
-              <span className="text-sm text-gray-400">{agent.role}</span>
             </div>
           ))}
         </div>

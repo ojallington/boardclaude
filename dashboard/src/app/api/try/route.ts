@@ -1,19 +1,20 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { parseGitHubUrl, fetchRepoContents } from "@/lib/github";
-import { REVIEWER_SYSTEM_PROMPT, buildUserPrompt } from "@/lib/try-prompt";
+import { buildUserPrompt } from "@/lib/try-prompt";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getGrade, getVerdict } from "@/lib/types";
-import type { TryResult, RadarData } from "@/lib/types";
+import type { TryAgentResult, TryPanelResult } from "@/lib/types";
+import {
+  WEB_AGENTS,
+  SYNTHESIS_PROMPT,
+  buildSynthesisUserPrompt,
+  getModelId,
+} from "@/lib/try-agents";
+import { saveWebReview } from "@/lib/try-storage";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 300;
 export const dynamic = "force-dynamic";
-
-const MODEL_MAP: Record<string, string> = {
-  haiku: "claude-haiku-4-5-20251001",
-  sonnet: "claude-sonnet-4-5-20250929",
-  opus: "claude-opus-4-6",
-};
 
 function sendSSE(
   writer: WritableStreamDefaultWriter<Uint8Array>,
@@ -25,19 +26,28 @@ function sendSSE(
   return writer.write(encoder.encode(payload));
 }
 
+function parseAgentJSON(text: string): Record<string, unknown> | null {
+  let jsonStr = text.trim();
+  if (jsonStr.startsWith("```")) {
+    jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+  try {
+    return JSON.parse(jsonStr) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   const encoder = new TextEncoder();
   const { readable, writable } = new TransformStream<Uint8Array>();
   const writer = writable.getWriter();
 
-  // Start the async processing in background
   (async () => {
     try {
-      // Parse request body
       const body = (await request.json()) as {
         url?: string;
         apiKey?: string;
-        model?: string;
       };
 
       const url = body.url?.trim();
@@ -49,7 +59,6 @@ export async function POST(request: Request) {
         return;
       }
 
-      // Parse GitHub URL
       const parsed = parseGitHubUrl(url);
       if (!parsed) {
         await sendSSE(writer, encoder, "error", {
@@ -59,7 +68,7 @@ export async function POST(request: Request) {
         return;
       }
 
-      // Rate limiting
+      // Rate limiting (1 hit per panel, not per agent)
       const ip =
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
         "unknown";
@@ -75,7 +84,6 @@ export async function POST(request: Request) {
         return;
       }
 
-      // Validate BYOK key format
       if (body.apiKey && !body.apiKey.startsWith("sk-ant-")) {
         await sendSSE(writer, encoder, "error", {
           code: "INVALID_API_KEY",
@@ -84,17 +92,12 @@ export async function POST(request: Request) {
         return;
       }
 
-      // Determine model
-      const modelKey = body.apiKey ? (body.model ?? "haiku") : "haiku";
-      const modelId = MODEL_MAP[modelKey] ?? "claude-haiku-4-5-20251001";
-
       // Phase: fetching
       await sendSSE(writer, encoder, "status", {
         phase: "fetching",
         repo: { owner: parsed.owner, name: parsed.repo },
       });
 
-      // Fetch repo contents
       let repoData;
       try {
         repoData = await fetchRepoContents(parsed.owner, parsed.repo);
@@ -113,11 +116,10 @@ export async function POST(request: Request) {
       // Phase: reviewing
       await sendSSE(writer, encoder, "status", {
         phase: "reviewing",
-        agent: "reviewer",
-        model: modelKey,
+        total: WEB_AGENTS.length,
+        tier,
       });
 
-      // Call Anthropic API
       const apiKey = body.apiKey ?? process.env.ANTHROPIC_API_KEY;
       if (!apiKey) {
         await sendSSE(writer, encoder, "error", {
@@ -134,91 +136,274 @@ export async function POST(request: Request) {
         repoData.treeSize,
       );
 
-      let responseText = "";
-      const stream = await client.messages.stream({
-        model: modelId,
-        max_tokens: 4096,
-        system: REVIEWER_SYSTEM_PROMPT,
-        messages: [{ role: "user", content: userPrompt }],
+      // Run 6 agents in parallel
+      const agentPromises = WEB_AGENTS.map(async (agent, index) => {
+        await sendSSE(writer, encoder, "agent_start", {
+          agent: agent.name,
+          index,
+        });
+
+        try {
+          const modelId = getModelId(agent.model, tier);
+          const response = await client.messages.create({
+            model: modelId,
+            max_tokens: 2048,
+            system: agent.systemPrompt,
+            messages: [{ role: "user", content: userPrompt }],
+          });
+
+          const text = response.content
+            .filter((b) => b.type === "text")
+            .map((b) => b.text)
+            .join("");
+
+          const data = parseAgentJSON(text);
+          if (!data) {
+            await sendSSE(writer, encoder, "agent_error", {
+              agent: agent.name,
+              index,
+              error: "Failed to parse agent response",
+            });
+            return null;
+          }
+
+          const scores = (data.scores ?? {}) as Record<string, number>;
+          const composite =
+            typeof data.composite === "number"
+              ? data.composite
+              : Math.round(
+                  Object.values(scores).reduce((a, b) => a + b, 0) /
+                    Math.max(Object.keys(scores).length, 1),
+                );
+
+          const result: TryAgentResult = {
+            agent: agent.name,
+            role: agent.role,
+            scores,
+            composite,
+            grade: getGrade(composite),
+            verdict: getVerdict(composite),
+            strengths: (data.strengths as [string, string, string]) ?? [
+              "",
+              "",
+              "",
+            ],
+            weaknesses: (data.weaknesses as [string, string, string]) ?? [
+              "",
+              "",
+              "",
+            ],
+            critical_issues: (data.critical_issues as string[]) ?? [],
+            action_items:
+              (data.action_items as TryAgentResult["action_items"]) ?? [],
+            one_line: (data.one_line as string) ?? "",
+            model_used: modelId,
+          };
+
+          await sendSSE(writer, encoder, "agent_complete", {
+            agent: agent.name,
+            index,
+            result,
+          });
+
+          return result;
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Unknown error";
+          await sendSSE(writer, encoder, "agent_error", {
+            agent: agent.name,
+            index,
+            error: message,
+          });
+          return null;
+        }
       });
 
-      for await (const event of stream) {
-        if (
-          event.type === "content_block_delta" &&
-          event.delta.type === "text_delta"
-        ) {
-          responseText += event.delta.text;
+      const settled = await Promise.allSettled(agentPromises);
+      const agentResults: TryAgentResult[] = [];
+      for (const s of settled) {
+        if (s.status === "fulfilled" && s.value) {
+          agentResults.push(s.value);
         }
       }
 
-      // Parse the response
-      let reviewData;
-      try {
-        // Try to extract JSON from response (handle markdown code blocks)
-        let jsonStr = responseText.trim();
-        if (jsonStr.startsWith("```")) {
-          jsonStr = jsonStr
-            .replace(/^```(?:json)?\n?/, "")
-            .replace(/\n?```$/, "");
-        }
-        reviewData = JSON.parse(jsonStr);
-      } catch {
+      if (agentResults.length < 3) {
         await sendSSE(writer, encoder, "error", {
-          code: "PARSE_FAILED",
-          message: "Failed to parse review response.",
+          code: "INSUFFICIENT_AGENTS",
+          message: `Only ${agentResults.length} of 6 agents completed. Need at least 3 for synthesis.`,
         });
         return;
       }
 
-      // Build radar data
-      const scores = reviewData.scores as Record<string, number>;
-      const radar: RadarData = {
-        architecture: scores.architecture ?? 0,
-        product: scores.product ?? 0,
-        innovation: scores.innovation ?? 0,
-        code_quality: scores.code_quality ?? 0,
-        documentation: scores.documentation ?? 0,
-        integration: scores.integration ?? 0,
-      };
+      // Phase: synthesizing
+      await sendSSE(writer, encoder, "status", { phase: "synthesizing" });
 
-      const composite =
-        reviewData.composite ??
-        Math.round(Object.values(radar).reduce((a, b) => a + b, 0) / 6);
+      const weights: Record<string, number> = {};
+      for (const a of WEB_AGENTS) {
+        weights[a.name] = a.panelWeight;
+      }
 
-      const result: TryResult = {
+      const synthesisUserPrompt = buildSynthesisUserPrompt(
+        agentResults.map((r) => ({
+          agent: r.agent,
+          role: r.role,
+          result: {
+            scores: r.scores,
+            composite: r.composite,
+            grade: r.grade,
+            verdict: r.verdict,
+            strengths: r.strengths,
+            weaknesses: r.weaknesses,
+            critical_issues: r.critical_issues,
+            action_items: r.action_items,
+            one_line: r.one_line,
+          },
+        })),
+        weights,
+      );
+
+      const synthesisModelId = getModelId("sonnet", tier);
+      const synthesisResponse = await client.messages.create({
+        model: synthesisModelId,
+        max_tokens: 2048,
+        system: SYNTHESIS_PROMPT,
+        messages: [{ role: "user", content: synthesisUserPrompt }],
+      });
+
+      const synthesisText = synthesisResponse.content
+        .filter((b) => b.type === "text")
+        .map((b) => b.text)
+        .join("");
+
+      const synthesisData = parseAgentJSON(synthesisText);
+      if (!synthesisData) {
+        // Fallback: compute synthesis from agent results directly
+        const weightedScore = agentResults.reduce((sum, r) => {
+          const w = weights[r.agent] ?? 1 / agentResults.length;
+          return sum + r.composite * w;
+        }, 0);
+        const fallbackScore = Math.round(
+          weightedScore /
+            agentResults.reduce(
+              (sum, r) => sum + (weights[r.agent] ?? 1 / agentResults.length),
+              0,
+            ),
+        );
+
+        const now = new Date();
+        const ts = now.toISOString();
+        const auditId = `web-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+
+        const fallbackResult: TryPanelResult = {
+          audit_id: auditId,
+          repo: repoData.meta,
+          panel: "web-judges",
+          timestamp: ts,
+          agents: agentResults,
+          composite: {
+            score: fallbackScore,
+            radar: {
+              architecture:
+                agentResults.find((a) => a.agent === "boris")?.composite ??
+                fallbackScore,
+              product:
+                agentResults.find((a) => a.agent === "cat")?.composite ??
+                fallbackScore,
+              innovation:
+                agentResults.find((a) => a.agent === "thariq")?.composite ??
+                fallbackScore,
+              code_quality:
+                agentResults.find((a) => a.agent === "lydia")?.composite ??
+                fallbackScore,
+              documentation:
+                agentResults.find((a) => a.agent === "ado")?.composite ??
+                fallbackScore,
+              integration:
+                agentResults.find((a) => a.agent === "jason")?.composite ??
+                fallbackScore,
+            },
+            grade: getGrade(fallbackScore),
+            verdict: getVerdict(fallbackScore),
+          },
+          highlights: {
+            top_strengths: agentResults.slice(0, 3).map((a) => a.strengths[0]),
+            top_weaknesses: agentResults
+              .slice(0, 3)
+              .map((a) => a.weaknesses[0]),
+            divergent_opinions: [],
+          },
+          action_items: [],
+          files_analyzed: repoData.totalFiles,
+          tier,
+        };
+
+        saveWebReview(fallbackResult).catch(() => {});
+        await sendSSE(writer, encoder, "complete", fallbackResult);
+        return;
+      }
+
+      // Build full result from synthesis
+      const now = new Date();
+      const ts = now.toISOString();
+      const auditId = `web-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+
+      const comp = synthesisData.composite as Record<string, unknown>;
+      const radar = (comp?.radar ?? {}) as Record<string, number>;
+      const score =
+        typeof comp?.score === "number"
+          ? comp.score
+          : Math.round(
+              agentResults.reduce((sum, r) => {
+                const w = weights[r.agent] ?? 1 / agentResults.length;
+                return sum + r.composite * w;
+              }, 0) /
+                agentResults.reduce(
+                  (sum, r) =>
+                    sum + (weights[r.agent] ?? 1 / agentResults.length),
+                  0,
+                ),
+            );
+
+      const highlights = (synthesisData.highlights ?? {}) as Record<
+        string,
+        unknown
+      >;
+
+      const panelResult: TryPanelResult = {
+        audit_id: auditId,
         repo: repoData.meta,
-        agent: "reviewer",
-        scores,
-        composite,
-        grade: getGrade(composite),
-        verdict: getVerdict(composite),
-        strengths: reviewData.strengths ?? ["", "", ""],
-        weaknesses: reviewData.weaknesses ?? ["", "", ""],
-        critical_issues: reviewData.critical_issues ?? [],
-        action_items: reviewData.action_items ?? [],
-        one_line: reviewData.one_line ?? "",
-        radar,
+        panel: "web-judges",
+        timestamp: ts,
+        agents: agentResults,
+        composite: {
+          score,
+          radar: {
+            architecture: radar.architecture ?? score,
+            product: radar.product ?? score,
+            innovation: radar.innovation ?? score,
+            code_quality: radar.code_quality ?? score,
+            documentation: radar.documentation ?? score,
+            integration: radar.integration ?? score,
+          },
+          grade: getGrade(score),
+          verdict: getVerdict(score),
+        },
+        highlights: {
+          top_strengths: (highlights.top_strengths as string[]) ?? [],
+          top_weaknesses: (highlights.top_weaknesses as string[]) ?? [],
+          divergent_opinions:
+            (highlights.divergent_opinions as TryPanelResult["highlights"]["divergent_opinions"]) ??
+            [],
+        },
+        action_items:
+          (synthesisData.action_items as TryPanelResult["action_items"]) ?? [],
         files_analyzed: repoData.totalFiles,
-        timestamp: new Date().toISOString(),
-        model_used: modelKey,
+        tier,
       };
 
-      // Send partial events for progressive UI
-      await sendSSE(writer, encoder, "partial", {
-        field: "one_line",
-        value: result.one_line,
-      });
-      await sendSSE(writer, encoder, "partial", {
-        field: "scores",
-        value: result.scores,
-      });
-      await sendSSE(writer, encoder, "partial", {
-        field: "verdict",
-        value: result.verdict,
-      });
+      // Save result (fire-and-forget)
+      saveWebReview(panelResult).catch(() => {});
 
-      // Send complete result
-      await sendSSE(writer, encoder, "complete", result);
+      await sendSSE(writer, encoder, "complete", panelResult);
     } catch (err) {
       const message =
         err instanceof Anthropic.AuthenticationError

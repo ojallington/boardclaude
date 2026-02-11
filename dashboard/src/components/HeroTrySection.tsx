@@ -6,19 +6,19 @@ import { TryForm } from "./TryForm";
 
 const EXAMPLE_REPOS = [
   {
-    name: "shadcn/ui",
+    name: "EveryInc/compound-engineering-plugin",
+    url: "https://github.com/EveryInc/compound-engineering-plugin",
+    desc: "4,700+ stars",
+  },
+  {
+    name: "ojallington/boardclaude",
+    url: "https://github.com/ojallington/boardclaude",
+    desc: "This project",
+  },
+  {
+    name: "shadcn-ui/ui",
     url: "https://github.com/shadcn-ui/ui",
-    desc: "UI component library",
-  },
-  {
-    name: "t3-oss/create-t3-app",
-    url: "https://github.com/t3-oss/create-t3-app",
-    desc: "Full-stack starter",
-  },
-  {
-    name: "anthropics/claude-code",
-    url: "https://github.com/anthropics/claude-code",
-    desc: "Claude CLI",
+    desc: "UI components",
   },
 ];
 

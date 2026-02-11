@@ -4,39 +4,50 @@ import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { messages } from "@/lib/messages";
-import { useReviewStream } from "@/hooks/useReviewStream";
+import { usePanelStream } from "@/hooks/usePanelStream";
 import { TryForm } from "./TryForm";
-import { StreamingAgentCard } from "./StreamingAgentCard";
-import { RadarChart } from "./RadarChart";
-import type { RadarData, TryStreamPhase } from "@/lib/types";
+import { PanelAgentCard } from "./PanelAgentCard";
+import { PanelProgressHeader } from "./PanelProgressHeader";
+import { PanelSynthesisView } from "./PanelSynthesisView";
+import type { TryPanelStreamPhase } from "@/lib/types";
 
-function isActivePhase(phase: TryStreamPhase): boolean {
+function isActivePhase(phase: TryPanelStreamPhase): boolean {
   return (
-    phase === "validating" || phase === "fetching" || phase === "reviewing"
+    phase === "validating" ||
+    phase === "fetching" ||
+    phase === "reviewing" ||
+    phase === "synthesizing"
   );
 }
 
 export function TryPageClient() {
   const searchParams = useSearchParams();
-  const { phase, result, error, repoInfo, modelInfo, startReview, reset } =
-    useReviewStream();
+  const {
+    phase,
+    result,
+    error,
+    repoInfo,
+    tier,
+    agents,
+    completedCount,
+    startReview,
+    reset,
+  } = usePanelStream();
 
   // Auto-start if URL is in query params (from homepage redirect)
   useEffect(() => {
     const url = searchParams.get("url");
     if (url) {
-      startReview(url, null, "haiku");
+      startReview(url, null);
     }
     // Only run on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const isLoading = isActivePhase(phase);
-  const showCard = phase !== "validating" || result !== null;
-  const showRadar = phase === "complete" && result?.radar;
 
-  function handleSubmit(url: string, apiKey: string | null, model: string) {
-    startReview(url, apiKey, model);
+  function handleSubmit(url: string, apiKey: string | null) {
+    startReview(url, apiKey);
   }
 
   function handleTryAnother() {
@@ -44,7 +55,7 @@ export function TryPageClient() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Form */}
       <TryForm onSubmit={handleSubmit} isLoading={isLoading} />
 
@@ -55,45 +66,94 @@ export function TryPageClient() {
         </div>
       )}
 
-      {/* Streaming card */}
-      {showCard && phase !== "error" && (
-        <StreamingAgentCard
-          phase={phase}
-          result={result}
-          repoInfo={repoInfo}
-          modelInfo={modelInfo}
-        />
-      )}
-
-      {/* Radar chart */}
-      {showRadar && result?.radar && (
-        <div className="flex justify-center">
-          <RadarChart data={result.radar as RadarData} size={350} />
+      {/* Fetching status */}
+      {(phase === "validating" || phase === "fetching") && (
+        <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-4">
+          <div className="flex items-center gap-3">
+            <span className="relative flex h-3 w-3">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 opacity-75" />
+              <span className="relative inline-flex h-3 w-3 rounded-full bg-gray-400" />
+            </span>
+            <span className="text-sm text-gray-400">
+              {messages.tryIt.phases[phase]}
+            </span>
+          </div>
+          {repoInfo && (
+            <p className="mt-2 text-xs text-gray-500">
+              {repoInfo.owner}/{repoInfo.name}
+            </p>
+          )}
         </div>
       )}
 
-      {/* Result CTAs */}
-      {phase === "complete" && (
-        <div className="flex flex-wrap justify-center gap-4">
-          <button
-            onClick={handleTryAnother}
-            className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700"
-          >
-            {messages.tryIt.resultCtas.tryAnother}
-          </button>
-          <a
-            href="#install"
-            className="rounded-lg border border-indigo-600/50 bg-indigo-950/30 px-6 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:bg-indigo-950/50"
-          >
-            {messages.tryIt.resultCtas.installCli}
-          </a>
-          <Link
-            href="/boards"
-            className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700"
-          >
-            {messages.tryIt.resultCtas.buildBoard}
-          </Link>
-        </div>
+      {/* Review in progress: progress header + agent cards grid */}
+      {(phase === "reviewing" || phase === "synthesizing") && (
+        <>
+          <PanelProgressHeader
+            agents={agents}
+            completedCount={completedCount}
+            total={6}
+            tier={tier}
+          />
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {agents.map((a) => (
+              <PanelAgentCard key={a.agent} progress={a} />
+            ))}
+          </div>
+          {phase === "synthesizing" && (
+            <div className="rounded-xl border border-indigo-600/30 bg-gray-900/60 p-4">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-indigo-400" />
+                </span>
+                <span className="text-sm text-indigo-300">
+                  {messages.tryIt.phases.synthesizing}
+                </span>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Complete: synthesis view + agent cards */}
+      {phase === "complete" && result && (
+        <>
+          <PanelSynthesisView result={result} />
+
+          <div>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
+              Individual Agent Evaluations
+            </h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {agents.map((a) => (
+                <PanelAgentCard key={a.agent} progress={a} />
+              ))}
+            </div>
+          </div>
+
+          {/* Result CTAs */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={handleTryAnother}
+              className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700"
+            >
+              {messages.tryIt.resultCtas.tryAnother}
+            </button>
+            <a
+              href="#install"
+              className="rounded-lg border border-indigo-600/50 bg-indigo-950/30 px-6 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:bg-indigo-950/50"
+            >
+              {messages.tryIt.resultCtas.installCli}
+            </a>
+            <Link
+              href="/boards"
+              className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700"
+            >
+              {messages.tryIt.resultCtas.buildBoard}
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );

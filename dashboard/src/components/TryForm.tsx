@@ -6,7 +6,7 @@ import { messages } from "@/lib/messages";
 const GITHUB_URL_RE = /^https?:\/\/(www\.)?github\.com\/[\w.-]+\/[\w.-]+\/?/i;
 
 interface TryFormProps {
-  onSubmit: (url: string, apiKey: string | null, model: string) => void;
+  onSubmit: (url: string, apiKey: string | null) => void;
   isLoading: boolean;
   compact?: boolean;
 }
@@ -15,7 +15,6 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
   const [url, setUrl] = useState("");
   const [showByok, setShowByok] = useState(false);
   const [apiKey, setApiKey] = useState("");
-  const [model, setModel] = useState("haiku");
   const [urlError, setUrlError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
@@ -26,7 +25,7 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
       return;
     }
     setUrlError(null);
-    onSubmit(trimmed, showByok && apiKey ? apiKey : null, model);
+    onSubmit(trimmed, showByok && apiKey ? apiKey : null);
   }
 
   return (
@@ -68,16 +67,24 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
       {/* BYOK section */}
       {!compact && (
         <div className="mt-4">
-          <button
-            type="button"
-            onClick={() => setShowByok(!showByok)}
-            className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
-          >
-            {showByok ? "Hide API key" : messages.tryIt.byokToggle}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowByok(!showByok)}
+              className="text-sm text-gray-400 hover:text-gray-300 transition-colors"
+            >
+              {showByok ? "Hide API key" : messages.tryIt.byokToggle}
+            </button>
+            {/* Tier badge */}
+            <span className="rounded-full border border-gray-700 bg-gray-800 px-3 py-0.5 text-xs text-gray-400">
+              {showByok && apiKey
+                ? `${messages.tryIt.byokModeLabel}: ${messages.tryIt.byokModeDescription}`
+                : `${messages.tryIt.demoModeLabel}: ${messages.tryIt.demoModeDescription}`}
+            </span>
+          </div>
 
           {showByok && (
-            <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end rounded-lg border border-gray-800 bg-gray-900/50 p-4">
+            <div className="mt-3 rounded-lg border border-gray-800 bg-gray-900/50 p-4">
               <div className="flex-1 min-w-0">
                 <label
                   htmlFor="byok-key"
@@ -97,24 +104,6 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
                 <p className="mt-1 text-xs text-gray-500">
                   {messages.tryIt.byokHint}
                 </p>
-              </div>
-              <div className="shrink-0">
-                <label
-                  htmlFor="byok-model"
-                  className="mb-1.5 block text-xs font-medium text-gray-400"
-                >
-                  {messages.tryIt.modelSelect}
-                </label>
-                <select
-                  id="byok-model"
-                  value={model}
-                  onChange={(e) => setModel(e.target.value)}
-                  className="rounded-md border border-gray-700 bg-gray-900 px-3 py-2 text-sm text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                >
-                  <option value="haiku">Haiku (Fast)</option>
-                  <option value="sonnet">Sonnet (Balanced)</option>
-                  <option value="opus">Opus (Best)</option>
-                </select>
               </div>
             </div>
           )}

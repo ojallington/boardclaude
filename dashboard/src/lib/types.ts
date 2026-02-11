@@ -399,11 +399,65 @@ export interface TryResult {
 }
 
 export type TryStreamPhase =
+  | "idle"
   | "validating"
   | "fetching"
   | "reviewing"
   | "complete"
   | "error";
+
+// ─── Try Panel (Full 6-Agent) Types ─────────────────────────────────────
+
+export interface TryAgentResult {
+  agent: string;
+  role: string;
+  scores: Record<string, number>;
+  composite: number;
+  grade: Grade;
+  verdict: Verdict;
+  strengths: [string, string, string];
+  weaknesses: [string, string, string];
+  critical_issues: string[];
+  action_items: AgentActionItem[];
+  one_line: string;
+  model_used: string;
+}
+
+export interface TryPanelResult {
+  audit_id: string;
+  repo: TryRepoMeta;
+  panel: "web-judges";
+  timestamp: string;
+  agents: TryAgentResult[];
+  composite: CompositeScore;
+  highlights: Highlights;
+  action_items: SynthesisActionItem[];
+  files_analyzed: number;
+  tier: "free" | "byok";
+}
+
+export type TryPanelStreamPhase =
+  | "idle"
+  | "validating"
+  | "fetching"
+  | "reviewing"
+  | "synthesizing"
+  | "complete"
+  | "error";
+
+export interface TryAgentProgress {
+  agent: string;
+  status: "pending" | "running" | "complete" | "error";
+  result?: TryAgentResult;
+}
+
+export interface TryResultSummary {
+  audit_id: string;
+  repo: { owner: string; name: string };
+  composite: { score: number; grade: Grade; verdict: Verdict };
+  tier: "free" | "byok";
+  timestamp: string;
+}
 
 // ─── Design System Constants ─────────────────────────────────────────
 

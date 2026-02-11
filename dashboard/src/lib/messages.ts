@@ -16,13 +16,22 @@ export const messages = {
   // ─── Landing page ──────────────────────────────────────────────────
   hero: {
     heading: "BoardClaude",
-    tagline: "Your AI Jury",
+    tagline: "We Didn\u2019t Get a Spot. So We Built the Judges.",
     description:
-      "Paste a GitHub URL and get an instant AI code review. Or install the CLI for six calibrated judges and one comprehensive verdict.",
+      "Six AI agents, each inspired by a real hackathon judge, evaluate your project from different expert perspectives. Whether you\u2019re competing or just building\u2014get the feedback that matters.",
     installCta: "Install Plugin",
     demoCta: "Watch Demo",
     resultsCta: "View Results",
     trySubtext: "or install the CLI for full panel audits",
+  },
+
+  story: {
+    heading: "The Story",
+    paragraphs: [
+      "Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon invited developers to push the boundaries of what\u2019s possible with Claude. 500 spots. We didn\u2019t get one.",
+      "So we did the next best thing: we studied the judges. Six industry experts, each with a distinct perspective on what makes software great\u2014architecture, product thinking, AI innovation, developer experience, documentation, and community impact. We built AI representations of each one.",
+      "The result is BoardClaude: a configurable panel of AI agents that evaluate your project the way a real judging panel would. Paste a GitHub URL to try a quick review, or install the CLI for the full six-judge experience with scored dimensions, radar charts, and prioritized action items.",
+    ],
   },
 
   install: {
@@ -62,14 +71,47 @@ export const messages = {
 
   panel: {
     heading: "The Panel",
-    description: "Six calibrated perspectives. One comprehensive evaluation.",
+    description:
+      "Six AI agents, each inspired by the public work and expertise of a real hackathon judge.",
+    disclaimer:
+      "AI representations inspired by the public work and expertise of the real judges. Not affiliated with or endorsed by them.",
     agents: [
-      { name: "Boris", role: "Architecture & Type Safety", key: "boris" },
-      { name: "Cat", role: "Product & UX Design", key: "cat" },
-      { name: "Thariq", role: "Innovation & Simplicity", key: "thariq" },
-      { name: "Lydia", role: "DX & Documentation", key: "lydia" },
-      { name: "Ado", role: "Community & Integration", key: "ado" },
-      { name: "Jason", role: "Community Impact", key: "jason" },
+      {
+        name: "Boris",
+        fullName: "Boris Cherny",
+        role: "Architecture & Verification",
+        key: "boris",
+      },
+      {
+        name: "Cat",
+        fullName: "Cat Wu",
+        role: "Product & User Impact",
+        key: "cat",
+      },
+      {
+        name: "Thariq",
+        fullName: "Thariq Shihipar",
+        role: "AI Innovation & Systems",
+        key: "thariq",
+      },
+      {
+        name: "Lydia",
+        fullName: "Lydia Hallie",
+        role: "Frontend & Developer Experience",
+        key: "lydia",
+      },
+      {
+        name: "Ado",
+        fullName: "Ado Kukic",
+        role: "Documentation & Developer Relations",
+        key: "ado",
+      },
+      {
+        name: "Jason",
+        fullName: "Jason",
+        role: "Community Impact & Integration",
+        key: "jason",
+      },
     ],
   },
 
@@ -99,7 +141,7 @@ export const messages = {
       {
         title: "Try Online",
         description:
-          "Paste a GitHub URL for an instant single-agent review. No install needed.",
+          "Paste a GitHub URL for a full 6-agent panel review. No install needed.",
       },
       {
         title: "Score Progression",
@@ -110,9 +152,9 @@ export const messages = {
   },
 
   footer: {
-    builtFor: "Built for the",
+    builtFor: "Inspired by the",
     hackathonName: "\u201cBuilt with Opus 4.6\u201d",
-    hackathonSuffix: "Hackathon",
+    hackathonSuffix: "Hackathon judges",
     github: "GitHub",
   },
 
@@ -281,21 +323,25 @@ export const messages = {
   tryIt: {
     heading: "Try It Now",
     description:
-      "Paste a public GitHub repo URL and get an instant AI code review. No install required.",
+      "Paste a public GitHub repo URL for a full 6-agent panel review. No install required.",
     inputPlaceholder: "https://github.com/owner/repo",
-    submitButton: "Review My Repo",
-    submitButtonLoading: "Reviewing...",
+    submitButton: "Run Panel Review",
+    submitButtonLoading: "Panel reviewing...",
     orInstall: "or install the CLI for full panel audits",
     byokToggle: "Use your own API key",
     byokPlaceholder: "sk-ant-...",
     byokHint:
-      "Your key is used for one request over HTTPS. Never stored or logged.",
-    modelSelect: "Model",
+      "Your key is sent over HTTPS for this request only. Never stored.",
     exampleRepos: "Try an example",
     rateLimitFree: "3 free reviews per hour",
     rateLimitByok: "30 reviews per hour with your key",
+    demoModeLabel: "Demo Mode",
+    demoModeDescription: "All agents use Haiku",
+    byokModeLabel: "Full Panel",
+    byokModeDescription:
+      "Opus for Boris/Cat/Thariq/Lydia, Sonnet for Ado/Jason",
     resultCtas: {
-      tryAnother: "Try Another Repo",
+      tryAnother: "Review Another Repo",
       installCli: "Install CLI for Full Panel",
       buildBoard: "Build a Custom Board",
     },
@@ -309,11 +355,21 @@ export const messages = {
       invalidApiKey: "Invalid API key. Keys should start with sk-ant-.",
     },
     phases: {
+      idle: "",
       validating: "Validating repository URL...",
       fetching: "Fetching repository contents...",
-      reviewing: "AI is reviewing your code...",
-      complete: "Review complete!",
+      reviewing: "Evaluating with 6 agents...",
+      synthesizing: "Synthesizing panel consensus...",
+      complete: "Panel review complete!",
       error: "Something went wrong.",
+    },
+    agentProgress: {
+      pending: "Waiting...",
+      running: "Analyzing...",
+      complete: "Complete",
+      error: "Skipped",
+      synthesizing: "Synthesizing results...",
+      panelProgress: "{completed} of {total} agents complete",
     },
   },
 
@@ -321,6 +377,7 @@ export const messages = {
   resultsSubNav: {
     list: "List",
     timeline: "Timeline",
+    web: "Web Reviews",
   },
 
   // ─── Shared ────────────────────────────────────────────────────────
