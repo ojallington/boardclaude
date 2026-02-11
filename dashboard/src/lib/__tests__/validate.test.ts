@@ -6,6 +6,7 @@ import {
   validateProjectState,
   validateTimeline,
   validateActionItemsLedger,
+  validateTryPanelResult,
 } from "../validate";
 
 // ─── Valid fixtures ──────────────────────────────────────────────────
@@ -470,6 +471,166 @@ describe("validateActionItemsLedger", () => {
     const result = validateActionItemsLedger({
       items: [],
       metadata: { total_items: 0, open: 0, resolved: 0, chronic: 0 },
+    });
+    expect(result.valid).toBe(true);
+  });
+});
+
+// ─── TryPanelResult validation ─────────────────────────────────────
+
+const validTryPanelResult = {
+  audit_id: "web-20260211-120000",
+  repo: {
+    owner: "test",
+    name: "repo",
+    description: null,
+    language: "TypeScript",
+    stars: 10,
+  },
+  panel: "web-judges",
+  timestamp: "2026-02-11T12:00:00Z",
+  agents: [
+    {
+      agent: "boris",
+      role: "Architecture",
+      scores: { architecture: 80 },
+      composite: 80,
+      grade: "B+",
+      verdict: "PASS",
+      strengths: ["s1", "s2", "s3"],
+      weaknesses: ["w1", "w2", "w3"],
+      critical_issues: [],
+      action_items: [],
+      one_line: "Solid",
+      model_used: "claude-haiku-4-5-20251001",
+    },
+  ],
+  composite: {
+    score: 78,
+    radar: {
+      architecture: 80,
+      product: 75,
+      innovation: 70,
+      code_quality: 82,
+      documentation: 78,
+      integration: 76,
+    },
+    grade: "B",
+    verdict: "PASS",
+  },
+  highlights: {
+    top_strengths: ["Good architecture"],
+    top_weaknesses: ["Needs docs"],
+    divergent_opinions: [],
+  },
+  action_items: [],
+  files_analyzed: 5,
+  tier: "free",
+};
+
+describe("validateTryPanelResult", () => {
+  it("accepts a valid TryPanelResult", () => {
+    const result = validateTryPanelResult(validTryPanelResult);
+    expect(result.valid).toBe(true);
+    expect(result.errors).toHaveLength(0);
+    expect(result.data).not.toBeNull();
+  });
+
+  it("rejects non-object input", () => {
+    const result = validateTryPanelResult("not an object");
+    expect(result.valid).toBe(false);
+    expect(result.errors[0]?.field).toBe("root");
+  });
+
+  it("rejects missing audit_id", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      audit_id: "",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "audit_id")).toBe(true);
+  });
+
+  it("rejects invalid panel value", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      panel: "other",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "panel")).toBe(true);
+  });
+
+  it("rejects invalid composite score", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      composite: { ...validTryPanelResult.composite, score: 150 },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "composite.score")).toBe(true);
+  });
+
+  it("rejects invalid composite grade", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      composite: { ...validTryPanelResult.composite, grade: "Z" },
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "composite.grade")).toBe(true);
+  });
+
+  it("rejects invalid tier", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      tier: "premium",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "tier")).toBe(true);
+  });
+
+  it("rejects non-array agents", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      agents: "not-array",
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "agents")).toBe(true);
+  });
+
+  it("rejects negative files_analyzed", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      files_analyzed: -1,
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field === "files_analyzed")).toBe(true);
+  });
+
+  it("rejects malformed files_detail entries", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      files_detail: [{ path: 123, size: "big", category: "unknown" }],
+    });
+    expect(result.valid).toBe(false);
+    expect(result.errors.some((e) => e.field.startsWith("files_detail"))).toBe(
+      true,
+    );
+  });
+
+  it("accepts valid files_detail", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      files_detail: [
+        { path: "README.md", size: 1024, category: "priority" },
+        { path: "src/index.ts", size: 2048, category: "source" },
+      ],
+    });
+    expect(result.valid).toBe(true);
+  });
+
+  it("accepts byok tier", () => {
+    const result = validateTryPanelResult({
+      ...validTryPanelResult,
+      tier: "byok",
     });
     expect(result.valid).toBe(true);
   });
