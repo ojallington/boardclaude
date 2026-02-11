@@ -51,14 +51,17 @@ function toRadarData(data: RadarData): RadarDatum[] {
 // to match dark-theme colors since it does not accept Tailwind classes)
 // ---------------------------------------------------------------------------
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Recharts tick callback uses `any` props
-function renderAxisTick(props: any): React.ReactElement<SVGElement> {
-  const { x, y, payload, textAnchor } = props as {
-    x: number;
-    y: number;
-    payload: { value: string };
-    textAnchor: "inherit" | "start" | "middle" | "end";
-  };
+interface RechartsPolarTickProps {
+  x: number;
+  y: number;
+  payload: { value: string };
+  textAnchor: "inherit" | "start" | "middle" | "end";
+}
+
+function renderAxisTick(
+  props: RechartsPolarTickProps,
+): React.ReactElement<SVGElement> {
+  const { x, y, payload, textAnchor } = props;
 
   return (
     <text

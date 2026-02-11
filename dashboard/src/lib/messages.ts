@@ -171,6 +171,21 @@ export const messages = {
     },
   },
 
+  // ─── Agent Card ──────────────────────────────────────────────────────
+  agentCard: {
+    verdicts: {
+      STRONG_PASS: "STRONG PASS",
+      PASS: "PASS",
+      MARGINAL: "MARGINAL",
+      FAIL: "FAIL",
+    },
+    sections: {
+      strengths: "Strengths",
+      weaknesses: "Weaknesses",
+      criticalIssues: "Critical Issues",
+    },
+  },
+
   // ─── Shared ────────────────────────────────────────────────────────
   video: {
     fallback: "Your browser does not support the video tag.",

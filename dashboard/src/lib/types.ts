@@ -353,7 +353,7 @@ export interface ValidationResult {
 
 // ─── Design System Constants ─────────────────────────────────────────
 
-export const AGENT_COLORS: Record<string, string> = {
+export const AGENT_COLORS = {
   boris: "#3b82f6",
   cat: "#8b5cf6",
   thariq: "#06b6d4",
@@ -361,7 +361,17 @@ export const AGENT_COLORS: Record<string, string> = {
   ado: "#10b981",
   jason: "#ef4444",
   synthesis: "#6366f1",
-} as const;
+} as const satisfies Record<string, string>;
+
+export type AgentColorKey = keyof typeof AGENT_COLORS;
+
+/** Get agent color by name, with fallback for unknown agents */
+export function getAgentColor(agent: string): string {
+  if (agent in AGENT_COLORS) {
+    return AGENT_COLORS[agent as AgentColorKey];
+  }
+  return "#6b7280";
+}
 
 export function getGrade(score: number): Grade {
   if (score >= 95) return "A+";
