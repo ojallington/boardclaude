@@ -5,7 +5,7 @@ description: >
   Analyzes file dependencies, batches independent fixes for parallel workers,
   validates each batch, and re-audits to measure improvement.
   Triggers on "fix", "implement", "resolve", "address findings".
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TeamCreate, TeamDelete, SendMessage
 context: fork
 agent: general-purpose
 ---
@@ -83,7 +83,7 @@ Analyze file dependencies to partition items into independent batches:
    - A simple greedy approach: iterate items in priority order, assign each to the first batch where it has no conflicts. If no batch works, create a new batch.
 
 5. **Serial fallback conditions** — skip teams and implement directly (original serial behavior) when:
-   - Only 1-2 items total after filtering
+   - Only 1 item total after filtering (a single item gains nothing from a team)
    - `--serial` flag is set
    - All items conflict with each other (single batch anyway)
 
