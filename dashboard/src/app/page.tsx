@@ -64,14 +64,14 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold mb-4">{install.heading}</h2>
         <p className="text-gray-400 mb-8 text-lg">{install.description}</p>
         <div className="rounded-xl border border-gray-800 bg-gray-900 p-6 text-left">
-          <p className="text-xs font-mono text-gray-500 mb-3">
+          <p className="text-xs font-mono text-gray-400 mb-3">
             {install.terminalLabel}
           </p>
           <code className="block text-base sm:text-lg font-mono text-indigo-300 break-all">
             {install.command}
           </code>
         </div>
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-gray-400">
           Then run{" "}
           <code className="text-gray-300 bg-gray-800 px-2 py-0.5 rounded text-sm">
             {install.hintCommand}
@@ -118,7 +118,7 @@ export default function HomePage() {
                 style={{ backgroundColor: getAgentColor(agent.key) }}
               />
               <span className="font-medium">{agent.name}</span>
-              <span className="text-sm text-gray-500">{agent.role}</span>
+              <span className="text-sm text-gray-400">{agent.role}</span>
             </div>
           ))}
         </div>
@@ -145,7 +145,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-12 text-center text-gray-500 text-sm">
+      <footer className="border-t border-gray-800 py-12 text-center text-gray-400 text-sm">
         <p>
           {footer.builtFor}{" "}
           <span className="text-gray-300">{footer.hackathonName}</span>{" "}

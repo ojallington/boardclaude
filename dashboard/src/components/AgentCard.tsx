@@ -96,7 +96,7 @@ function ListSection({
 
   return (
     <div>
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+      <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
         {label}
       </h4>
       <ul className="space-y-1.5">

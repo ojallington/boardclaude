@@ -11,7 +11,7 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 - **Configurable Panels** -- YAML-defined agent panels. Use built-in templates or create your own
 - **Real Validation** -- Agents cite real `tsc`, `jest`, `eslint`, `prettier` output, not opinions
 - **Visual Dashboard** -- Web UI with radar charts, agent cards, score progression, timeline visualization
-- **Panel Builder** -- No-code web interface to design custom evaluation panels
+- **Panel Templates** -- YAML-defined agent panels with 4 built-in templates, or create your own
 
 ## Quick Start
 

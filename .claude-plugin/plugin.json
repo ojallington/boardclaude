@@ -1,6 +1,6 @@
 {
   "name": "boardclaude",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "description": "Assemble a board of AI agents that evaluate your project from multiple expert perspectives. Configure panels of evaluator personas, run parallel audits, and track improvement over iterations. Triggers: board, panel, audit, evaluate, review, score, judge.",
   "author": {
     "name": "Oscar",
