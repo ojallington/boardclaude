@@ -3,6 +3,7 @@ import {
   getGrade,
   getVerdict,
   AGENT_COLORS,
+  type AgentColorKey,
   type Grade,
   type Verdict,
   type AgentEvaluation,
@@ -69,7 +70,7 @@ describe("getVerdict", () => {
 
 describe("AGENT_COLORS", () => {
   it("contains all 7 agents with valid hex colors", () => {
-    const requiredAgents = [
+    const requiredAgents: AgentColorKey[] = [
       "boris",
       "cat",
       "thariq",

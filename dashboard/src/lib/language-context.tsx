@@ -36,12 +36,16 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
  * Detect the best matching supported locale from the browser's language
  * preferences. Falls back to "en" if no match is found.
  */
+function isSupportedLocale(value: string): value is SupportedLocale {
+  return SUPPORTED_LOCALES.includes(value as SupportedLocale);
+}
+
 function detectBrowserLocale(): SupportedLocale {
   if (typeof navigator === "undefined") return "en";
 
   for (const lang of navigator.languages ?? [navigator.language]) {
-    const prefix = lang.slice(0, 2).toLowerCase() as SupportedLocale;
-    if (SUPPORTED_LOCALES.includes(prefix)) {
+    const prefix = lang.slice(0, 2).toLowerCase();
+    if (isSupportedLocale(prefix)) {
       return prefix;
     }
   }
@@ -56,8 +60,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   // On mount: restore from localStorage or detect from browser
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored && SUPPORTED_LOCALES.includes(stored as SupportedLocale)) {
-      setLocaleState(stored as SupportedLocale);
+    if (stored && isSupportedLocale(stored)) {
+      setLocaleState(stored);
     } else {
       setLocaleState(detectBrowserLocale());
     }

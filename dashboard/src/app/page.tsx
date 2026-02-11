@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AGENT_COLORS } from "@/lib/types";
+import { getAgentColor } from "@/lib/types";
 import { messages } from "@/lib/messages";
 
 export default function HomePage() {
@@ -22,19 +22,19 @@ export default function HomePage() {
         <div className="mt-10 flex flex-wrap gap-4 justify-center">
           <a
             href="#install"
-            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition-colors text-lg"
+            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-medium transition-colors text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
           >
             {hero.installCta}
           </a>
           <a
             href="#demo"
-            className="px-8 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg font-medium transition-colors text-lg"
+            className="px-8 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg font-medium transition-colors text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
           >
             {hero.demoCta}
           </a>
           <Link
             href="/results"
-            className="px-8 py-3 text-gray-400 hover:text-gray-200 font-medium transition-colors text-lg"
+            className="px-8 py-3 text-gray-400 hover:text-gray-200 font-medium transition-colors text-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-lg"
           >
             {hero.resultsCta}
           </Link>
@@ -115,7 +115,7 @@ export default function HomePage() {
             >
               <span
                 className="inline-block h-3 w-3 rounded-full shrink-0"
-                style={{ backgroundColor: AGENT_COLORS[agent.key] }}
+                style={{ backgroundColor: getAgentColor(agent.key) }}
               />
               <span className="font-medium">{agent.name}</span>
               <span className="text-sm text-gray-500">{agent.role}</span>
@@ -155,7 +155,7 @@ export default function HomePage() {
           href="https://github.com/ojallington/boardclaude"
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-2 inline-block text-indigo-400 hover:text-indigo-300 transition-colors"
+          className="mt-2 inline-block text-indigo-400 hover:text-indigo-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
         >
           {footer.github}
         </a>

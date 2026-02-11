@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { AGENT_COLORS, type Verdict } from "@/lib/types";
+import { getAgentColor, type Verdict } from "@/lib/types";
 import { VERDICT_BADGE_STYLES } from "@/lib/ui-constants";
+import { messages } from "@/lib/messages";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -24,12 +25,7 @@ export interface AgentCardProps {
 // Helpers
 // ---------------------------------------------------------------------------
 
-const VERDICT_LABELS: Record<Verdict, string> = {
-  STRONG_PASS: "STRONG PASS",
-  PASS: "PASS",
-  MARGINAL: "MARGINAL",
-  FAIL: "FAIL",
-};
+const VERDICT_LABELS = messages.agentCard.verdicts;
 
 function formatCriterionLabel(key: string): string {
   return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -214,7 +210,7 @@ export function AgentCard({
   verdict,
   one_line,
 }: AgentCardProps) {
-  const accentColor = AGENT_COLORS[agent] ?? "#6b7280";
+  const accentColor = getAgentColor(agent);
   const scoreEntries = Object.entries(scores);
   const prefersReducedMotion = useReducedMotion();
 
@@ -272,19 +268,19 @@ export function AgentCard({
             items={strengths}
             icon={<CheckIcon />}
             iconColor="text-emerald-400"
-            label="Strengths"
+            label={messages.agentCard.sections.strengths}
           />
           <ListSection
             items={weaknesses}
             icon={<WarningIcon />}
             iconColor="text-amber-400"
-            label="Weaknesses"
+            label={messages.agentCard.sections.weaknesses}
           />
           <ListSection
             items={critical_issues}
             icon={<AlertIcon />}
             iconColor="text-red-400"
-            label="Critical Issues"
+            label={messages.agentCard.sections.criticalIssues}
           />
         </div>
 
