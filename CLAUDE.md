@@ -30,6 +30,7 @@ Claude Code plugin: configurable AI agent panels for multi-perspective project e
 - Prefer named exports (except `page.tsx`).
 - Imports: absolute from `@/` alias. Group: react, next, external, internal.
 - Test with `npm run typecheck && npm run lint` before committing.
+- Run `npm run format` in `dashboard/` before committing to avoid CI failures. A pre-commit hook enforces this.
 
 ## Agent System
 
