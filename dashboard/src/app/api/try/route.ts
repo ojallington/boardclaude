@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { parseGitHubUrl, fetchRepoContents } from "@/lib/github";
-import { buildUserPrompt } from "@/lib/try-prompt";
+import { buildUserPrompt, buildCrossIterationContext } from "@/lib/try-prompt";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getGrade, getVerdict } from "@/lib/types";
 import type { TryAgentResult, TryPanelResult } from "@/lib/types";
@@ -12,7 +12,7 @@ import {
   getModelId,
   EFFORT_BUDGET_MAP,
 } from "@/lib/try-agents";
-import { saveWebReview } from "@/lib/try-storage";
+import { saveWebReview, getPreviousReviewForRepo } from "@/lib/try-storage";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -115,11 +115,26 @@ export async function POST(request: Request) {
         return;
       }
 
+      // Cross-iteration context: check for previous reviews of the same repo
+      let crossIterationContext = "";
+      try {
+        const priorReview = await getPreviousReviewForRepo(
+          parsed.owner,
+          parsed.repo,
+        );
+        if (priorReview) {
+          crossIterationContext = buildCrossIterationContext(priorReview);
+        }
+      } catch {
+        // Non-critical — proceed without cross-iteration context
+      }
+
       // Phase: reviewing
       await sendSSE(writer, encoder, "status", {
         phase: "reviewing",
         total: WEB_AGENTS.length,
         tier,
+        hasPriorReview: crossIterationContext.length > 0,
       });
 
       const apiKey = body.apiKey ?? process.env.ANTHROPIC_API_KEY;
@@ -132,11 +147,9 @@ export async function POST(request: Request) {
       }
 
       const client = new Anthropic({ apiKey });
-      const userPrompt = buildUserPrompt(
-        repoData.meta,
-        repoData.files,
-        repoData.treeSize,
-      );
+      const userPrompt =
+        buildUserPrompt(repoData.meta, repoData.files, repoData.treeSize) +
+        crossIterationContext;
 
       // Run 6 agents in parallel
       const agentPromises = WEB_AGENTS.map(async (agent, index) => {

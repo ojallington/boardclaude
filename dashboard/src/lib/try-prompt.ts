@@ -50,6 +50,51 @@ Guidelines:
 - Do NOT inflate scores. A typical decent open-source project scores 60-75.
 - If you cannot assess a dimension due to limited files, estimate conservatively and note it.`;
 
+/** Build cross-iteration context from a prior review of the same repo */
+export function buildCrossIterationContext(prior: {
+  timestamp: string;
+  composite: { score: number; grade: string; verdict: string };
+  agents: Array<{
+    agent: string;
+    role: string;
+    composite: number;
+    one_line: string;
+  }>;
+  action_items: Array<{ priority: number; action: string }>;
+}): string {
+  const lines = [
+    "\n## Previous Review Context",
+    `This repository was previously reviewed on ${prior.timestamp}.`,
+    `Previous composite score: ${prior.composite.score} (${prior.composite.grade}, ${prior.composite.verdict})`,
+    "",
+    "### Prior Agent Scores:",
+  ];
+
+  for (const agent of prior.agents) {
+    lines.push(
+      `- ${agent.agent} (${agent.role}): ${agent.composite} — ${agent.one_line}`,
+    );
+  }
+
+  if (prior.action_items.length > 0) {
+    lines.push("", "### Prior Action Items (top 3):");
+    for (const item of prior.action_items.slice(0, 3)) {
+      lines.push(`- P${item.priority}: ${item.action}`);
+    }
+  }
+
+  lines.push(
+    "",
+    "### Your Task:",
+    "Evaluate the repository as it exists NOW. Compare against the prior review where relevant:",
+    "- Note improvements since the last review",
+    "- Flag regressions or unresolved issues from prior action items",
+    "- Your scores should reflect the current state, not the delta",
+  );
+
+  return lines.join("\n");
+}
+
 export function buildUserPrompt(
   repoMeta: {
     owner: string;

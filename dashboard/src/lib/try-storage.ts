@@ -185,6 +185,68 @@ export async function getWebReview(
   return null;
 }
 
+/** Look up the most recent previous review for a given repo */
+export async function getPreviousReviewForRepo(
+  owner: string,
+  name: string,
+  excludeAuditId?: string,
+): Promise<TryPanelResult | null> {
+  const kv = await getRedis();
+  if (kv) {
+    const raw = await kv.lrange(REDIS_INDEX_KEY, 0, 99);
+    for (const entry of raw) {
+      try {
+        const parsed =
+          typeof entry === "string"
+            ? (JSON.parse(entry) as TryResultSummary)
+            : (entry as TryResultSummary);
+        if (
+          parsed.repo.owner === owner &&
+          parsed.repo.name === name &&
+          parsed.audit_id !== excludeAuditId
+        ) {
+          return getWebReview(parsed.audit_id);
+        }
+      } catch {
+        continue;
+      }
+    }
+    return null;
+  }
+
+  // Filesystem fallback
+  const dirs = await resolveReadDirs();
+  for (const dir of dirs) {
+    try {
+      const files = await fs.readdir(dir);
+      const sorted = files
+        .filter((f) => f.endsWith(".json"))
+        .sort()
+        .reverse();
+      for (const file of sorted) {
+        try {
+          const rawFile = await fs.readFile(path.join(dir, file), "utf-8");
+          const parsed = validateTryPanelResult(JSON.parse(rawFile));
+          if (!parsed.valid || !parsed.data) continue;
+          const data = parsed.data;
+          if (
+            data.repo.owner === owner &&
+            data.repo.name === name &&
+            data.audit_id !== excludeAuditId
+          ) {
+            return data;
+          }
+        } catch {
+          continue;
+        }
+      }
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
 /** Generate a shareable URL path for a Try-It-Now result */
 export function getShareableUrl(auditId: string): string {
   return `/results/web/${auditId}`;

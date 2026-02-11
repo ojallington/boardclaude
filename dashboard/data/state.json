@@ -2,9 +2,9 @@
   "project": "boardclaude",
   "panel": "hackathon-judges",
   "branch": "main",
-  "audit_count": 8,
-  "latest_audit": "audit-20260211-174511.json",
-  "latest_score": 83.87,
+  "audit_count": 9,
+  "latest_audit": "audit-20260211-204759.json",
+  "latest_score": 83.51,
   "score_history": [
     {
       "audit_id": "20260210-193000",
@@ -69,6 +69,14 @@
       "grade": "B",
       "verdict": "PASS",
       "timestamp": "2026-02-11T17:45:11.000Z"
+    },
+    {
+      "audit_id": "20260211-204759",
+      "iteration": 8,
+      "score": 83.51,
+      "grade": "B",
+      "verdict": "PASS",
+      "timestamp": "2026-02-11T20:47:59.000Z"
     }
   ],
   "worktrees": [],
