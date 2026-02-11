@@ -584,12 +584,111 @@
       "status": "resolved",
       "resolved_at": "2026-02-11T18:32:00.000Z",
       "resolution": "Added FileDetail type and files_detail optional field to TryPanelResult. Updated FetchedRepo and fetchRepoContents to return file metadata (path, size, category). Created FilesAnalyzedSection expandable component showing config/documentation vs source code files with sizes. Added to PanelSynthesisView and web review detail page. Added validation in validate.ts."
+    },
+    {
+      "id": "ai-056",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 1,
+      "action": "Implement adaptive thinking budgets: map agent effort config to budget_tokens (max=20000, high=10000, medium=5000, low=2000). Replace hardcoded 10000 in route.ts.",
+      "source_agents": ["thariq"],
+      "impact": "Demonstrates genuine Opus 4.6 capability utilization. opus_usage +10 points.",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T19:05:00.000Z",
+      "resolution": "Added ThinkingEffort type and EFFORT_BUDGET_MAP to try-agents.ts. Added effort field to each WebAgentConfig (thariq=max/20K, boris/lydia=high/10K, cat=medium/5K, ado/jason=medium). Updated route.ts to use EFFORT_BUDGET_MAP[agent.effort] instead of hardcoded 10000. max_tokens scales as budgetTokens+6000."
+    },
+    {
+      "id": "ai-057",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 2,
+      "action": "Replace `as unknown as TryPanelResult` in usePanelStream.ts:165 and useReviewStream.ts:132 with runtime validation.",
+      "source_agents": ["lydia"],
+      "impact": "Eliminates the only double-cast in production code. Closes type-safety gap on SSE boundary.",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T19:05:00.000Z",
+      "resolution": "Replaced double-cast in usePanelStream.ts with validateTryPanelResult() call. Created validateTryResult() validator in validate.ts for single-agent TryResult type. Replaced double-cast in useReviewStream.ts with validateTryResult(). Both handle validation failures by transitioning to error phase."
+    },
+    {
+      "id": "ai-058",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 3,
+      "action": "Add lightweight debate round: after all 6 agents complete, identify top 2 divergent agents and send each a follow-up with the other's evaluation. Feed debate to synthesis.",
+      "source_agents": ["thariq"],
+      "impact": "Transforms parallel opinion collection into genuine multi-agent intelligence. emergent_behavior +15.",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T19:05:00.000Z",
+      "resolution": "Added debate phase between agent evaluation and synthesis in route.ts. For BYOK tier with 4+ agents, identifies highest/lowest scoring agents (minimum 5-point delta), sends each a follow-up with the other's assessment via Sonnet. Debate transcript appended to synthesis prompt. Added 'debating' phase to TryPanelStreamPhase type, usePanelStream handler, TryPageClient UI (cyan spinner), and messages.ts."
+    },
+    {
+      "id": "ai-059",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 4,
+      "action": "Implement cross-iteration context in web pipeline: check Redis for previous reviews of same repo, include prior scores and action items in agent prompts.",
+      "source_agents": ["thariq", "cat"],
+      "impact": "Creates compound intelligence where each review builds on the last. emergent_behavior +8.",
+      "effort": "medium",
+      "status": "open",
+      "iterations_open": 0
+    },
+    {
+      "id": "ai-060",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 5,
+      "action": "Add stable identity keys (crypto.randomUUID()) to BuilderAgent in boards/build/page.tsx. Use key={agent.id} instead of key={idx}.",
+      "source_agents": ["lydia"],
+      "impact": "Fixes real bug where removing an agent could cause stale form state in subsequent agents.",
+      "effort": "low",
+      "status": "open",
+      "iterations_open": 0
+    },
+    {
+      "id": "ai-061",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 6,
+      "action": "Add dedicated tests for validateTryPanelResult covering valid data, missing fields, and malformed agent arrays.",
+      "source_agents": ["boris"],
+      "impact": "Closes the last critical untested validation boundary.",
+      "effort": "low",
+      "status": "open",
+      "iterations_open": 0
+    },
+    {
+      "id": "ai-062",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 7,
+      "action": "Add 30-second quickstart GIF to README showing /bc:audit -> results -> /bc:fix -> score improvement.",
+      "source_agents": ["ado"],
+      "impact": "Reduces time-to-comprehension from 3 minutes to 30 seconds.",
+      "effort": "medium",
+      "status": "open",
+      "iterations_open": 0
+    },
+    {
+      "id": "ai-063",
+      "source_audit": "20260211-174511",
+      "iteration": 7,
+      "priority": 8,
+      "action": "Add Open Graph / Twitter Card metadata to /results/web/[auditId] shareable pages with composite score, grade, and repo name.",
+      "source_agents": ["cat"],
+      "impact": "Rich social previews increase click-through on shared audit links.",
+      "effort": "low",
+      "status": "open",
+      "iterations_open": 0
     }
   ],
   "metadata": {
-    "total_items": 45,
-    "open": 0,
-    "resolved": 45,
+    "total_items": 53,
+    "open": 5,
+    "resolved": 48,
     "chronic": 0
   }
 }

@@ -16,6 +16,7 @@ function isActivePhase(phase: TryPanelStreamPhase): boolean {
     phase === "validating" ||
     phase === "fetching" ||
     phase === "reviewing" ||
+    phase === "debating" ||
     phase === "synthesizing"
   );
 }
@@ -87,7 +88,9 @@ export function TryPageClient() {
       )}
 
       {/* Review in progress: progress header + agent cards grid */}
-      {(phase === "reviewing" || phase === "synthesizing") && (
+      {(phase === "reviewing" ||
+        phase === "debating" ||
+        phase === "synthesizing") && (
         <>
           <PanelProgressHeader
             agents={agents}
@@ -100,6 +103,19 @@ export function TryPageClient() {
               <PanelAgentCard key={a.agent} progress={a} />
             ))}
           </div>
+          {phase === "debating" && (
+            <div className="rounded-xl border border-cyan-600/30 bg-gray-900/60 p-4">
+              <div className="flex items-center gap-3">
+                <span className="relative flex h-3 w-3">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-75" />
+                  <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-400" />
+                </span>
+                <span className="text-sm text-cyan-300">
+                  Agents debating divergent opinions...
+                </span>
+              </div>
+            </div>
+          )}
           {phase === "synthesizing" && (
             <div className="rounded-xl border border-indigo-600/30 bg-gray-900/60 p-4">
               <div className="flex items-center gap-3">

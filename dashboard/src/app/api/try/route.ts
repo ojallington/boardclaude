@@ -9,6 +9,7 @@ import {
   SYNTHESIS_PROMPT,
   buildSynthesisUserPrompt,
   getModelId,
+  EFFORT_BUDGET_MAP,
 } from "@/lib/try-agents";
 import { saveWebReview } from "@/lib/try-storage";
 
@@ -146,15 +147,16 @@ export async function POST(request: Request) {
         try {
           const modelId = getModelId(agent.model, tier);
           const useThinking = tier === "byok" && agent.model === "opus";
+          const budgetTokens = EFFORT_BUDGET_MAP[agent.effort];
           const response = await client.messages.create({
             model: modelId,
-            max_tokens: useThinking ? 16000 : 2048,
+            max_tokens: useThinking ? budgetTokens + 6000 : 2048,
             system: agent.systemPrompt,
             messages: [{ role: "user", content: userPrompt }],
             ...(useThinking && {
               thinking: {
                 type: "enabled" as const,
-                budget_tokens: 10000,
+                budget_tokens: budgetTokens,
               },
             }),
           });
@@ -241,6 +243,96 @@ export async function POST(request: Request) {
         return;
       }
 
+      // Phase: debate (lightweight — top 2 divergent agents exchange views)
+      let debateTranscript = "";
+      if (agentResults.length >= 4 && tier === "byok") {
+        await sendSSE(writer, encoder, "status", { phase: "debating" });
+
+        const sorted = [...agentResults].sort(
+          (a, b) => b.composite - a.composite,
+        );
+        const high = sorted[0];
+        const low = sorted[sorted.length - 1];
+
+        if (
+          high &&
+          low &&
+          high.agent !== low.agent &&
+          high.composite - low.composite >= 5
+        ) {
+          const debatePrompt = (self: TryAgentResult, other: TryAgentResult) =>
+            `Another evaluator (${other.agent}, ${other.role}) scored this project ${other.composite}/100 with verdict ${other.verdict}. Their strengths: ${other.strengths.join("; ")}. Their weaknesses: ${other.weaknesses.join("; ")}.\n\nYou scored it ${self.composite}/100. In 2-3 sentences, respond to their assessment — where do you agree, where do you disagree, and why?`;
+
+          const highAgent = WEB_AGENTS.find((a) => a.name === high.agent);
+          const lowAgent = WEB_AGENTS.find((a) => a.name === low.agent);
+
+          if (highAgent && lowAgent) {
+            const debateModel = getModelId("sonnet", tier);
+            const [highReply, lowReply] = await Promise.allSettled([
+              client.messages.create({
+                model: debateModel,
+                max_tokens: 512,
+                system: highAgent.systemPrompt,
+                messages: [
+                  { role: "user", content: userPrompt },
+                  {
+                    role: "assistant",
+                    content: JSON.stringify({
+                      scores: high.scores,
+                      composite: high.composite,
+                      one_line: high.one_line,
+                    }),
+                  },
+                  { role: "user", content: debatePrompt(high, low) },
+                ],
+              }),
+              client.messages.create({
+                model: debateModel,
+                max_tokens: 512,
+                system: lowAgent.systemPrompt,
+                messages: [
+                  { role: "user", content: userPrompt },
+                  {
+                    role: "assistant",
+                    content: JSON.stringify({
+                      scores: low.scores,
+                      composite: low.composite,
+                      one_line: low.one_line,
+                    }),
+                  },
+                  { role: "user", content: debatePrompt(low, high) },
+                ],
+              }),
+            ]);
+
+            const highText =
+              highReply.status === "fulfilled"
+                ? highReply.value.content
+                    .filter((b) => b.type === "text")
+                    .map((b) => b.text)
+                    .join("")
+                : "";
+            const lowText =
+              lowReply.status === "fulfilled"
+                ? lowReply.value.content
+                    .filter((b) => b.type === "text")
+                    .map((b) => b.text)
+                    .join("")
+                : "";
+
+            if (highText || lowText) {
+              debateTranscript = `\n## Debate Round\n\n### ${high.agent} (scored ${high.composite}) responds to ${low.agent} (scored ${low.composite}):\n${highText}\n\n### ${low.agent} (scored ${low.composite}) responds to ${high.agent} (scored ${high.composite}):\n${lowText}\n`;
+
+              await sendSSE(writer, encoder, "debate", {
+                high_agent: high.agent,
+                low_agent: low.agent,
+                delta: high.composite - low.composite,
+              });
+            }
+          }
+        }
+      }
+
       // Phase: synthesizing
       await sendSSE(writer, encoder, "status", { phase: "synthesizing" });
 
@@ -249,24 +341,25 @@ export async function POST(request: Request) {
         weights[a.name] = a.panelWeight;
       }
 
-      const synthesisUserPrompt = buildSynthesisUserPrompt(
-        agentResults.map((r) => ({
-          agent: r.agent,
-          role: r.role,
-          result: {
-            scores: r.scores,
-            composite: r.composite,
-            grade: r.grade,
-            verdict: r.verdict,
-            strengths: r.strengths,
-            weaknesses: r.weaknesses,
-            critical_issues: r.critical_issues,
-            action_items: r.action_items,
-            one_line: r.one_line,
-          },
-        })),
-        weights,
-      );
+      const synthesisUserPrompt =
+        buildSynthesisUserPrompt(
+          agentResults.map((r) => ({
+            agent: r.agent,
+            role: r.role,
+            result: {
+              scores: r.scores,
+              composite: r.composite,
+              grade: r.grade,
+              verdict: r.verdict,
+              strengths: r.strengths,
+              weaknesses: r.weaknesses,
+              critical_issues: r.critical_issues,
+              action_items: r.action_items,
+              one_line: r.one_line,
+            },
+          })),
+          weights,
+        ) + debateTranscript;
 
       const synthesisModelId = getModelId("sonnet", tier);
       const synthesisResponse = await client.messages.create({

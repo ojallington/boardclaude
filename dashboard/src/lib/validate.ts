@@ -7,6 +7,7 @@ import type {
   Timeline,
   ActionItemsLedger,
   TryPanelResult,
+  TryResult,
 } from "./types";
 
 // ─── Type Guard ─────────────────────────────────────────────────────
@@ -749,4 +750,81 @@ export function parseTryPanelResult(
       ],
     };
   }
+}
+
+// ─── TryResult (Single-Agent Review) Validation ──────────────────────
+
+export function validateTryResult(data: unknown): ValidationResult<TryResult> {
+  const raw = data;
+  const errors: ValidationError[] = [];
+
+  if (!isRecord(data)) {
+    return {
+      valid: false,
+      data: null,
+      errors: [{ field: "root", message: "Expected an object" }],
+    };
+  }
+
+  const obj = data;
+
+  if (!isRecord(obj.repo)) {
+    errors.push({ field: "repo", message: "Must be an object" });
+  }
+
+  if (typeof obj.agent !== "string") {
+    errors.push({ field: "agent", message: "Must be a string" });
+  }
+
+  if (!isRecord(obj.scores)) {
+    errors.push({ field: "scores", message: "Must be an object" });
+  }
+
+  if (typeof obj.composite !== "number") {
+    errors.push({ field: "composite", message: "Must be a number" });
+  }
+
+  if (!VALID_GRADES.includes(obj.grade as Grade)) {
+    errors.push({
+      field: "grade",
+      message: `Must be one of: ${VALID_GRADES.join(", ")}`,
+    });
+  }
+
+  if (!VALID_VERDICTS.includes(obj.verdict as Verdict)) {
+    errors.push({
+      field: "verdict",
+      message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
+    });
+  }
+
+  if (!Array.isArray(obj.strengths)) {
+    errors.push({ field: "strengths", message: "Must be an array" });
+  }
+
+  if (!Array.isArray(obj.weaknesses)) {
+    errors.push({ field: "weaknesses", message: "Must be an array" });
+  }
+
+  if (typeof obj.one_line !== "string") {
+    errors.push({ field: "one_line", message: "Must be a string" });
+  }
+
+  if (typeof obj.files_analyzed !== "number") {
+    errors.push({ field: "files_analyzed", message: "Must be a number" });
+  }
+
+  if (typeof obj.timestamp !== "string") {
+    errors.push({ field: "timestamp", message: "Must be a string" });
+  }
+
+  if (typeof obj.model_used !== "string") {
+    errors.push({ field: "model_used", message: "Must be a string" });
+  }
+
+  return {
+    valid: errors.length === 0,
+    data: errors.length === 0 ? (raw as TryResult) : null,
+    errors,
+  };
 }

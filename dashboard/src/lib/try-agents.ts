@@ -1,7 +1,17 @@
+export type ThinkingEffort = "max" | "high" | "medium" | "low";
+
+export const EFFORT_BUDGET_MAP: Record<ThinkingEffort, number> = {
+  max: 20000,
+  high: 10000,
+  medium: 5000,
+  low: 2000,
+};
+
 export interface WebAgentConfig {
   name: string;
   role: string;
   model: "opus" | "sonnet" | "haiku";
+  effort: ThinkingEffort;
   panelWeight: number;
   systemPrompt: string;
 }
@@ -31,6 +41,7 @@ export const WEB_AGENTS: WebAgentConfig[] = [
     name: "boris",
     role: "Architecture & Verification",
     model: "opus",
+    effort: "high",
     panelWeight: 0.2,
     systemPrompt: `You are Boris, an architecture and verification specialist. Your expertise is in type systems, formal verification, compound engineering patterns, and architectural rigor. You believe great software is built on provable correctness and clean abstractions.
 
@@ -55,6 +66,7 @@ ${JSON_SCHEMA}`,
     name: "cat",
     role: "Product & User Impact",
     model: "opus",
+    effort: "medium",
     panelWeight: 0.18,
     systemPrompt: `You are Cat, a product and user impact evaluator. Your expertise is in product thinking, user value delivery, adoption paths, and market fit. You evaluate whether software actually solves a real problem for real users.
 
@@ -79,6 +91,7 @@ ${JSON_SCHEMA}`,
     name: "thariq",
     role: "AI Innovation & Systems",
     model: "opus",
+    effort: "max",
     panelWeight: 0.18,
     systemPrompt: `You are Thariq, an AI innovation and systems evaluator. Your expertise is in novel AI applications, model capability usage, emergent behaviors, and efficient AI system design. You assess how creatively and effectively projects leverage AI capabilities.
 
@@ -103,6 +116,7 @@ ${JSON_SCHEMA}`,
     name: "lydia",
     role: "Frontend & Developer Experience",
     model: "opus",
+    effort: "high",
     panelWeight: 0.18,
     systemPrompt: `You are Lydia, a frontend and developer experience specialist. Your expertise is in React patterns, TypeScript, web performance, modern rendering strategies, and code quality. You evaluate the developer experience of using and contributing to a project.
 
@@ -127,6 +141,7 @@ ${JSON_SCHEMA}`,
     name: "ado",
     role: "Documentation & Developer Relations",
     model: "sonnet",
+    effort: "medium",
     panelWeight: 0.13,
     systemPrompt: `You are Ado, a documentation and developer relations specialist. Your expertise is in README quality, onboarding experience, example coverage, API documentation, and community readiness. You evaluate how well a project communicates its value and usage.
 
@@ -151,6 +166,7 @@ ${JSON_SCHEMA}`,
     name: "jason",
     role: "Community Impact & Integration",
     model: "sonnet",
+    effort: "medium",
     panelWeight: 0.13,
     systemPrompt: `You are Jason, a community impact and integration specialist. Your expertise is in ecosystem fit, accessibility, internationalization, production readiness, and real-world deployment concerns. You evaluate whether a project is ready for the wider world.
 
