@@ -15,11 +15,15 @@ export const metadata: Metadata = {
   description: messages.site.description,
 };
 
-const NAV_LINKS = [
+const NAV_LINKS: ReadonlyArray<{
+  href: string;
+  label: string;
+  highlight?: boolean;
+}> = [
+  { href: "/try", label: messages.nav.tryIt, highlight: true },
   { href: "/results", label: messages.nav.results },
-  { href: "/timeline", label: messages.nav.timeline },
   { href: "/boards", label: messages.nav.boards },
-] as const;
+];
 
 export default function RootLayout({
   children,
@@ -50,7 +54,11 @@ export default function RootLayout({
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                    className={
+                      link.highlight
+                        ? "rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-950/60 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                        : "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                    }
                   >
                     {link.label}
                   </Link>

@@ -18,10 +18,11 @@ export const messages = {
     heading: "BoardClaude",
     tagline: "Your AI Jury",
     description:
-      "Assemble a board of AI agents that evaluate your project from every perspective that matters. Six calibrated judges. One comprehensive verdict.",
+      "Paste a GitHub URL and get an instant AI code review. Or install the CLI for six calibrated judges and one comprehensive verdict.",
     installCta: "Install Plugin",
     demoCta: "Watch Demo",
     resultsCta: "View Results",
+    trySubtext: "or install the CLI for full panel audits",
   },
 
   install: {
@@ -40,9 +41,9 @@ export const messages = {
     steps: [
       {
         number: "01",
-        title: "Configure Your Panel",
+        title: "Paste a GitHub URL",
         description:
-          "Pick a template or build custom. Define agents, weights, and criteria in YAML.",
+          "Try it online with one agent, or install the CLI and configure a full panel of judges.",
       },
       {
         number: "02",
@@ -96,9 +97,9 @@ export const messages = {
           "YAML configs for any evaluation scenario \u2014 code review, startup pitch, hackathon judging.",
       },
       {
-        title: "Dual Runtime",
+        title: "Try Online",
         description:
-          "CLI plugin and web dashboard share the same config format and evaluation engine.",
+          "Paste a GitHub URL for an instant single-agent review. No install needed.",
       },
       {
         title: "Score Progression",
@@ -202,6 +203,7 @@ export const messages = {
   // ─── Navigation ────────────────────────────────────────────────────
   nav: {
     home: "BoardClaude",
+    tryIt: "Try It",
     results: "Results",
     timeline: "Timeline",
     boards: "Boards",
@@ -273,6 +275,52 @@ export const messages = {
     passingThreshold: "Passing Threshold",
     iterationTarget: "Iteration Target",
     backToTemplates: "Templates",
+  },
+
+  // ─── Try It ────────────────────────────────────────────────────────
+  tryIt: {
+    heading: "Try It Now",
+    description:
+      "Paste a public GitHub repo URL and get an instant AI code review. No install required.",
+    inputPlaceholder: "https://github.com/owner/repo",
+    submitButton: "Review My Repo",
+    submitButtonLoading: "Reviewing...",
+    orInstall: "or install the CLI for full panel audits",
+    byokToggle: "Use your own API key",
+    byokPlaceholder: "sk-ant-...",
+    byokHint:
+      "Your key is used for one request over HTTPS. Never stored or logged.",
+    modelSelect: "Model",
+    exampleRepos: "Try an example",
+    rateLimitFree: "3 free reviews per hour",
+    rateLimitByok: "30 reviews per hour with your key",
+    resultCtas: {
+      tryAnother: "Try Another Repo",
+      installCli: "Install CLI for Full Panel",
+      buildBoard: "Build a Custom Board",
+    },
+    errors: {
+      invalidUrl: "Please enter a valid GitHub repository URL.",
+      rateLimited:
+        "Rate limit reached. Try again later or use your own API key.",
+      repoNotFound: "Repository not found. Make sure it exists and is public.",
+      fetchFailed: "Failed to fetch repository contents.",
+      reviewFailed: "Review failed. Please try again.",
+      invalidApiKey: "Invalid API key. Keys should start with sk-ant-.",
+    },
+    phases: {
+      validating: "Validating repository URL...",
+      fetching: "Fetching repository contents...",
+      reviewing: "AI is reviewing your code...",
+      complete: "Review complete!",
+      error: "Something went wrong.",
+    },
+  },
+
+  // ─── Results sub-nav ──────────────────────────────────────────────
+  resultsSubNav: {
+    list: "List",
+    timeline: "Timeline",
   },
 
   // ─── Shared ────────────────────────────────────────────────────────
