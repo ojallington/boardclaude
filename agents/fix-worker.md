@@ -1,7 +1,7 @@
 ---
 name: fix-worker
 description: Focused implementation agent for a single audit action item. Reads context, implements the fix, runs a quick validation, and reports results. Spawned as a teammate by the fix-implementer lead.
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: Read, Write, Edit, Bash, Glob, Grep, SendMessage
 model: sonnet
 ---
 

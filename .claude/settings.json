@@ -23,7 +23,10 @@
       "Edit(*)",
       "Glob(*)",
       "Grep(*)",
-      "Task(*)"
+      "Task(*)",
+      "TeamCreate(*)",
+      "TeamDelete(*)",
+      "SendMessage(*)"
     ],
     "deny": [
       "Read(./.env*)",

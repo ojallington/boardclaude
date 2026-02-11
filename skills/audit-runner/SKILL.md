@@ -1,7 +1,7 @@
 ---
 name: audit-runner
 description: Run multi-agent panel audits on codebases. Use when evaluating code quality, running board reviews, or scoring projects against configurable criteria. Triggers on "audit", "evaluate", "review", "score", "panel", "board".
-allowed-tools: Read, Grep, Glob, Bash, Write, Task
+allowed-tools: Read, Grep, Glob, Bash, Write, Task, TeamCreate, TeamDelete, SendMessage
 context: fork
 agent: general-purpose
 ---
