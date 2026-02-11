@@ -24,6 +24,7 @@ export interface BuilderCriterion {
 }
 
 export interface BuilderAgent {
+  id: string;
   name: string;
   role: string;
   weight: number;
@@ -92,6 +93,7 @@ const AGENT_PALETTE = [
 
 function defaultAgent(): BuilderAgent {
   return {
+    id: crypto.randomUUID(),
     name: "",
     role: "",
     weight: 0.25,
@@ -139,6 +141,7 @@ function templateToState(t: TemplateData): BuilderState {
     description: t.description,
     type: t.type,
     agents: t.agents.map((a) => ({
+      id: crypto.randomUUID(),
       name: a.name,
       role: a.role,
       weight: a.weight,
@@ -471,7 +474,7 @@ export default function BuilderPage() {
         )}
         {state.agents.map((agent, idx) => (
           <AgentFormCard
-            key={idx}
+            key={agent.id}
             agent={agent}
             index={idx}
             canRemove={state.agents.length > 2}

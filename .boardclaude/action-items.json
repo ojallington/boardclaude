@@ -634,7 +634,7 @@
       "impact": "Creates compound intelligence where each review builds on the last. emergent_behavior +8.",
       "effort": "medium",
       "status": "open",
-      "iterations_open": 0
+      "iterations_open": 1
     },
     {
       "id": "ai-060",
@@ -645,8 +645,9 @@
       "source_agents": ["lydia"],
       "impact": "Fixes real bug where removing an agent could cause stale form state in subsequent agents.",
       "effort": "low",
-      "status": "open",
-      "iterations_open": 0
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:30:00.000Z",
+      "resolution": "Added id: string to BuilderAgent, crypto.randomUUID() in defaultAgent() and templateToState(), changed key={idx} to key={agent.id}."
     },
     {
       "id": "ai-061",
@@ -657,8 +658,9 @@
       "source_agents": ["boris"],
       "impact": "Closes the last critical untested validation boundary.",
       "effort": "low",
-      "status": "open",
-      "iterations_open": 0
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:30:00.000Z",
+      "resolution": "Added 12 tests for validateTryPanelResult: valid data, non-object, missing audit_id, invalid panel, invalid score/grade/tier, non-array agents, negative files_analyzed, malformed files_detail, valid files_detail, byok tier. Test count: 94 -> 106."
     },
     {
       "id": "ai-062",
@@ -670,7 +672,7 @@
       "impact": "Reduces time-to-comprehension from 3 minutes to 30 seconds.",
       "effort": "medium",
       "status": "open",
-      "iterations_open": 0
+      "iterations_open": 1
     },
     {
       "id": "ai-063",
@@ -681,14 +683,67 @@
       "source_agents": ["cat"],
       "impact": "Rich social previews increase click-through on shared audit links.",
       "effort": "low",
-      "status": "open",
-      "iterations_open": 0
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:25:00.000Z",
+      "resolution": "Replaced static metadata with dynamic generateMetadata() returning title, description, OpenGraph, and Twitter Card tags based on review data."
+    },
+    {
+      "id": "ai-064",
+      "source_audit": "20260211-204759",
+      "iteration": 8,
+      "priority": 1,
+      "action": "Wire validateAgentEvaluation into route.ts before constructing TryAgentResult to prevent malformed AI output from passing silently into synthesis.",
+      "source_agents": ["boris"],
+      "impact": "Prevents synthesis crashes, improves verification score +3-5 points.",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:15:00.000Z",
+      "resolution": "Called validateAgentEvaluation after parseAgentJSON. Valid data uses typed fields directly; invalid falls back to existing best-effort construction."
+    },
+    {
+      "id": "ai-065",
+      "source_audit": "20260211-204759",
+      "iteration": 8,
+      "priority": 3,
+      "action": "Implement tier-aware file selection: increase BYOK tier to 400KB+ / 40+ files via getTierLimits(tier) in github.ts.",
+      "source_agents": ["thariq"],
+      "impact": "Unlocks 1M context window for paying users. opus_usage +8-12 points.",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:15:00.000Z",
+      "resolution": "Added TierLimits interface and getTierLimits(). Updated selectFiles() with maxSourceFiles param. Updated fetchRepoContents() to accept tier param. BYOK: 400KB/40 files, Free: 80KB/10 files."
+    },
+    {
+      "id": "ai-066",
+      "source_audit": "20260211-204759",
+      "iteration": 8,
+      "priority": 5,
+      "action": "Consolidate usePanelStream 7 useState hooks into useReducer with PanelStreamState/PanelStreamAction discriminated union.",
+      "source_agents": ["lydia"],
+      "impact": "Eliminates intermediate renders, makes SSE state machine explicit. Patterns +2-3.",
+      "effort": "medium",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:30:00.000Z",
+      "resolution": "Replaced 7 useState hooks with useReducer(panelStreamReducer). Defined PanelStreamState interface and 11-variant PanelStreamAction union. All 12 existing tests pass unchanged."
+    },
+    {
+      "id": "ai-067",
+      "source_audit": "20260211-204759",
+      "iteration": 8,
+      "priority": 7,
+      "action": "Create .github/PULL_REQUEST_TEMPLATE.md with checklist (tests, types, prettier, screenshots).",
+      "source_agents": ["ado", "jason"],
+      "impact": "Completes community infrastructure. Consensus across 2 agents.",
+      "effort": "low",
+      "status": "resolved",
+      "resolved_at": "2026-02-11T22:30:00.000Z",
+      "resolution": "Created .github/PULL_REQUEST_TEMPLATE.md with Summary, Changes, Checklist (typecheck, test, format, build, no any, server components, accessibility), Screenshots, and Related Issues sections."
     }
   ],
   "metadata": {
-    "total_items": 53,
-    "open": 5,
-    "resolved": 48,
+    "total_items": 58,
+    "open": 2,
+    "resolved": 56,
     "chronic": 0
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useReducer, useCallback, useRef } from "react";
 import type {
   TryPanelResult,
   TryPanelStreamPhase,
@@ -15,6 +15,118 @@ function initialAgents(): TryAgentProgress[] {
   return AGENT_NAMES.map((name) => ({ agent: name, status: "pending" }));
 }
 
+// ─── State & Actions ─────────────────────────────────────────────────
+
+interface PanelStreamState {
+  phase: TryPanelStreamPhase;
+  result: TryPanelResult | null;
+  error: string | null;
+  repoInfo: { owner: string; name: string } | null;
+  tier: "free" | "byok" | null;
+  agents: TryAgentProgress[];
+  completedCount: number;
+}
+
+type PanelStreamAction =
+  | { type: "RESET" }
+  | { type: "START_REVIEW"; tier: "free" | "byok" }
+  | { type: "STATUS_FETCHING"; repo?: { owner: string; name: string } }
+  | { type: "STATUS_REVIEWING"; tier?: "free" | "byok" }
+  | { type: "STATUS_DEBATING" }
+  | { type: "STATUS_SYNTHESIZING" }
+  | { type: "AGENT_START"; agent: string }
+  | { type: "AGENT_COMPLETE"; agent: string; result: TryAgentResult }
+  | { type: "AGENT_ERROR"; agent: string }
+  | { type: "COMPLETE"; result: TryPanelResult }
+  | { type: "ERROR"; message: string };
+
+function initialState(): PanelStreamState {
+  return {
+    phase: "idle",
+    result: null,
+    error: null,
+    repoInfo: null,
+    tier: null,
+    agents: initialAgents(),
+    completedCount: 0,
+  };
+}
+
+function panelStreamReducer(
+  state: PanelStreamState,
+  action: PanelStreamAction,
+): PanelStreamState {
+  switch (action.type) {
+    case "RESET":
+      return initialState();
+
+    case "START_REVIEW":
+      return {
+        ...initialState(),
+        phase: "validating",
+        tier: action.tier,
+      };
+
+    case "STATUS_FETCHING":
+      return {
+        ...state,
+        phase: "fetching",
+        repoInfo: action.repo ?? state.repoInfo,
+      };
+
+    case "STATUS_REVIEWING":
+      return {
+        ...state,
+        phase: "reviewing",
+        tier: action.tier ?? state.tier,
+      };
+
+    case "STATUS_DEBATING":
+      return { ...state, phase: "debating" };
+
+    case "STATUS_SYNTHESIZING":
+      return { ...state, phase: "synthesizing" };
+
+    case "AGENT_START":
+      return {
+        ...state,
+        agents: state.agents.map((a) =>
+          a.agent === action.agent ? { ...a, status: "running" } : a,
+        ),
+      };
+
+    case "AGENT_COMPLETE":
+      return {
+        ...state,
+        agents: state.agents.map((a) =>
+          a.agent === action.agent
+            ? { ...a, status: "complete", result: action.result }
+            : a,
+        ),
+        completedCount: state.completedCount + 1,
+      };
+
+    case "AGENT_ERROR":
+      return {
+        ...state,
+        agents: state.agents.map((a) =>
+          a.agent === action.agent ? { ...a, status: "error" } : a,
+        ),
+      };
+
+    case "COMPLETE":
+      return { ...state, phase: "complete", result: action.result };
+
+    case "ERROR":
+      return { ...state, phase: "error", error: action.message };
+
+    default:
+      return state;
+  }
+}
+
+// ─── Hook ────────────────────────────────────────────────────────────
+
 interface UsePanelStreamReturn {
   phase: TryPanelStreamPhase;
   result: TryPanelResult | null;
@@ -28,27 +140,16 @@ interface UsePanelStreamReturn {
 }
 
 export function usePanelStream(): UsePanelStreamReturn {
-  const [phase, setPhase] = useState<TryPanelStreamPhase>("idle");
-  const [result, setResult] = useState<TryPanelResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [repoInfo, setRepoInfo] = useState<{
-    owner: string;
-    name: string;
-  } | null>(null);
-  const [tier, setTier] = useState<"free" | "byok" | null>(null);
-  const [agents, setAgents] = useState<TryAgentProgress[]>(initialAgents);
-  const [completedCount, setCompletedCount] = useState(0);
+  const [state, dispatch] = useReducer(
+    panelStreamReducer,
+    undefined,
+    initialState,
+  );
   const abortRef = useRef<AbortController | null>(null);
 
   const reset = useCallback(() => {
     if (abortRef.current) abortRef.current.abort();
-    setPhase("idle");
-    setResult(null);
-    setError(null);
-    setRepoInfo(null);
-    setTier(null);
-    setAgents(initialAgents());
-    setCompletedCount(0);
+    dispatch({ type: "RESET" });
   }, []);
 
   const startReview = useCallback((url: string, apiKey: string | null) => {
@@ -56,13 +157,7 @@ export function usePanelStream(): UsePanelStreamReturn {
     const controller = new AbortController();
     abortRef.current = controller;
 
-    setPhase("validating");
-    setResult(null);
-    setError(null);
-    setRepoInfo(null);
-    setTier(apiKey ? "byok" : "free");
-    setAgents(initialAgents());
-    setCompletedCount(0);
+    dispatch({ type: "START_REVIEW", tier: apiKey ? "byok" : "free" });
 
     (async () => {
       try {
@@ -77,8 +172,10 @@ export function usePanelStream(): UsePanelStreamReturn {
         });
 
         if (!res.ok || !res.body) {
-          setError("Failed to connect to review service.");
-          setPhase("error");
+          dispatch({
+            type: "ERROR",
+            message: "Failed to connect to review service.",
+          });
           return;
         }
 
@@ -111,8 +208,10 @@ export function usePanelStream(): UsePanelStreamReturn {
         }
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return;
-        setError("Review failed. Please try again.");
-        setPhase("error");
+        dispatch({
+          type: "ERROR",
+          message: "Review failed. Please try again.",
+        });
       }
     })();
 
@@ -121,77 +220,62 @@ export function usePanelStream(): UsePanelStreamReturn {
         case "status": {
           const statusPhase = data.phase as string;
           if (statusPhase === "fetching") {
-            setPhase("fetching");
-            if (data.repo) {
-              setRepoInfo(data.repo as { owner: string; name: string });
-            }
+            dispatch({
+              type: "STATUS_FETCHING",
+              repo: data.repo as { owner: string; name: string } | undefined,
+            });
           } else if (statusPhase === "reviewing") {
-            setPhase("reviewing");
-            if (data.tier) setTier(data.tier as "free" | "byok");
+            dispatch({
+              type: "STATUS_REVIEWING",
+              tier: data.tier as "free" | "byok" | undefined,
+            });
           } else if (statusPhase === "debating") {
-            setPhase("debating");
+            dispatch({ type: "STATUS_DEBATING" });
           } else if (statusPhase === "synthesizing") {
-            setPhase("synthesizing");
+            dispatch({ type: "STATUS_SYNTHESIZING" });
           }
           break;
         }
-        case "agent_start": {
-          const name = data.agent as string;
-          setAgents((prev) =>
-            prev.map((a) =>
-              a.agent === name ? { ...a, status: "running" } : a,
-            ),
-          );
+        case "agent_start":
+          dispatch({ type: "AGENT_START", agent: data.agent as string });
           break;
-        }
-        case "agent_complete": {
-          const name = data.agent as string;
-          const agentResult = data.result as TryAgentResult;
-          setAgents((prev) =>
-            prev.map((a) =>
-              a.agent === name
-                ? { ...a, status: "complete", result: agentResult }
-                : a,
-            ),
-          );
-          setCompletedCount((c) => c + 1);
+        case "agent_complete":
+          dispatch({
+            type: "AGENT_COMPLETE",
+            agent: data.agent as string,
+            result: data.result as TryAgentResult,
+          });
           break;
-        }
-        case "agent_error": {
-          const name = data.agent as string;
-          setAgents((prev) =>
-            prev.map((a) => (a.agent === name ? { ...a, status: "error" } : a)),
-          );
+        case "agent_error":
+          dispatch({ type: "AGENT_ERROR", agent: data.agent as string });
           break;
-        }
         case "complete": {
           const validation = validateTryPanelResult(data);
           if (validation.valid && validation.data) {
-            setResult(validation.data);
-            setPhase("complete");
+            dispatch({ type: "COMPLETE", result: validation.data });
           } else {
-            setError("Invalid review data received.");
-            setPhase("error");
+            dispatch({
+              type: "ERROR",
+              message: "Invalid review data received.",
+            });
           }
           break;
         }
-        case "error": {
-          setError(data.message as string);
-          setPhase("error");
+        case "error":
+          dispatch({ type: "ERROR", message: data.message as string });
           break;
-        }
       }
     }
   }, []);
 
   return {
-    phase,
-    result,
-    error,
-    repoInfo,
-    tier,
-    agents,
-    completedCount,
+    phase: state.phase,
+    result: state.result,
+    error: state.error,
+    repoInfo: state.repoInfo,
+    tier: state.tier,
+    agents: state.agents,
+    completedCount: state.completedCount,
     startReview,
     reset,
   };
