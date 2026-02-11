@@ -7,6 +7,7 @@ import type {
   TryAgentProgress,
   TryAgentResult,
 } from "@/lib/types";
+import { validateTryPanelResult } from "@/lib/validate";
 
 const AGENT_NAMES = ["boris", "cat", "thariq", "lydia", "ado", "jason"];
 
@@ -127,6 +128,8 @@ export function usePanelStream(): UsePanelStreamReturn {
           } else if (statusPhase === "reviewing") {
             setPhase("reviewing");
             if (data.tier) setTier(data.tier as "free" | "byok");
+          } else if (statusPhase === "debating") {
+            setPhase("debating");
           } else if (statusPhase === "synthesizing") {
             setPhase("synthesizing");
           }
@@ -162,8 +165,14 @@ export function usePanelStream(): UsePanelStreamReturn {
           break;
         }
         case "complete": {
-          setResult(data as unknown as TryPanelResult);
-          setPhase("complete");
+          const validation = validateTryPanelResult(data);
+          if (validation.valid && validation.data) {
+            setResult(validation.data);
+            setPhase("complete");
+          } else {
+            setError("Invalid review data received.");
+            setPhase("error");
+          }
           break;
         }
         case "error": {

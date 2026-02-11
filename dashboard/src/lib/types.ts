@@ -448,6 +448,7 @@ export type TryPanelStreamPhase =
   | "validating"
   | "fetching"
   | "reviewing"
+  | "debating"
   | "synthesizing"
   | "complete"
   | "error";

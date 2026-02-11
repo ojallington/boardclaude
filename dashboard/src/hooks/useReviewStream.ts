@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import type { TryResult, TryStreamPhase } from "@/lib/types";
+import { validateTryResult } from "@/lib/validate";
 
 interface UseReviewStreamReturn {
   phase: TryStreamPhase;
@@ -129,8 +130,14 @@ export function useReviewStream(): UseReviewStreamReturn {
             break;
           }
           case "complete": {
-            setResult(data as unknown as TryResult);
-            setPhase("complete");
+            const validation = validateTryResult(data);
+            if (validation.valid && validation.data) {
+              setResult(validation.data);
+              setPhase("complete");
+            } else {
+              setError("Invalid review data received.");
+              setPhase("error");
+            }
             break;
           }
           case "error": {
