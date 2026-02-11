@@ -15,10 +15,42 @@ import { DivergentOpinions } from "@/components/DivergentOpinions";
 import { PrioritizedActionItems } from "@/components/PrioritizedActionItems";
 import { FilesAnalyzedSection } from "@/components/FilesAnalyzedSection";
 
-export const metadata: Metadata = {
-  title: "Web Review Detail - BoardClaude",
-  description: "Detailed web panel review with per-agent scores and analysis.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ auditId: string }>;
+}): Promise<Metadata> {
+  const { auditId } = await params;
+  const result = await getWebReview(auditId);
+
+  if (!result) {
+    return {
+      title: "Web Review Detail - BoardClaude",
+      description:
+        "Detailed web panel review with per-agent scores and analysis.",
+    };
+  }
+
+  const { composite, repo, agents } = result;
+  const title = `${repo.owner}/${repo.name} scored ${composite.score}/100 - BoardClaude`;
+  const description = `Grade ${composite.grade} (${composite.verdict}) — reviewed by ${agents.length} AI judges on BoardClaude.`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      siteName: "BoardClaude",
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function WebReviewDetailPage({
   params,

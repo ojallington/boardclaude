@@ -4,6 +4,7 @@ import { buildUserPrompt } from "@/lib/try-prompt";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { getGrade, getVerdict } from "@/lib/types";
 import type { TryAgentResult, TryPanelResult } from "@/lib/types";
+import { validateAgentEvaluation } from "@/lib/validate";
 import {
   WEB_AGENTS,
   SYNTHESIS_PROMPT,
@@ -101,7 +102,7 @@ export async function POST(request: Request) {
 
       let repoData;
       try {
-        repoData = await fetchRepoContents(parsed.owner, parsed.repo);
+        repoData = await fetchRepoContents(parsed.owner, parsed.repo, tier);
       } catch (err) {
         const message =
           err instanceof Error && err.message === "REPO_NOT_FOUND"
@@ -176,38 +177,60 @@ export async function POST(request: Request) {
             return null;
           }
 
-          const scores = (data.scores ?? {}) as Record<string, number>;
-          const composite =
-            typeof data.composite === "number"
-              ? data.composite
-              : Math.round(
-                  Object.values(scores).reduce((a, b) => a + b, 0) /
-                    Math.max(Object.keys(scores).length, 1),
-                );
+          let result: TryAgentResult;
+          const validation = validateAgentEvaluation(data);
 
-          const result: TryAgentResult = {
-            agent: agent.name,
-            role: agent.role,
-            scores,
-            composite,
-            grade: getGrade(composite),
-            verdict: getVerdict(composite),
-            strengths: (data.strengths as [string, string, string]) ?? [
-              "",
-              "",
-              "",
-            ],
-            weaknesses: (data.weaknesses as [string, string, string]) ?? [
-              "",
-              "",
-              "",
-            ],
-            critical_issues: (data.critical_issues as string[]) ?? [],
-            action_items:
-              (data.action_items as TryAgentResult["action_items"]) ?? [],
-            one_line: (data.one_line as string) ?? "",
-            model_used: modelId,
-          };
+          if (validation.valid && validation.data) {
+            const v = validation.data;
+            result = {
+              agent: agent.name,
+              role: agent.role,
+              scores: v.scores,
+              composite: v.composite,
+              grade: getGrade(v.composite),
+              verdict: getVerdict(v.composite),
+              strengths: v.strengths,
+              weaknesses: v.weaknesses,
+              critical_issues: v.critical_issues,
+              action_items: v.action_items,
+              one_line: v.one_line,
+              model_used: modelId,
+            };
+          } else {
+            // Fallback: best-effort construction from non-conforming JSON
+            const scores = (data.scores ?? {}) as Record<string, number>;
+            const composite =
+              typeof data.composite === "number"
+                ? data.composite
+                : Math.round(
+                    Object.values(scores).reduce((a, b) => a + b, 0) /
+                      Math.max(Object.keys(scores).length, 1),
+                  );
+
+            result = {
+              agent: agent.name,
+              role: agent.role,
+              scores,
+              composite,
+              grade: getGrade(composite),
+              verdict: getVerdict(composite),
+              strengths: (data.strengths as [string, string, string]) ?? [
+                "",
+                "",
+                "",
+              ],
+              weaknesses: (data.weaknesses as [string, string, string]) ?? [
+                "",
+                "",
+                "",
+              ],
+              critical_issues: (data.critical_issues as string[]) ?? [],
+              action_items:
+                (data.action_items as TryAgentResult["action_items"]) ?? [],
+              one_line: (data.one_line as string) ?? "",
+              model_used: modelId,
+            };
+          }
 
           await sendSSE(writer, encoder, "agent_complete", {
             agent: agent.name,

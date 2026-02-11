@@ -162,7 +162,10 @@ function scoreFile(e: GitHubTreeEntry): number {
   return s;
 }
 
-function selectFiles(tree: GitHubTreeEntry[]): string[] {
+function selectFiles(
+  tree: GitHubTreeEntry[],
+  maxSourceFiles: number = 10,
+): string[] {
   const selected: string[] = [];
   const paths = new Set(tree.map((e) => e.path));
 
@@ -173,7 +176,7 @@ function selectFiles(tree: GitHubTreeEntry[]): string[] {
     }
   }
 
-  // Source files: pick up to 10, scored by relevance
+  // Source files: pick up to maxSourceFiles, scored by relevance
   const sourceFiles = tree.filter(
     (e) =>
       !EXCLUDED_DIRS.some((d) => e.path.includes(d)) &&
@@ -189,7 +192,7 @@ function selectFiles(tree: GitHubTreeEntry[]): string[] {
 
   let count = 0;
   for (const sf of sourceFiles) {
-    if (count >= 10) break;
+    if (count >= maxSourceFiles) break;
     if (!selected.includes(sf.path)) {
       selected.push(sf.path);
       count++;
@@ -199,9 +202,21 @@ function selectFiles(tree: GitHubTreeEntry[]): string[] {
   return selected;
 }
 
-// ─── Main Fetch Function ────────────────────────────────────────────────────
+// ─── Tier-Aware Limits ──────────────────────────────────────────────────────
 
-const MAX_TOTAL_CHARS = 80000;
+interface TierLimits {
+  maxTotalChars: number;
+  maxSourceFiles: number;
+}
+
+export function getTierLimits(tier: "free" | "byok"): TierLimits {
+  if (tier === "byok") {
+    return { maxTotalChars: 400_000, maxSourceFiles: 40 };
+  }
+  return { maxTotalChars: 80_000, maxSourceFiles: 10 };
+}
+
+// ─── Main Fetch Function ────────────────────────────────────────────────────
 
 export interface FetchedRepo {
   meta: TryRepoMeta;
@@ -214,10 +229,12 @@ export interface FetchedRepo {
 export async function fetchRepoContents(
   owner: string,
   repo: string,
+  tier: "free" | "byok" = "free",
 ): Promise<FetchedRepo> {
+  const limits = getTierLimits(tier);
   const { meta, defaultBranch } = await fetchRepoMeta(owner, repo);
   const tree = await fetchTree(owner, repo, defaultBranch);
-  const filePaths = selectFiles(tree);
+  const filePaths = selectFiles(tree, limits.maxSourceFiles);
   const prioritySet = new Set(PRIORITY_FILES);
 
   const files: Array<{ path: string; content: string }> = [];
@@ -225,7 +242,7 @@ export async function fetchRepoContents(
   let totalChars = 0;
 
   for (const filePath of filePaths) {
-    if (totalChars >= MAX_TOTAL_CHARS) break;
+    if (totalChars >= limits.maxTotalChars) break;
     const content = await fetchFileContent(
       owner,
       repo,
@@ -234,8 +251,8 @@ export async function fetchRepoContents(
     );
     if (content) {
       const trimmed =
-        totalChars + content.length > MAX_TOTAL_CHARS
-          ? content.slice(0, MAX_TOTAL_CHARS - totalChars)
+        totalChars + content.length > limits.maxTotalChars
+          ? content.slice(0, limits.maxTotalChars - totalChars)
           : content;
       files.push({ path: filePath, content: trimmed });
       filesDetail.push({
