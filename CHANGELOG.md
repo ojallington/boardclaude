@@ -4,13 +4,37 @@ All notable changes to BoardClaude will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.5.0] - 2026-02-11
+
+### Added
+
+- Integration tests for audit data loaders and validation pipeline
+- SECURITY.md with vulnerability reporting guidelines
+- Prettier pre-commit hook and format scripts to prevent CI failures
+
+### Changed
+
+- Plugin version set to 0.5.0 (was incorrectly 1.0.0)
+- README "Panel Builder" claim replaced with accurate "Panel Templates" description
+- CHANGELOG updated with complete version history
+
+### Removed
+
+- Unused LanguageProvider context and tests (dead i18n infrastructure flagged by 5/6 agents)
+
+### Fixed
+
+- 5 iteration-5 audit action items: type safety improvements, accessibility attributes, i18n string centralization
+- 7 files reformatted with prettier to fix CI check failures
+- `text-gray-500` contrast ratio on dark backgrounds (WCAG AA compliance, Lighthouse a11y)
+
+## [0.4.0] - 2026-02-11
 
 ### Added
 
 - Locale-aware date formatting (replaces hardcoded en-US)
 - ScoreProgression component tests
-- CHANGELOG.md
+- Iteration 5 audit data (90.02 composite, first all-STRONG_PASS)
 
 ### Changed
 

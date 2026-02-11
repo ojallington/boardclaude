@@ -59,7 +59,7 @@ function ScoreTooltip({ active, payload }: CustomTooltipProps) {
         <span className="rounded bg-gray-800 px-2 py-0.5 text-xs font-semibold text-gray-200">
           {grade}
         </span>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-gray-400">
           {formatTimestamp(timestamp)}
         </span>
       </div>
@@ -152,7 +152,7 @@ export function ScoreProgression({
         role="img"
         aria-label="Score progression chart with no data"
       >
-        <p className="text-sm text-gray-500">No audit history available</p>
+        <p className="text-sm text-gray-400">No audit history available</p>
       </div>
     );
   }

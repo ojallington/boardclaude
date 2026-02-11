@@ -32,12 +32,12 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
         {/* Left: audit info */}
         <div className="min-w-0 flex-1 space-y-1">
           <p className="truncate font-mono text-sm text-gray-400">{audit_id}</p>
-          <p className="text-xs text-gray-500">{formatTimestamp(timestamp)}</p>
+          <p className="text-xs text-gray-400">{formatTimestamp(timestamp)}</p>
           <div className="flex items-center gap-2 pt-1">
             <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
               {panel}
             </span>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-400">
               {messages.results.iterationLabel} {iteration}
             </span>
           </div>
@@ -95,7 +95,7 @@ export default async function ResultsPage() {
         <nav className="mb-4">
           <Link
             href="/"
-            className="text-sm text-gray-500 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
+            className="text-sm text-gray-400 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
           >
             {messages.results.backHome}
           </Link>
@@ -113,7 +113,7 @@ export default async function ResultsPage() {
       {/* Audit list */}
       {sorted.length === 0 ? (
         <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-800">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-400">
             No audits yet. Run your first audit with{" "}
             <code className="rounded bg-gray-800 px-1.5 py-0.5 text-xs">
               {messages.results.emptyCommand}

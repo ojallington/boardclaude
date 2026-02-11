@@ -86,7 +86,7 @@ export default async function AuditDetailPage({
       <nav className="mb-8">
         <Link
           href="/results"
-          className="text-sm text-gray-500 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
+          className="text-sm text-gray-400 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
         >
           &larr; Back to Results
         </Link>
@@ -98,7 +98,7 @@ export default async function AuditDetailPage({
           <h1 className="text-3xl font-bold tracking-tight text-gray-100">
             Audit #{audit.iteration}
           </h1>
-          <p className="font-mono text-sm text-gray-500">{audit.audit_id}</p>
+          <p className="font-mono text-sm text-gray-400">{audit.audit_id}</p>
           <p className="text-sm text-gray-400">
             {audit.panel} &middot; {formatTimestamp(audit.timestamp)}
           </p>
@@ -207,7 +207,7 @@ export default async function AuditDetailPage({
                 <h3 className="mb-3 font-medium text-gray-200">{d.topic}</h3>
                 <div className="mb-3 grid gap-3 md:grid-cols-2">
                   <div className="rounded-md bg-gray-900/60 p-3">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">
                       {d.agent_a.agent}
                     </p>
                     <p className="text-sm text-gray-300">
@@ -215,7 +215,7 @@ export default async function AuditDetailPage({
                     </p>
                   </div>
                   <div className="rounded-md bg-gray-900/60 p-3">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-400">
                       {d.agent_b.agent}
                     </p>
                     <p className="text-sm text-gray-300">
@@ -270,10 +270,10 @@ export default async function AuditDetailPage({
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-gray-200">{item.action}</p>
                   <div className="mt-1 flex items-center gap-3">
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       from {item.source_agents?.join(", ") ?? "unknown"}
                     </span>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-400">
                       effort: {item.effort}
                     </span>
                   </div>
