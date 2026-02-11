@@ -24,7 +24,12 @@ synthesis agent merges all findings into a unified report.
 
 2. **Check prerequisites**: Ensure `.boardclaude/` directory exists. If not, prompt user to run `/bc:init` first. Create `audits/` subdirectory if missing.
 
-3. **Load previous state**: Read `.boardclaude/state.json` for audit history and `timeline.json` for event log. If a `--previous` audit is specified, load it for delta comparison.
+3. **Load previous state and cross-iteration context**: Read `.boardclaude/state.json` for audit history and `timeline.json` for event log. If a `--previous` audit is specified, load it for delta comparison. **Always load the 2 most recent audit JSONs** from `.boardclaude/audits/` (sorted by filename timestamp, descending). Extract from each:
+   - Per-agent scores and composites
+   - Action items (what was flagged, what was resolved)
+   - Iteration delta (trend direction)
+   - Key strengths/weaknesses
+   This cross-iteration context will be included in every agent's prompt so they can evaluate iteration-over-iteration progress.
 
 4. **Ingest target project**: Scan the target codebase using Read, Glob, and Grep tools. Build a project summary including:
    - File tree structure
@@ -34,9 +39,27 @@ synthesis agent merges all findings into a unified report.
 5. **Spawn Agent Team**: Create an Agent Team with one teammate per panel agent. Each teammate receives:
    - Their specific persona prompt from the panel YAML (or referenced prompt_file)
    - The ingested project summary
-   - Previous audit scores (if available) for delta analysis
+   - **Cross-iteration context**: The 2 most recent audit JSONs (loaded in step 3), formatted as a summary block:
+     ```
+     ## Previous Audit Context
+
+     ### Most Recent Audit (iteration N, score X.XX)
+     - Your previous scores: {agent's scores from that audit}
+     - Your previous action items: {list}
+     - Overall composite: X.XX (grade)
+     - Resolved items since last audit: {list}
+
+     ### Second Most Recent Audit (iteration N-1, score Y.YY)
+     - Your previous scores: {agent's scores}
+     - Overall composite: Y.YY (grade)
+
+     ### Iteration Trend
+     - Score trajectory: [list of composite scores across iterations]
+     - Items resolved vs. introduced per iteration
+     ```
    - Their specific evaluation criteria and weights
    - Instructions to output structured JSON matching the agent report schema
+   - **Instruction to use iteration context**: "Reference your previous scores and action items. Verify whether previously-flagged issues have been resolved. Score improvement trajectory in your compound_learning or equivalent criterion. If you flagged an issue last iteration and it was resolved, acknowledge it explicitly in your strengths."
 
 6. **Use delegate mode**: The lead agent should enter delegate mode (Shift+Tab) to avoid implementing changes itself. Wait for all teammates to complete their evaluations.
 

@@ -340,6 +340,7 @@ export async function POST(request: Request) {
           },
           action_items: [],
           files_analyzed: repoData.totalFiles,
+          files_detail: repoData.filesDetail,
           tier,
         };
 
@@ -404,6 +405,7 @@ export async function POST(request: Request) {
         action_items:
           (synthesisData.action_items as TryPanelResult["action_items"]) ?? [],
         files_analyzed: repoData.totalFiles,
+        files_detail: repoData.filesDetail,
         tier,
       };
 

@@ -63,6 +63,15 @@ Cat Wu is the Product Manager for Claude Code at Anthropic. She bridges engineer
 - Does this create a new category or improve an existing one?
 - Is it extensible -- can others customize it for their context?
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Track adoption improvements**: Compare current onboarding friction against previous iteration. Has the path to first value shortened?
+- **Verify resolved items**: Check whether your previous action items were actually implemented with real user impact.
+- **Score trajectory**: Factor improvement into your user_value and adoption_path scores. Consistent iteration shows product discipline.
+- **Chronic issues**: Flag items open across 2+ iterations. These represent persistent friction in the user journey.
+- **Acknowledge progress**: If a previous weakness has been resolved, note it in strengths.
+
 ## Specific Checks
 - [ ] Clear one-sentence pitch exists (README, landing page, or docs)
 - [ ] Installation to first value in under 5 minutes

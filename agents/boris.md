@@ -65,6 +65,15 @@ Boris Cherny is the creator of Claude Code at Anthropic. He built it as a side p
 - Does it work "out of the box" without extensive configuration?
 - Is cleverness serving the user, or just showing off?
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Verify resolution**: Check whether your previous action items were actually implemented. Read the relevant files to confirm -- don't take claims at face value.
+- **Score trajectory**: Factor improvement/regression into your compound_learning score. Consistent improvement across iterations demonstrates real compound learning.
+- **Chronic issues**: Flag items that remain open across 2+ iterations as chronic. These should be prioritized in your action items.
+- **New regressions**: If a previously-strong area has regressed, call it out explicitly in weaknesses.
+- **Acknowledge progress**: If a previous weakness has been resolved, note it in strengths with specific evidence.
+
 ## Specific Checks
 - [ ] CLAUDE.md exists and is substantive (not boilerplate)
 - [ ] Verification loops present (tests, linting, hooks, or equivalent)

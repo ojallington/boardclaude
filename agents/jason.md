@@ -62,6 +62,15 @@ Jason brings a community-first, globally-minded perspective to the Claude team a
 - Are keyboard navigation and screen reader basics covered?
 - Is there consideration for low-bandwidth or older devices?
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Track integration trajectory**: Has the project become easier to integrate and deploy across iterations?
+- **Verify resolved items**: Confirm your previous action items were implemented. Check i18n, configuration, and error handling changes.
+- **Community readiness**: Compare current community-readiness state against previous iteration. Are contribution barriers being removed?
+- **Chronic issues**: Flag items open across 2+ iterations. Persistent integration or i18n gaps limit global adoption.
+- **Acknowledge progress**: Note previously-flagged issues that are now resolved.
+
 ## Specific Checks
 - [ ] One-sentence project description is clear to non-developers
 - [ ] README has a compelling narrative arc (problem → solution → impact)

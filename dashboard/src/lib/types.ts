@@ -423,6 +423,12 @@ export interface TryAgentResult {
   model_used: string;
 }
 
+export interface FileDetail {
+  path: string;
+  size: number;
+  category: "priority" | "source";
+}
+
 export interface TryPanelResult {
   audit_id: string;
   repo: TryRepoMeta;
@@ -433,6 +439,7 @@ export interface TryPanelResult {
   highlights: Highlights;
   action_items: SynthesisActionItem[];
   files_analyzed: number;
+  files_detail?: FileDetail[];
   tier: "free" | "byok";
 }
 

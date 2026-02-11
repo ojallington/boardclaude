@@ -35,6 +35,16 @@ export const AGENT_ROLES: Record<string, string> = {
   jason: "Community Impact & Integration",
 };
 
+// ─── Effort Styles ──────────────────────────────────────────────────────────
+// Shared across PanelSynthesisView and web review detail page
+
+export const EFFORT_STYLES: Record<string, string> = {
+  low: "bg-emerald-900/40 text-emerald-400 border-emerald-800",
+  medium: "bg-blue-900/40 text-blue-400 border-blue-800",
+  high: "bg-amber-900/40 text-amber-400 border-amber-800",
+  max: "bg-red-900/40 text-red-400 border-red-800",
+};
+
 // ─── Date Formatting ────────────────────────────────────────────────────────
 
 export function formatTimestamp(iso: string): string {

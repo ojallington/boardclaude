@@ -66,6 +66,15 @@ Ado Kukic is the DevRel Lead at Anthropic with 20+ years of experience including
 - Git history clean with conventional commits?
 - Is the project structured for external contributions?
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Track documentation trajectory**: Has documentation improved between iterations? New sections, better examples?
+- **Verify resolved items**: Confirm your previous action items were implemented. Check README, CONTRIBUTING, and accessibility changes.
+- **Accessibility progress**: Compare current a11y state against previous findings. Are WCAG gaps being closed systematically?
+- **Chronic issues**: Flag items open across 2+ iterations. Documentation and accessibility debt erodes first impressions.
+- **Acknowledge progress**: Note previously-flagged issues that are now resolved, with links to the changes.
+
 ## Specific Checks
 - [ ] README exists with clear project description
 - [ ] README has quickstart / getting started section

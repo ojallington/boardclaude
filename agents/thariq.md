@@ -61,6 +61,15 @@ Thariq Shihipar comes from a background at Google (Maps, Search) and brings deep
 - Could the same result be achieved with fewer tokens?
 - Is the model routing strategy documented and justified?
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Track innovation trajectory**: Has AI usage deepened between iterations? New capabilities added?
+- **Verify resolved items**: Check whether your previous action items were implemented. Did they actually improve AI capability usage?
+- **Emergent learning**: Cross-iteration improvement itself is evidence of emergent behavior if the system uses its own audit results to improve.
+- **Chronic issues**: Flag items open across 2+ iterations, especially AI capability gaps that persist.
+- **Acknowledge progress**: Note previously-flagged issues that are now resolved, with evidence.
+
 ## Specific Checks
 - [ ] Agent Teams used for genuine multi-agent coordination (not just parallelism)
 - [ ] Extended thinking / effort levels calibrated per task type
