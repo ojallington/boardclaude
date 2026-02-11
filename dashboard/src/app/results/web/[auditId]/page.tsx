@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getWebReview } from "@/lib/try-storage";
 import { getAgentColor } from "@/lib/types";
-import type { Verdict, TryAgentResult, SynthesisActionItem } from "@/lib/types";
+import type { Verdict, TryAgentResult } from "@/lib/types";
 import {
   VERDICT_BADGE_STYLES,
   GRADE_STYLES,
@@ -11,17 +11,13 @@ import {
   formatTimestamp,
 } from "@/lib/ui-constants";
 import { RadarChart } from "@/components/RadarChart";
+import { DivergentOpinions } from "@/components/DivergentOpinions";
+import { PrioritizedActionItems } from "@/components/PrioritizedActionItems";
+import { FilesAnalyzedSection } from "@/components/FilesAnalyzedSection";
 
 export const metadata: Metadata = {
   title: "Web Review Detail - BoardClaude",
   description: "Detailed web panel review with per-agent scores and analysis.",
-};
-
-const EFFORT_STYLES: Record<string, string> = {
-  low: "bg-emerald-900/40 text-emerald-400 border-emerald-800",
-  medium: "bg-blue-900/40 text-blue-400 border-blue-800",
-  high: "bg-amber-900/40 text-amber-400 border-amber-800",
-  max: "bg-red-900/40 text-red-400 border-red-800",
 };
 
 export default async function WebReviewDetailPage({
@@ -100,6 +96,12 @@ export default async function WebReviewDetailPage({
           <RadarChart data={composite.radar} size={350} />
         </div>
 
+        {/* Files Analyzed */}
+        <FilesAnalyzedSection
+          filesAnalyzed={result.files_analyzed}
+          filesDetail={result.files_detail}
+        />
+
         {/* Highlights */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-5">
@@ -137,98 +139,13 @@ export default async function WebReviewDetailPage({
         </div>
 
         {/* Divergent Opinions */}
-        {highlights.divergent_opinions.length > 0 && (
-          <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-5">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-indigo-400 mb-4">
-              Divergent Opinions
-            </h2>
-            <div className="space-y-5">
-              {highlights.divergent_opinions.map((d, i) => (
-                <div key={i} className="space-y-2">
-                  <p className="text-sm font-medium text-gray-200">{d.topic}</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-gray-800 bg-gray-900/40 p-3">
-                      <p
-                        className="text-xs font-medium capitalize mb-1"
-                        style={{ color: getAgentColor(d.agent_a.agent) }}
-                      >
-                        {d.agent_a.agent}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {d.agent_a.position}
-                      </p>
-                    </div>
-                    <div className="rounded-lg border border-gray-800 bg-gray-900/40 p-3">
-                      <p
-                        className="text-xs font-medium capitalize mb-1"
-                        style={{ color: getAgentColor(d.agent_b.agent) }}
-                      >
-                        {d.agent_b.agent}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {d.agent_b.position}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-xs italic text-gray-500">{d.analysis}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <DivergentOpinions
+          opinions={highlights.divergent_opinions}
+          className="p-5"
+        />
 
         {/* Action Items */}
-        {action_items.length > 0 && (
-          <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-5">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
-              Prioritized Action Items
-            </h2>
-            <div className="space-y-3">
-              {action_items.map((item: SynthesisActionItem, i: number) => {
-                const effortStyle =
-                  EFFORT_STYLES[item.effort] ??
-                  "bg-gray-800 text-gray-400 border-gray-700";
-
-                return (
-                  <div key={i} className="flex items-start gap-3 text-sm">
-                    <span className="mt-0.5 shrink-0 font-mono text-xs text-indigo-400 w-5 text-right">
-                      {item.priority}.
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-gray-200">{item.action}</p>
-                      {item.impact && (
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {item.impact}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1">
-                        {item.source_agents?.length > 0 && (
-                          <div className="flex items-center gap-1">
-                            {item.source_agents.map((a) => (
-                              <span
-                                key={a}
-                                className="inline-flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold capitalize text-white"
-                                style={{ backgroundColor: getAgentColor(a) }}
-                                title={a}
-                              >
-                                {a[0]}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-                        <span
-                          className={`rounded-md border px-1.5 py-0.5 text-[10px] font-medium ${effortStyle}`}
-                        >
-                          {item.effort}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <PrioritizedActionItems items={action_items} className="p-5" />
 
         {/* Per-Agent Evaluations */}
         <div>

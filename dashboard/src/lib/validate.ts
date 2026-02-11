@@ -674,6 +674,45 @@ export function validateTryPanelResult(
     });
   }
 
+  // files_detail (optional)
+  if (obj.files_detail !== undefined) {
+    if (!Array.isArray(obj.files_detail)) {
+      errors.push({
+        field: "files_detail",
+        message: "Must be an array if present",
+      });
+    } else {
+      for (let i = 0; i < obj.files_detail.length; i++) {
+        const fd = obj.files_detail[i];
+        if (!isRecord(fd)) {
+          errors.push({
+            field: `files_detail[${i}]`,
+            message: "Must be an object",
+          });
+        } else {
+          if (typeof fd.path !== "string") {
+            errors.push({
+              field: `files_detail[${i}].path`,
+              message: "Must be a string",
+            });
+          }
+          if (typeof fd.size !== "number") {
+            errors.push({
+              field: `files_detail[${i}].size`,
+              message: "Must be a number",
+            });
+          }
+          if (fd.category !== "priority" && fd.category !== "source") {
+            errors.push({
+              field: `files_detail[${i}].category`,
+              message: 'Must be "priority" or "source"',
+            });
+          }
+        }
+      }
+    }
+  }
+
   // Tier
   if (
     typeof obj.tier !== "string" ||

@@ -1,4 +1,4 @@
-import type { TryRepoMeta } from "./types";
+import type { TryRepoMeta, FileDetail } from "./types";
 
 // ─── URL Parsing ────────────────────────────────────────────────────────────
 
@@ -206,6 +206,7 @@ const MAX_TOTAL_CHARS = 80000;
 export interface FetchedRepo {
   meta: TryRepoMeta;
   files: Array<{ path: string; content: string }>;
+  filesDetail: FileDetail[];
   totalFiles: number;
   treeSize: number;
 }
@@ -217,8 +218,10 @@ export async function fetchRepoContents(
   const { meta, defaultBranch } = await fetchRepoMeta(owner, repo);
   const tree = await fetchTree(owner, repo, defaultBranch);
   const filePaths = selectFiles(tree);
+  const prioritySet = new Set(PRIORITY_FILES);
 
   const files: Array<{ path: string; content: string }> = [];
+  const filesDetail: FileDetail[] = [];
   let totalChars = 0;
 
   for (const filePath of filePaths) {
@@ -235,6 +238,11 @@ export async function fetchRepoContents(
           ? content.slice(0, MAX_TOTAL_CHARS - totalChars)
           : content;
       files.push({ path: filePath, content: trimmed });
+      filesDetail.push({
+        path: filePath,
+        size: trimmed.length,
+        category: prioritySet.has(filePath) ? "priority" : "source",
+      });
       totalChars += trimmed.length;
     }
   }
@@ -242,6 +250,7 @@ export async function fetchRepoContents(
   return {
     meta,
     files,
+    filesDetail,
     totalFiles: files.length,
     treeSize: tree.length,
   };

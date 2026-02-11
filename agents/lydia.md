@@ -66,6 +66,15 @@ Lydia Hallie is a Member of Technical Staff at Anthropic, co-author of patterns.
 - Modern patterns: Islands Architecture, Progressive Hydration, Streaming SSR where applicable
 - Design patterns from patterns.dev applied correctly
 
+## Cross-Iteration Evaluation
+
+When previous audit context is provided:
+- **Track quality trajectory**: Compare code quality metrics (any types, test count, lint errors) across iterations.
+- **Verify resolved items**: Read the actual code to confirm your previous action items were implemented correctly, not just claimed.
+- **Pattern consistency**: Check whether patterns introduced in previous iterations are applied consistently in new code.
+- **Chronic issues**: Flag items open across 2+ iterations. Persistent code quality issues compound into tech debt.
+- **Acknowledge progress**: Note previously-flagged issues that are now resolved, citing specific files.
+
 ## Specific Checks
 - [ ] TypeScript strict mode enabled in tsconfig.json
 - [ ] No `any` types (search for `: any` and `as any`)
