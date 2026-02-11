@@ -73,7 +73,7 @@ export async function POST(request: Request) {
         request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
         "unknown";
       const tier = body.apiKey ? "byok" : "free";
-      const rateCheck = checkRateLimit(ip, tier);
+      const rateCheck = await checkRateLimit(ip, tier);
       if (!rateCheck.allowed) {
         await sendSSE(writer, encoder, "error", {
           code: "RATE_LIMITED",
@@ -145,11 +145,18 @@ export async function POST(request: Request) {
 
         try {
           const modelId = getModelId(agent.model, tier);
+          const useThinking = tier === "byok" && agent.model === "opus";
           const response = await client.messages.create({
             model: modelId,
-            max_tokens: 2048,
+            max_tokens: useThinking ? 16000 : 2048,
             system: agent.systemPrompt,
             messages: [{ role: "user", content: userPrompt }],
+            ...(useThinking && {
+              thinking: {
+                type: "enabled" as const,
+                budget_tokens: 10000,
+              },
+            }),
           });
 
           const text = response.content

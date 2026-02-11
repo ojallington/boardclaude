@@ -213,7 +213,7 @@ beforeEach(() => {
   (fetchRepoContents as ReturnType<typeof vi.fn>).mockResolvedValue(
     MOCK_REPO_DATA,
   );
-  (checkRateLimit as ReturnType<typeof vi.fn>).mockReturnValue({
+  (checkRateLimit as ReturnType<typeof vi.fn>).mockResolvedValue({
     allowed: true,
     remaining: 2,
     resetAt: Date.now() + 3600000,
@@ -252,7 +252,7 @@ describe("POST /api/try", () => {
   });
 
   it("returns error SSE when rate limited", async () => {
-    (checkRateLimit as ReturnType<typeof vi.fn>).mockReturnValue({
+    (checkRateLimit as ReturnType<typeof vi.fn>).mockResolvedValue({
       allowed: false,
       remaining: 0,
       resetAt: Date.now() + 3600000,
