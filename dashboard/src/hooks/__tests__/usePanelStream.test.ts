@@ -213,7 +213,9 @@ describe("usePanelStream", () => {
 
     await waitFor(() => {
       expect(result.current.phase).toBe("error");
-      expect(result.current.error).toBe("Rate limit reached.");
+      expect(result.current.error).toBe(
+        "Rate limit reached. Try again later or use your own API key.",
+      );
     });
   });
 

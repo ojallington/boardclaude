@@ -143,7 +143,7 @@ export default async function WebReviewDetailPage({
             <ul className="space-y-2">
               {highlights.top_strengths.filter(Boolean).map((s, i) => (
                 <li
-                  key={i}
+                  key={`item-${s ?? i}`}
                   className="flex items-start gap-2 text-sm text-gray-300"
                 >
                   <span className="mt-0.5 shrink-0 text-emerald-500">+</span>
@@ -159,7 +159,7 @@ export default async function WebReviewDetailPage({
             <ul className="space-y-2">
               {highlights.top_weaknesses.filter(Boolean).map((w, i) => (
                 <li
-                  key={i}
+                  key={`item-${w ?? i}`}
                   className="flex items-start gap-2 text-sm text-gray-300"
                 >
                   <span className="mt-0.5 shrink-0 text-amber-500">-</span>
@@ -238,7 +238,7 @@ export default async function WebReviewDetailPage({
                       <ul className="space-y-0.5">
                         {agent.strengths.filter(Boolean).map((s, i) => (
                           <li
-                            key={i}
+                            key={`item-${s ?? i}`}
                             className="text-xs text-gray-300 flex items-start gap-1"
                           >
                             <span className="text-emerald-500 shrink-0">+</span>
@@ -254,7 +254,7 @@ export default async function WebReviewDetailPage({
                       <ul className="space-y-0.5">
                         {agent.weaknesses.filter(Boolean).map((w, i) => (
                           <li
-                            key={i}
+                            key={`item-${w ?? i}`}
                             className="text-xs text-gray-300 flex items-start gap-1"
                           >
                             <span className="text-amber-500 shrink-0">-</span>

@@ -327,14 +327,46 @@ export async function invokeAgents(
           model_used: modelId,
         };
       } else {
-        const scores = (data.scores ?? {}) as Record<string, number>;
+        const rawScores =
+          typeof data.scores === "object" &&
+          data.scores !== null &&
+          !Array.isArray(data.scores)
+            ? (data.scores as Record<string, unknown>)
+            : {};
+        const scores: Record<string, number> = {};
+        for (const [k, v] of Object.entries(rawScores)) {
+          if (typeof v === "number" && isFinite(v)) scores[k] = v;
+        }
+        const scoreValues = Object.values(scores);
         const composite =
-          typeof data.composite === "number"
+          typeof data.composite === "number" && isFinite(data.composite)
             ? data.composite
-            : Math.round(
-                Object.values(scores).reduce((a, b) => a + b, 0) /
-                  Math.max(Object.keys(scores).length, 1),
-              );
+            : scoreValues.length > 0
+              ? Math.round(
+                  scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length,
+                )
+              : 50;
+
+        const extractStringArray = (val: unknown, len: number): string[] => {
+          if (!Array.isArray(val)) return Array.from({ length: len }, () => "");
+          return val.map((v) => (typeof v === "string" ? v : "")).slice(0, len);
+        };
+
+        const extractActionItems = (
+          val: unknown,
+        ): TryAgentResult["action_items"] => {
+          if (!Array.isArray(val)) return [];
+          return val
+            .filter(
+              (item): item is Record<string, unknown> =>
+                typeof item === "object" && item !== null,
+            )
+            .map((item) => ({
+              priority: typeof item.priority === "number" ? item.priority : 99,
+              action: typeof item.action === "string" ? item.action : "",
+              impact: typeof item.impact === "string" ? item.impact : "",
+            }));
+        };
 
         result = {
           agent: agent.name,
@@ -343,20 +375,24 @@ export async function invokeAgents(
           composite,
           grade: getGrade(composite),
           verdict: getVerdict(composite),
-          strengths: (data.strengths as [string, string, string]) ?? [
-            "",
-            "",
-            "",
+          strengths: extractStringArray(data.strengths, 3) as [
+            string,
+            string,
+            string,
           ],
-          weaknesses: (data.weaknesses as [string, string, string]) ?? [
-            "",
-            "",
-            "",
+          weaknesses: extractStringArray(data.weaknesses, 3) as [
+            string,
+            string,
+            string,
           ],
-          critical_issues: (data.critical_issues as string[]) ?? [],
-          action_items:
-            (data.action_items as TryAgentResult["action_items"]) ?? [],
-          one_line: (data.one_line as string) ?? "",
+          critical_issues: extractStringArray(
+            data.critical_issues,
+            Array.isArray(data.critical_issues)
+              ? data.critical_issues.length
+              : 0,
+          ),
+          action_items: extractActionItems(data.action_items),
+          one_line: typeof data.one_line === "string" ? data.one_line : "",
           model_used: modelId,
         };
       }

@@ -13,6 +13,12 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 - **Visual Dashboard** -- Web UI with radar charts, agent cards, score progression, timeline visualization
 - **Panel Templates** -- YAML-defined agent panels with 4 built-in templates, or create your own
 
+## Prerequisites
+
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) CLI installed and authenticated
+- Node.js 20+ (for the web dashboard)
+- Git
+
 ## Quick Start
 
 <p align="center">

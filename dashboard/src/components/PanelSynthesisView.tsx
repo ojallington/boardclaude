@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { TryPanelResult, Verdict } from "@/lib/types";
 import { VERDICT_BADGE_STYLES, GRADE_STYLES } from "@/lib/ui-constants";
@@ -15,11 +16,24 @@ interface PanelSynthesisViewProps {
 
 export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
   const shouldReduceMotion = useReducedMotion();
+  const [copied, setCopied] = useState(false);
   const { composite, highlights, action_items } = result;
   const verdictStyle =
     VERDICT_BADGE_STYLES[composite.verdict as Verdict] ??
     "bg-gray-800 text-gray-400 border-gray-700";
   const gradeColor = GRADE_STYLES[composite.grade] ?? "text-gray-400";
+
+  const handleCopyLink = useCallback(async () => {
+    if (!result.audit_id) return;
+    const url = `${window.location.origin}/results/web/${result.audit_id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: select-and-copy not needed in modern browsers
+    }
+  }, [result.audit_id]);
 
   return (
     <motion.div
@@ -59,6 +73,29 @@ export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
             {result.tier === "byok" ? "Full Panel" : "Demo Mode"}
           </span>
         </div>
+        {result.audit_id && (
+          <button
+            onClick={handleCopyLink}
+            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-gray-700 bg-gray-800 px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:border-indigo-600 hover:text-gray-100"
+            aria-label="Copy shareable link"
+          >
+            <svg
+              className="h-3.5 w-3.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.813a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.34 8.374"
+              />
+            </svg>
+            {copied ? "Copied!" : "Copy Link"}
+          </button>
+        )}
       </div>
 
       {/* Radar Chart */}

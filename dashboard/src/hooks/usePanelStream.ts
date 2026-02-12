@@ -8,14 +8,9 @@ import type {
   TryAgentResult,
 } from "@/lib/types";
 import { validateTryPanelResult } from "@/lib/validate";
+import { isRecord } from "@/lib/type-guards";
 
 const AGENT_NAMES = ["boris", "cat", "thariq", "lydia", "ado", "jason"];
-
-// ─── SSE Data Type Guards ─────────────────────────────────────────────
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function isRepoInfo(value: unknown): value is { owner: string; name: string } {
   return (
@@ -328,10 +323,23 @@ export function usePanelStream(): UsePanelStreamReturn {
           // the debating phase indicator until synthesis begins.
           break;
         case "error": {
+          const code = typeof data.code === "string" ? data.code : "";
+          const serverMessage =
+            typeof data.message === "string" ? data.message : "";
+          const ERROR_MESSAGES: Record<string, string> = {
+            INVALID_URL: "Please enter a valid GitHub repository URL.",
+            RATE_LIMITED:
+              "Rate limit reached. Try again later or use your own API key.",
+            INVALID_API_KEY: "Invalid API key. Keys should start with sk-ant-.",
+            FETCH_FAILED:
+              "Failed to fetch repository. Make sure it exists and is public.",
+            NO_API_KEY:
+              "No API key configured. Please provide your own API key.",
+            INSUFFICIENT_AGENTS: "Too few agents completed. Please try again.",
+          };
           const message =
-            typeof data.message === "string"
-              ? data.message
-              : "Unknown error occurred.";
+            ERROR_MESSAGES[code] ??
+            (serverMessage || "Unknown error occurred.");
           dispatch({ type: "ERROR", message });
           break;
         }
