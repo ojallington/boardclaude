@@ -28,17 +28,20 @@ BoardClaude is a [Claude Code](https://docs.anthropic.com/en/docs/claude-code) p
 ### Install
 
 ```bash
-# Option 1: One-command install
+# Option 1: npx (recommended)
+npx @boardclaude/cli install .
+
+# Option 2: One-command install
 git clone https://github.com/ojallington/boardclaude.git
 ./boardclaude/install.sh your-project/
 
-# Option 2: Manual copy
+# Option 3: Manual copy
 git clone https://github.com/ojallington/boardclaude.git
 cp -r boardclaude/.claude-plugin boardclaude/agents boardclaude/commands \
       boardclaude/skills boardclaude/panels boardclaude/hooks \
       your-project/
 
-# Option 3: Plugin registry (when available)
+# Option 4: Plugin registry (when available)
 claude plugin add boardclaude
 ```
 

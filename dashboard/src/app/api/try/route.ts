@@ -9,6 +9,8 @@ import { runDebate } from "@/lib/try-debate";
 import { synthesizeResults } from "@/lib/try-synthesize";
 import type { TryAgentResult, ScoreRevision } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
+import { MetricsCollector } from "@/lib/try-metrics";
+import type { DebateMetric } from "@/lib/try-metrics";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -129,12 +131,39 @@ export async function POST(request: Request) {
         buildUserPrompt(repoData.meta, repoData.files, repoData.treeSize) +
         crossIterationContext;
 
+      // Metrics collection: intercept SSE events to record tool use / agent outcomes
+      const collector = new MetricsCollector(tier);
+      const instrumentedSend: SSESender = async (event, data) => {
+        if (
+          event === "agent_tool_use" &&
+          typeof data === "object" &&
+          data !== null
+        ) {
+          const d = data as Record<string, unknown>;
+          if (typeof d.agent === "string" && typeof d.tool === "string") {
+            collector.recordToolCall(d.agent, d.tool);
+          }
+        } else if (event === "agent_complete") {
+          collector.recordAgentComplete();
+        } else if (event === "agent_error") {
+          collector.recordAgentFailed();
+        } else if (
+          event === "complete" &&
+          typeof data === "object" &&
+          data !== null
+        ) {
+          const result = data as Record<string, unknown>;
+          result.metrics = collector.finalize(WEB_AGENTS.length);
+        }
+        return send(event, data);
+      };
+
       // Phase: agent invocation (tool-enabled agents get file access)
       const agentResults = await invokeAgents(
         client,
         userPrompt,
         tier,
-        send,
+        instrumentedSend,
         repoData.files,
       );
 
@@ -144,8 +173,23 @@ export async function POST(request: Request) {
         agentResults,
         userPrompt,
         tier,
-        send,
+        instrumentedSend,
       );
+
+      // Record debate metrics if a debate occurred
+      if (debateResult.pairs_debated > 0) {
+        const debateMetric: DebateMetric = {
+          pairs_examined: debateResult.pairs_debated,
+          revisions_applied: debateResult.scores_revised,
+          revisions: debateResult.revisions.map((r) => ({
+            agent: r.agent,
+            criterion: r.criterion,
+            old_score: r.original,
+            new_score: r.revised,
+          })),
+        };
+        collector.recordDebate(debateMetric);
+      }
 
       // Apply score revisions from debate before synthesis
       const effectiveResults = applyRevisions(
@@ -160,7 +204,7 @@ export async function POST(request: Request) {
         debateResult.transcript,
         repoData,
         tier,
-        send,
+        instrumentedSend,
         debateResult.revisions,
       );
     } catch (err) {

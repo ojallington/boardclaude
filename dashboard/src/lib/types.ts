@@ -541,6 +541,7 @@ export interface TryPanelResult {
   files_analyzed: number;
   files_detail?: FileDetail[];
   tier: "free" | "byok";
+  metrics?: import("@/lib/try-metrics").AuditMetrics;
 }
 
 export type TryPanelStreamPhase =

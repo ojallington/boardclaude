@@ -1470,9 +1470,11 @@
       "source_agents": ["thariq"],
       "impact": "Proves compound learning with data, enables tuning of thinking budgets and tool access",
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
+      "resolved_at": "2026-02-12T22:40:00.000Z",
+      "resolution": "Created MetricsCollector class in try-metrics.ts with AuditMetrics interface. Wired into route.ts via instrumentedSend wrapper intercepting SSE events. 9 new tests. Metrics included in final complete event.",
       "iterations_open": 0,
-      "file_refs": []
+      "file_refs": ["dashboard/src/lib/try-metrics.ts", "dashboard/src/lib/__tests__/try-metrics.test.ts", "dashboard/src/lib/types.ts", "dashboard/src/app/api/try/route.ts"]
     },
     {
       "id": "ai-099",
@@ -1483,9 +1485,11 @@
       "source_agents": ["jason", "cat"],
       "impact": "Mainstream adoption path. Moves from git-clone-only to npm-standard.",
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
+      "resolved_at": "2026-02-12T22:24:00.000Z",
+      "resolution": "Created root package.json (@boardclaude/cli@0.1.0), bin/boardclaude.mjs (zero-dep CLI with install/help/version), .npmignore. Updated README with npx install as Option 1. Tested install to /tmp.",
       "iterations_open": 0,
-      "file_refs": []
+      "file_refs": ["package.json", "bin/boardclaude.mjs", ".npmignore", "README.md"]
     },
     {
       "id": "ai-100",
@@ -1496,21 +1500,23 @@
       "source_agents": ["jason"],
       "impact": "Proves global readiness. Internationalization +30-35.",
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
+      "resolved_at": "2026-02-12T22:40:00.000Z",
+      "resolution": "Installed next-intl. Created 7 message JSON files (en/es/fr/de/ja/zh/ar) with real translations for UI chrome. Added i18n/request.ts (cookie-based locale detection), LocaleSwitcher component, NextIntlClientProvider in layout.tsx with dynamic lang/dir attributes. Build passes.",
       "iterations_open": 0,
-      "file_refs": []
+      "file_refs": ["dashboard/messages/", "dashboard/src/i18n/request.ts", "dashboard/src/components/LocaleSwitcher.tsx", "dashboard/next.config.ts", "dashboard/src/app/layout.tsx"]
     }
   ],
   "metadata": {
     "total_items": 81,
-    "open": 3,
+    "open": 0,
     "in_progress": 0,
-    "resolved": 78,
+    "resolved": 81,
     "blocked": 0,
     "chronic": 0,
-    "open_items": 3,
-    "resolved_items": 78,
+    "open_items": 0,
+    "resolved_items": 81,
     "in_progress_items": 0,
-    "last_updated": "2026-02-12T22:16:00.000Z"
+    "last_updated": "2026-02-12T22:41:00.000Z"
   }
 }

@@ -1,0 +1,10 @@
+dashboard/
+.boardclaude/
+.remotion/
+node_modules/
+docs/
+context/
+examples/
+.git/
+.github/
+*.jsonl
