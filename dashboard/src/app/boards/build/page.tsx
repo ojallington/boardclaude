@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useCallback, useState, useEffect } from "react";
+import { useReducer, useCallback, useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { messages } from "@/lib/messages";
@@ -267,6 +267,29 @@ function builderReducer(
   }
 }
 
+// ─── YAML Preview ────────────────────────────────────────────────────
+
+function YamlPreview({ yaml }: { yaml: string }) {
+  const [collapsed, setCollapsed] = useState(true);
+  return (
+    <section className="mt-8 rounded-xl border border-gray-800 bg-gray-900/50">
+      <button
+        type="button"
+        onClick={() => setCollapsed((c) => !c)}
+        className="flex w-full items-center justify-between px-5 py-3 text-left text-sm font-medium text-gray-300 transition-colors hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+      >
+        <span>YAML Preview</span>
+        <span className="text-gray-500">{collapsed ? "▸" : "▾"}</span>
+      </button>
+      {!collapsed && (
+        <pre className="max-h-96 overflow-auto border-t border-gray-800 px-5 py-4 text-xs leading-relaxed text-gray-300">
+          <code>{yaml}</code>
+        </pre>
+      )}
+    </section>
+  );
+}
+
 // ─── Component ────────────────────────────────────────────────────────
 
 export default function BuilderPage() {
@@ -311,6 +334,11 @@ export default function BuilderPage() {
       },
     };
   }, [state]);
+
+  const yamlPreview = useMemo(
+    () => panelToYaml(toSerializedPanel()),
+    [toSerializedPanel],
+  );
 
   const handleExport = useCallback(() => {
     const panel = toSerializedPanel();
@@ -482,6 +510,9 @@ export default function BuilderPage() {
           />
         ))}
       </section>
+
+      {/* YAML Preview */}
+      <YamlPreview yaml={yamlPreview} />
 
       {/* Actions */}
       <div className="mt-10 flex flex-wrap gap-3">

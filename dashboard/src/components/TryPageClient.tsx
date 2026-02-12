@@ -60,9 +60,21 @@ export function TryPageClient() {
       {/* Form */}
       <TryForm onSubmit={handleSubmit} isLoading={isLoading} />
 
+      {/* Live region for screen readers: announces phase changes */}
+      <div aria-live="polite" role="status" className="sr-only">
+        {phase !== "idle" && messages.tryIt.phases[phase]}
+        {phase === "reviewing" &&
+          messages.tryIt.agentProgress.panelProgress
+            .replace("{completed}", String(completedCount))
+            .replace("{total}", "6")}
+      </div>
+
       {/* Error */}
       {phase === "error" && error && (
-        <div className="rounded-xl border border-red-800/50 bg-red-950/30 p-4">
+        <div
+          role="alert"
+          className="rounded-xl border border-red-800/50 bg-red-950/30 p-4"
+        >
           <p className="text-sm text-red-400">{error}</p>
         </div>
       )}

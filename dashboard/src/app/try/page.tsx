@@ -18,7 +18,7 @@ export default function TryPage() {
         <h1 className="text-3xl font-bold tracking-tight text-gray-100">
           {messages.tryIt.heading}
         </h1>
-        <p className="mt-3 text-lg text-gray-400">
+        <p className="mt-3 text-lg text-gray-300">
           {messages.tryIt.description}
         </p>
       </div>

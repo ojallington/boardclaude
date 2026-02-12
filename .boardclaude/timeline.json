@@ -167,6 +167,25 @@
       "agents": 6,
       "verdict": "STRONG_PASS",
       "description": "Self-Audit #13: Score +1.26 to 86.72 (A-, STRONG_PASS). All Lydia iter-12 items resolved. Full i18n (7 locales, RTL). Tests 148->169 (+21). npm CLI scaffolded but not published (404). MetricsCollector integrated. TSDoc 24% (11/45). 5/6 STRONG_PASS. Thariq (81.1) and Jason (82.5) at PASS -- debate context and i18n translations incomplete."
+    },
+    {
+      "id": "audit-20260212-224140",
+      "type": "audit",
+      "timestamp": "2026-02-12T22:41:40.000Z",
+      "branch": "main",
+      "composite": 88.83,
+      "iteration": 14,
+      "panel": "hackathon-judges",
+      "agents": 6,
+      "verdict": "PASS",
+      "description": "Self-Audit #14: Score +2.11 to 88.83 (B+, PASS). npm package published (boardclaude@0.1.0). TSDoc 93% (42/45). i18n 100% (203/203 keys, 7 locales). Tests 169->174. text-gray-400 reduced 111->41. 5/6 STRONG_PASS. Thariq (82.6) at PASS -- context window underutilization and no Agent SDK Teams. Debate not triggered (no pairs >= 15)."
+    },
+    {
+      "id": "fix-20260213-002000",
+      "type": "fix",
+      "timestamp": "2026-02-13T00:20:00.000Z",
+      "branch": "main",
+      "description": "Iter-14 fix cycle: 9/10 action items resolved. DRY fix (try-invoke.ts shared validators). npx install command. Suspense boundaries (results+timeline). aria-live regions (/try page). text-gray-400->300 contrast fixes. BYOK limits 400K->800K. YAML preview in Board Builder. +70 tests (174->244). Prompt caching enabled. Install nav link added (7 locales). SSESender type extracted to shared module. Only P10 (demo project, high effort) deferred."
     }
   ]
 }

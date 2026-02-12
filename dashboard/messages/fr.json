@@ -128,7 +128,8 @@
     "tryIt": "Essayer",
     "results": "R\u00e9sultats",
     "timeline": "Chronologie",
-    "boards": "Panneaux"
+    "boards": "Panneaux",
+    "install": "Installer"
   },
   "timeline": {
     "title": "Chronologie des Audits - BoardClaude",

@@ -11,13 +11,14 @@ import { applyRevisions } from "@/lib/try-revisions";
 import { isRecord } from "@/lib/type-guards";
 import { MetricsCollector } from "@/lib/try-metrics";
 import type { DebateMetric } from "@/lib/try-metrics";
+import type { SSESender } from "@/lib/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 export const dynamic = "force-dynamic";
 
-/** Shared SSE sender type used by try-invoke, try-debate, try-synthesize. */
-export type SSESender = (event: string, data: unknown) => Promise<void>;
+// Re-export for any external consumers
+export type { SSESender } from "@/lib/types";
 
 export async function POST(request: Request) {
   const encoder = new TextEncoder();

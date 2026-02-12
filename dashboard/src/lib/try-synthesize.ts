@@ -9,6 +9,7 @@ import type {
   EffortLevel,
   ScoreRevision,
   DebateExchange,
+  SSESender,
 } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@/lib/try-agents";
 import { saveWebReview } from "@/lib/try-storage";
 import type { FetchedRepo } from "@/lib/github";
-import type { SSESender } from "@/app/api/try/route";
 import { isRecord } from "@/lib/type-guards";
 
 // ─── Synthesis Data Validators ──────────────────────────────────────

@@ -2,7 +2,11 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { TryAgentResult } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import { validateAgentEvaluation } from "@/lib/validate";
-import { extractStringArray } from "@/lib/try-synthesize";
+import {
+  extractStringArray,
+  extractNumber,
+  extractSynthesisActionItem,
+} from "@/lib/try-synthesize";
 import { isRecord } from "@/lib/type-guards";
 import {
   WEB_AGENTS,
@@ -10,7 +14,7 @@ import {
   EFFORT_BUDGET_MAP,
   type WebAgentConfig,
 } from "@/lib/try-agents";
-import type { SSESender } from "@/app/api/try/route";
+import type { SSESender } from "@/lib/types";
 
 /** Repo file used for tool execution. */
 export type RepoFile = { path: string; content: string };
@@ -162,7 +166,16 @@ async function invokeAgentWithTools(
   const budgetTokens = EFFORT_BUDGET_MAP[agent.effort];
 
   const msgs: Anthropic.Messages.MessageParam[] = [
-    { role: "user", content: userPrompt },
+    {
+      role: "user",
+      content: [
+        {
+          type: "text",
+          text: userPrompt,
+          cache_control: { type: "ephemeral" },
+        },
+      ],
+    },
   ];
 
   for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
@@ -283,7 +296,18 @@ export async function invokeAgents(
           model: modelId,
           max_tokens: useThinking ? budgetTokens + 6000 : 2048,
           system: agent.systemPrompt,
-          messages: [{ role: "user", content: userPrompt }],
+          messages: [
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: userPrompt,
+                  cache_control: { type: "ephemeral" },
+                },
+              ],
+            },
+          ],
           ...(useThinking && {
             thinking: {
               type: "enabled" as const,
@@ -335,14 +359,13 @@ export async function invokeAgents(
           if (typeof v === "number" && isFinite(v)) scores[k] = v;
         }
         const scoreValues = Object.values(scores);
-        const composite =
-          typeof data.composite === "number" && isFinite(data.composite)
-            ? data.composite
-            : scoreValues.length > 0
-              ? Math.round(
-                  scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length,
-                )
-              : 50;
+        const avgFallback =
+          scoreValues.length > 0
+            ? Math.round(
+                scoreValues.reduce((a, b) => a + b, 0) / scoreValues.length,
+              )
+            : 50;
+        const composite = extractNumber(data, "composite", avgFallback);
 
         const padToThree = (arr: string[]): [string, string, string] => [
           arr[0] ?? "",
@@ -353,12 +376,14 @@ export async function invokeAgents(
         const actionItems: TryAgentResult["action_items"] = [];
         if (Array.isArray(data.action_items)) {
           for (const item of data.action_items) {
-            if (!isRecord(item)) continue;
-            actionItems.push({
-              priority: typeof item.priority === "number" ? item.priority : 99,
-              action: typeof item.action === "string" ? item.action : "",
-              impact: typeof item.impact === "string" ? item.impact : "",
-            });
+            const validated = extractSynthesisActionItem(item);
+            if (validated) {
+              actionItems.push({
+                priority: validated.priority,
+                action: validated.action,
+                impact: validated.impact,
+              });
+            }
           }
         }
 

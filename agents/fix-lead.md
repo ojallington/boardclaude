@@ -61,6 +61,7 @@ For each batch:
    - `subagent_type`: `"general-purpose"`
    - `team_name`: current team name
    - `name`: `"fix-worker-{item.id}"`
+   - `mode`: `"bypassPermissions"`
    - Worker prompt includes the fix-worker agent instructions, the specific action item (id, action, priority, effort, file_refs, source_agents, impact), source agent's finding text, and validation baseline summary.
 
 2. **Wait for all workers** to report or timeout (3 minutes per worker).

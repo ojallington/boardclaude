@@ -37,10 +37,9 @@ export const messages = {
   install: {
     heading: "Get Started",
     description:
-      "Install the BoardClaude plugin for Claude Code with the install script.",
+      "Install the BoardClaude plugin for Claude Code with a single command.",
     terminalLabel: "Terminal",
-    command:
-      "git clone https://github.com/ojallington/boardclaude.git && ./boardclaude/install.sh .",
+    command: "npx boardclaude install .",
     hint: "Then run {command} in any project to start your first evaluation.",
     hintCommand: "/bc:audit",
   },

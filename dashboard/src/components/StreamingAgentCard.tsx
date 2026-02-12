@@ -87,7 +87,7 @@ export function StreamingAgentCard({
       <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-6">
         <div className="flex items-center gap-3">
           <PulsingDot color="bg-gray-400" />
-          <span className="text-gray-400">{messages.tryIt.phases[phase]}</span>
+          <span className="text-gray-300">{messages.tryIt.phases[phase]}</span>
         </div>
         {repoInfo && (
           <p className="mt-3 text-sm text-gray-500">
