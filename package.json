@@ -1,0 +1,36 @@
+{
+  "name": "@boardclaude/cli",
+  "version": "0.1.0",
+  "description": "Multi-perspective AI evaluation panels for Claude Code",
+  "type": "module",
+  "bin": {
+    "boardclaude": "./bin/boardclaude.mjs"
+  },
+  "files": [
+    "bin/",
+    ".claude-plugin/",
+    "agents/",
+    "commands/",
+    "skills/",
+    "panels/",
+    "hooks/",
+    "install.sh",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "claude",
+    "claude-code",
+    "ai",
+    "evaluation",
+    "multi-agent"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ojallington/boardclaude.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
