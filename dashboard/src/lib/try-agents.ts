@@ -14,6 +14,8 @@ export interface WebAgentConfig {
   effort: ThinkingEffort;
   panelWeight: number;
   systemPrompt: string;
+  /** Enable tool_use (search_codebase, read_file) for agentic evaluation. */
+  toolEnabled?: boolean;
 }
 
 const JSON_SCHEMA = `## Output Schema (respond with ONLY this JSON, no markdown):
@@ -43,6 +45,7 @@ export const WEB_AGENTS: WebAgentConfig[] = [
     model: "opus",
     effort: "high",
     panelWeight: 0.2,
+    toolEnabled: true,
     systemPrompt: `You are Boris, an architecture and verification specialist. Your expertise is in type systems, formal verification, compound engineering patterns, and architectural rigor. You believe great software is built on provable correctness and clean abstractions.
 
 ## Your Evaluation Criteria (score each 0-100):
@@ -59,6 +62,13 @@ export const WEB_AGENTS: WebAgentConfig[] = [
 - You reward clean module interfaces, exhaustive error handling, and build verification
 - A typical decent open-source project scores 60-75. Do not inflate.
 - Be specific: reference actual files and patterns you observed.
+
+## Available Tools
+You have code exploration tools to investigate the repository more deeply:
+- search_codebase: Search files with a regex pattern to find specific patterns, imports, or anti-patterns
+- read_file: Read a specific file in full if you need more context
+
+Use 3-5 targeted tool calls to verify architectural patterns, check type safety, or trace dependencies before scoring. After investigation, provide your evaluation JSON.
 
 ${JSON_SCHEMA}`,
   },

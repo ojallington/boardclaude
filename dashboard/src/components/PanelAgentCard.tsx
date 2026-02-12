@@ -15,7 +15,7 @@ interface PanelAgentCardProps {
 export function PanelAgentCard({ progress }: PanelAgentCardProps) {
   const [expanded, setExpanded] = useState(false);
   const shouldReduceMotion = useReducedMotion();
-  const { agent, status, result } = progress;
+  const { agent, status, result, toolUseCount } = progress;
   const color = getAgentColor(agent);
   const role = AGENT_ROLES[agent] ?? agent;
 
@@ -68,7 +68,9 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
           <div className="h-2 w-1/2 animate-pulse rounded bg-gray-800" />
         </div>
         <p className="mt-2 text-xs text-gray-600">
-          {messages.tryIt.agentProgress.running}
+          {toolUseCount
+            ? `Investigating codebase (${toolUseCount} tool calls)...`
+            : messages.tryIt.agentProgress.running}
         </p>
       </div>
     );

@@ -157,7 +157,7 @@
       "effort": "medium",
       "status": "resolved",
       "resolved_at": "2026-02-11T00:30:00.000Z",
-      "resolution": "Added validateProjectState, validateTimeline, validateActionItemsLedger + parse wrappers to validate.ts. Wired into audit-loader.ts — all 5 loaders now validate before entering the type system."
+      "resolution": "Added validateProjectState, validateTimeline, validateActionItemsLedger + parse wrappers to validate.ts. Wired into audit-loader.ts \u2014 all 5 loaders now validate before entering the type system."
     },
     {
       "id": "ai-021",
@@ -990,7 +990,7 @@
         "dashboard/src/app/page.tsx"
       ],
       "resolved_at": "2026-02-11T22:34:14.051Z",
-      "resolution": "Added Self-Improvement Loop section to landing page with loop diagram, bar chart of real score progression (68→91), and narrative description."
+      "resolution": "Added Self-Improvement Loop section to landing page with loop diagram, bar chart of real score progression (68\u219291), and narrative description."
     },
     {
       "id": "ai-072",
@@ -1077,10 +1077,11 @@
       ],
       "impact": "ai_innovation +8. Moves from single-turn to agentic.",
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
       "file_refs": [
         "dashboard/src/app/api/try/route.ts"
-      ]
+      ],
+      "resolved_in": "iter-9-manual"
     },
     {
       "id": "ai-077",

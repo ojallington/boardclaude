@@ -35,6 +35,7 @@ type PanelStreamAction =
   | { type: "STATUS_DEBATING" }
   | { type: "STATUS_SYNTHESIZING" }
   | { type: "AGENT_START"; agent: string }
+  | { type: "AGENT_TOOL_USE"; agent: string }
   | { type: "AGENT_COMPLETE"; agent: string; result: TryAgentResult }
   | { type: "AGENT_ERROR"; agent: string }
   | { type: "COMPLETE"; result: TryPanelResult }
@@ -92,6 +93,16 @@ function panelStreamReducer(
         ...state,
         agents: state.agents.map((a) =>
           a.agent === action.agent ? { ...a, status: "running" } : a,
+        ),
+      };
+
+    case "AGENT_TOOL_USE":
+      return {
+        ...state,
+        agents: state.agents.map((a) =>
+          a.agent === action.agent
+            ? { ...a, toolUseCount: (a.toolUseCount ?? 0) + 1 }
+            : a,
         ),
       };
 
@@ -238,6 +249,9 @@ export function usePanelStream(): UsePanelStreamReturn {
         }
         case "agent_start":
           dispatch({ type: "AGENT_START", agent: data.agent as string });
+          break;
+        case "agent_tool_use":
+          dispatch({ type: "AGENT_TOOL_USE", agent: data.agent as string });
           break;
         case "agent_complete":
           dispatch({

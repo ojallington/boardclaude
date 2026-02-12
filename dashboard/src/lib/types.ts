@@ -457,6 +457,8 @@ export interface TryAgentProgress {
   agent: string;
   status: "pending" | "running" | "complete" | "error";
   result?: TryAgentResult;
+  /** Number of tool calls made (only for tool-enabled agents like Boris). */
+  toolUseCount?: number;
 }
 
 export interface TryResultSummary {

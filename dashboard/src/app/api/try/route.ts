@@ -127,8 +127,14 @@ export async function POST(request: Request) {
         buildUserPrompt(repoData.meta, repoData.files, repoData.treeSize) +
         crossIterationContext;
 
-      // Phase: agent invocation
-      const agentResults = await invokeAgents(client, userPrompt, tier, send);
+      // Phase: agent invocation (tool-enabled agents get file access)
+      const agentResults = await invokeAgents(
+        client,
+        userPrompt,
+        tier,
+        send,
+        repoData.files,
+      );
 
       // Phase: debate
       const debateTranscript = await runDebate(
