@@ -119,6 +119,30 @@
       "agents": 6,
       "verdict": "PASS",
       "description": "Self-Audit #9: Score flat (0.0). Thariq (74.35) still lowest but improved +3.05. Lydia (87.95) highest. Route handler decomposition and debate model upgrade identified as top priorities. 4/6 agents STRONG_PASS."
+    },
+    {
+      "id": "audit-20260212-194024",
+      "type": "audit",
+      "timestamp": "2026-02-12T18:40:24.674Z",
+      "branch": "main",
+      "composite": 83.45,
+      "iteration": 10,
+      "panel": "hackathon-judges",
+      "agents": 6,
+      "verdict": "PASS",
+      "description": "Self-Audit #10: Score flat (-0.06). 9 iter-9 action items resolved (route decomposition, Boris tool_use, debate Opus, EvaluationList, OG image, README, landing page loop, BYOK UX, tests 106->111). Persistent gaps: serial file fetch (2 iters), SSE type assertions (2 iters), 1/6 agentic. 4/6 STRONG_PASS."
+    },
+    {
+      "id": "audit-20260212-185848",
+      "type": "audit",
+      "timestamp": "2026-02-12T18:58:48.000Z",
+      "branch": "main",
+      "composite": 83.91,
+      "iteration": 11,
+      "panel": "hackathon-judges",
+      "agents": 6,
+      "verdict": "PASS",
+      "description": "Self-Audit #11 (post /bc:fix): 3 iter-10 items resolved (synthesis validation, parallel fetch, SSE type guards). Score +0.46. Boris +3.2, Cat +2.15, Lydia +1.0. Thariq (75.05) still lowest -- 5/6 single-turn, decorative debate. 4/6 STRONG_PASS."
     }
   ]
 }

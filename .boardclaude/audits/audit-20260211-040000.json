@@ -3,7 +3,7 @@
   "panel": "hackathon-judges",
   "target": "boardclaude",
   "iteration": 4,
-  "timestamp": "2026-02-10T23:55:00.000Z",
+  "timestamp": "2026-02-11T04:00:00.000Z",
   "agents": [
     {
       "agent": "boris",
@@ -207,98 +207,70 @@
     {
       "priority": 1,
       "action": "Add 3 screenshots to docs/screenshots/: dashboard-overview.png (full audit results page), radar-chart.png (composite radar visualization), score-progression.png (iteration timeline chart). Reference these from README.md:68-70.",
-      "source_agents": [
-        "cat",
-        "ado",
-        "jason"
-      ],
+      "source_agents": ["cat", "ado", "jason"],
       "impact": "Fixes broken visual storytelling in README -- most-cited critical issue. High-impact first impression improvement.",
       "effort": "low"
     },
     {
       "priority": 2,
       "action": "Add skip-to-content link at top of app/layout.tsx before nav, add role='main' to main content area, role='banner' to header, role='navigation' to nav. Wrap main with <main role='main'> semantic tag.",
-      "source_agents": [
-        "lydia",
-        "ado",
-        "jason"
-      ],
+      "source_agents": ["lydia", "ado", "jason"],
       "impact": "Foundational accessibility improvement for keyboard navigation and screen readers. Required for WCAG AA compliance.",
       "effort": "low"
     },
     {
       "priority": 3,
       "action": "Consolidate VERDICT_STYLES: remove AgentCard.tsx:26 ring-based definition, extend VERDICT_BADGE_STYLES in ui-constants.ts with ring property, import from both AgentCard and badge components. Document why ring vs border styles exist if they're architecturally distinct.",
-      "source_agents": [
-        "boris",
-        "lydia"
-      ],
+      "source_agents": ["boris", "lydia"],
       "impact": "Closes verification gap in iter-3 action item completion. Eliminates style drift between components.",
       "effort": "low"
     },
     {
       "priority": 4,
       "action": "Remove formatTimestamp duplication: ScoreProgression.tsx:44 should import formatTimestamp from ui-constants.ts instead of defining its own. Ensure format options are consistent.",
-      "source_agents": [
-        "boris",
-        "lydia"
-      ],
+      "source_agents": ["boris", "lydia"],
       "impact": "Completes string/utility extraction pattern. Single source of truth for date formatting.",
       "effort": "low"
     },
     {
       "priority": 5,
       "action": "Add tests for validateProjectState, validateTimeline, validateActionItemsLedger in validate.test.ts. Cover valid inputs, invalid schemas, missing required fields, type mismatches.",
-      "source_agents": [
-        "boris"
-      ],
+      "source_agents": ["boris"],
       "impact": "Closes biggest test coverage gap. 3 validators with zero tests currently.",
       "effort": "medium"
     },
     {
       "priority": 6,
       "action": "Refactor validate.ts type casts: replace 12 instances of `as Record<string, unknown>` with type guard pattern. Create isRecord(value: unknown): value is Record<string, unknown> helper.",
-      "source_agents": [
-        "lydia"
-      ],
+      "source_agents": ["lydia"],
       "impact": "Improves type safety. Type guards are more maintainable and TypeScript-idiomatic than as-casts.",
       "effort": "medium"
     },
     {
       "priority": 7,
       "action": "Add aria-live='polite' to score bars in AgentCard.tsx for dynamic score updates. Add aria-busy during loading states. Add aria-label to loading.tsx spinner.",
-      "source_agents": [
-        "lydia",
-        "ado"
-      ],
+      "source_agents": ["lydia", "ado"],
       "impact": "Screen reader users get live updates when content changes dynamically.",
       "effort": "low"
     },
     {
       "priority": 8,
       "action": "Add demo video poster frame and compression: generate poster image from first frame, compress mp4 to <10MB with ffmpeg, add poster attribute to video tag.",
-      "source_agents": [
-        "cat"
-      ],
+      "source_agents": ["cat"],
       "impact": "Reduces initial page load, improves LCP. 32MB video without poster is a performance gap.",
       "effort": "low"
     },
     {
       "priority": 9,
       "action": "Add visual confirmation in Quick Start section: show terminal output example for successful install.sh run, show expected dashboard screenshot after first audit.",
-      "source_agents": [
-        "ado"
-      ],
+      "source_agents": ["ado"],
       "impact": "Users know what success looks like. Reduces support questions.",
       "effort": "low"
     },
     {
       "priority": 10,
       "action": "Add lang switcher infrastructure: create LanguageContext in app/layout.tsx, wire to html lang attribute, add Inter font 'latin-ext' subset for broader European language support.",
-      "source_agents": [
-        "jason",
-        "ado"
-      ],
+      "source_agents": ["jason", "ado"],
       "impact": "Foundation for internationalization. Low-effort signal of global readiness.",
       "effort": "medium"
     }

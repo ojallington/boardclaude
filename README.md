@@ -119,7 +119,7 @@ boardclaude/
 │   ├── src/app/                  # App Router pages
 │   ├── src/components/           # React components
 │   └── src/lib/types.ts          # Canonical TypeScript interfaces
-└── .boardclaude/                 # Runtime state (gitignored)
+└── .boardclaude/                 # Audit state (tracked in git)
     ├── state.json                # Project state
     ├── timeline.json             # Event timeline
     ├── action-items.json         # Action item ledger

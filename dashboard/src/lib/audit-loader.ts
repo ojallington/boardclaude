@@ -16,9 +16,9 @@ import {
   parseActionItemsLedger,
 } from "./validate";
 
-// Local dev: .boardclaude/ at repo root (gitignored, live data)
+// Local dev: .boardclaude/ at repo root (tracked in git, source of truth)
 const LOCAL_DIR = path.join(process.cwd(), "..", ".boardclaude");
-// Production/Vercel: committed snapshot in dashboard/data/
+// Production/Vercel: synced copy in dashboard/data/ (build artifact via sync-data.mjs)
 const COMMITTED_DIR = path.join(process.cwd(), "data");
 
 async function resolveDataDir(): Promise<string> {
