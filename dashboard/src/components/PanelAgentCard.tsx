@@ -6,6 +6,7 @@ import type { TryAgentProgress, Verdict } from "@/lib/types";
 import { getAgentColor } from "@/lib/types";
 import { VERDICT_BADGE_STYLES, AGENT_ROLES } from "@/lib/ui-constants";
 import { messages } from "@/lib/messages";
+import { EvaluationList } from "./EvaluationList";
 
 interface PanelAgentCardProps {
   progress: TryAgentProgress;
@@ -173,43 +174,20 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
             className="overflow-hidden"
           >
             <div className="mt-3 space-y-3 border-t border-gray-800 pt-3">
-              {/* Strengths */}
-              <div>
-                <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                  Strengths
-                </h4>
-                <ul className="space-y-0.5">
-                  {result.strengths.filter(Boolean).map((s, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-1.5 text-xs text-gray-300"
-                    >
-                      <span className="mt-0.5 text-emerald-500 shrink-0">
-                        +
-                      </span>
-                      <span>{s}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Weaknesses */}
-              <div>
-                <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                  Weaknesses
-                </h4>
-                <ul className="space-y-0.5">
-                  {result.weaknesses.filter(Boolean).map((w, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-1.5 text-xs text-gray-300"
-                    >
-                      <span className="mt-0.5 text-amber-500 shrink-0">-</span>
-                      <span>{w}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <EvaluationList
+                items={result.strengths}
+                variant="strengths"
+                label="Strengths"
+                size="sm"
+                iconColor="text-emerald-500"
+              />
+              <EvaluationList
+                items={result.weaknesses}
+                variant="weaknesses"
+                label="Weaknesses"
+                size="sm"
+                iconColor="text-amber-500"
+              />
 
               {/* Action items */}
               {result.action_items.length > 0 && (
@@ -218,9 +196,9 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
                     Action Items
                   </h4>
                   <ol className="space-y-0.5">
-                    {result.action_items.map((item, i) => (
+                    {result.action_items.map((item) => (
                       <li
-                        key={i}
+                        key={item.priority}
                         className="flex items-start gap-1.5 text-xs text-gray-300"
                       >
                         <span className="text-indigo-400 shrink-0 font-mono">

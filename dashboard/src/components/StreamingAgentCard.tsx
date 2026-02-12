@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import type { TryResult, TryStreamPhase, Verdict } from "@/lib/types";
 import { VERDICT_BADGE_STYLES } from "@/lib/ui-constants";
 import { messages } from "@/lib/messages";
+import { EvaluationList } from "./EvaluationList";
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -199,66 +200,22 @@ export function StreamingAgentCard({
         {/* Strengths */}
         {result.strengths && result.strengths.length > 0 && (
           <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-              Strengths
-            </h4>
-            <ul className="space-y-1.5">
-              {result.strengths.map((s, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-2 text-sm text-gray-300"
-                >
-                  <span className="mt-0.5 shrink-0 text-emerald-400">
-                    <svg
-                      viewBox="0 0 16 16"
-                      fill="currentColor"
-                      className="size-4"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span>{s}</span>
-                </li>
-              ))}
-            </ul>
+            <EvaluationList
+              items={result.strengths}
+              variant="strengths"
+              label="Strengths"
+            />
           </div>
         )}
 
         {/* Weaknesses */}
         {result.weaknesses && result.weaknesses.length > 0 && (
           <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-              Weaknesses
-            </h4>
-            <ul className="space-y-1.5">
-              {result.weaknesses.map((w, i) => (
-                <li
-                  key={i}
-                  className="flex items-start gap-2 text-sm text-gray-300"
-                >
-                  <span className="mt-0.5 shrink-0 text-amber-400">
-                    <svg
-                      viewBox="0 0 16 16"
-                      fill="currentColor"
-                      className="size-4"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </span>
-                  <span>{w}</span>
-                </li>
-              ))}
-            </ul>
+            <EvaluationList
+              items={result.weaknesses}
+              variant="weaknesses"
+              label="Weaknesses"
+            />
           </div>
         )}
 
@@ -269,9 +226,9 @@ export function StreamingAgentCard({
               Action Items
             </h4>
             <ol className="space-y-1.5">
-              {result.action_items.map((item, i) => (
+              {result.action_items.map((item) => (
                 <li
-                  key={i}
+                  key={item.priority}
                   className="flex items-start gap-2 text-sm text-gray-300"
                 >
                   <span className="mt-0.5 shrink-0 text-xs font-mono text-indigo-400 w-4">

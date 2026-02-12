@@ -104,6 +104,20 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
                 <p className="mt-1 text-xs text-gray-500">
                   {messages.tryIt.byokHint}
                 </p>
+                <p className="mt-1.5 text-xs text-gray-500">
+                  {messages.tryIt.byokCostEstimate}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {messages.tryIt.byokGetKey}{" "}
+                  <a
+                    href="https://console.anthropic.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-400 hover:text-indigo-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
+                  >
+                    {messages.tryIt.byokGetKeyLink}
+                  </a>
+                </p>
               </div>
             </div>
           )}

@@ -7,6 +7,7 @@ import { RadarChart } from "./RadarChart";
 import { DivergentOpinions } from "./DivergentOpinions";
 import { PrioritizedActionItems } from "./PrioritizedActionItems";
 import { FilesAnalyzedSection } from "./FilesAnalyzedSection";
+import { EvaluationList } from "./EvaluationList";
 
 interface PanelSynthesisViewProps {
   result: TryPanelResult;
@@ -73,66 +74,21 @@ export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
 
       {/* Highlights */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Top Strengths */}
         <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-3">
-            Top Strengths
-          </h3>
-          <ul className="space-y-2">
-            {highlights.top_strengths.filter(Boolean).map((s, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-sm text-gray-300"
-              >
-                <span className="mt-0.5 shrink-0 text-emerald-500">
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="size-4"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-                <span>{s}</span>
-              </li>
-            ))}
-          </ul>
+          <EvaluationList
+            items={highlights.top_strengths}
+            variant="strengths"
+            label="Top Strengths"
+            iconColor="text-emerald-500"
+          />
         </div>
-
-        {/* Top Weaknesses */}
         <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-3">
-            Top Weaknesses
-          </h3>
-          <ul className="space-y-2">
-            {highlights.top_weaknesses.filter(Boolean).map((w, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-sm text-gray-300"
-              >
-                <span className="mt-0.5 shrink-0 text-amber-500">
-                  <svg
-                    viewBox="0 0 16 16"
-                    fill="currentColor"
-                    className="size-4"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </span>
-                <span>{w}</span>
-              </li>
-            ))}
-          </ul>
+          <EvaluationList
+            items={highlights.top_weaknesses}
+            variant="weaknesses"
+            label="Top Weaknesses"
+            iconColor="text-amber-500"
+          />
         </div>
       </div>
 

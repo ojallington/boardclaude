@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { getAgentColor, type Verdict } from "@/lib/types";
 import { VERDICT_BADGE_STYLES } from "@/lib/ui-constants";
 import { messages } from "@/lib/messages";
+import { EvaluationList } from "./EvaluationList";
 
 // ---------------------------------------------------------------------------
 // Props
@@ -78,97 +79,6 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
         {score}
       </span>
     </div>
-  );
-}
-
-function ListSection({
-  items,
-  icon,
-  iconColor,
-  label,
-}: {
-  items: string[];
-  icon: React.ReactNode;
-  iconColor: string;
-  label: string;
-}) {
-  if (items.length === 0) return null;
-
-  return (
-    <div>
-      <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-        {label}
-      </h4>
-      <ul className="space-y-1.5">
-        {items.map((item) => (
-          <li
-            key={item}
-            className="flex items-start gap-2 text-sm text-gray-300"
-          >
-            <span className={`mt-0.5 shrink-0 ${iconColor}`}>{icon}</span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-// ---------------------------------------------------------------------------
-// Icons (inline SVG to avoid external dependency)
-// ---------------------------------------------------------------------------
-
-function CheckIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className="size-4"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 0 1 1.04-.207Z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function WarningIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className="size-4"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M6.701 2.25c.577-1 2.02-1 2.598 0l5.196 9a1.5 1.5 0 0 1-1.299 2.25H2.804a1.5 1.5 0 0 1-1.3-2.25l5.197-9ZM8 4a.75.75 0 0 1 .75.75v3a.75.75 0 0 1-1.5 0v-3A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
-
-function AlertIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      className="size-4"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14ZM8 4a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 8 4Zm0 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
-        clipRule="evenodd"
-      />
-    </svg>
   );
 }
 
@@ -264,22 +174,19 @@ export function AgentCard({
 
         {/* ── Strengths / Weaknesses / Critical Issues ───────── */}
         <div className="space-y-4">
-          <ListSection
+          <EvaluationList
             items={strengths}
-            icon={<CheckIcon />}
-            iconColor="text-emerald-400"
+            variant="strengths"
             label={messages.agentCard.sections.strengths}
           />
-          <ListSection
+          <EvaluationList
             items={weaknesses}
-            icon={<WarningIcon />}
-            iconColor="text-amber-400"
+            variant="weaknesses"
             label={messages.agentCard.sections.weaknesses}
           />
-          <ListSection
+          <EvaluationList
             items={critical_issues}
-            icon={<AlertIcon />}
-            iconColor="text-red-400"
+            variant="critical"
             label={messages.agentCard.sections.criticalIssues}
           />
         </div>

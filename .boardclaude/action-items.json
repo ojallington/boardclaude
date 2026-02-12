@@ -6,7 +6,12 @@
       "iteration": 1,
       "priority": 1,
       "action": "Wire audit-loader.ts into results/page.tsx (replace DEMO_AUDITS with getAllAuditSummaries), import AgentCard/RadarChart into audit detail page with real data.",
-      "source_agents": ["boris", "cat", "thariq", "lydia"],
+      "source_agents": [
+        "boris",
+        "cat",
+        "thariq",
+        "lydia"
+      ],
       "impact": "Closes the dashboard data pipeline gap -- the #1 weakness cited by 4 of 6 agents",
       "effort": "medium",
       "status": "resolved",
@@ -19,7 +24,10 @@
       "iteration": 1,
       "priority": 2,
       "action": "Add error.tsx, loading.tsx, and not-found.tsx in app/ and app/results/ for graceful error handling.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Prevents raw Next.js error pages, improves resilience for demos",
       "effort": "low",
       "status": "resolved",
@@ -32,7 +40,10 @@
       "iteration": 1,
       "priority": 3,
       "action": "Enable noUncheckedIndexedAccess and noImplicitReturns in tsconfig.json.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Aligns implementation with own strict-mode philosophy",
       "effort": "medium",
       "status": "resolved",
@@ -45,7 +56,9 @@
       "iteration": 1,
       "priority": 4,
       "action": "Wire validate.ts into audit-loader.ts for runtime validation.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Validates before data enters the type system",
       "effort": "low",
       "status": "resolved",
@@ -58,7 +71,9 @@
       "iteration": 1,
       "priority": 5,
       "action": "Add component tests for AgentCard and RadarChart.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Zero component coverage before this fix",
       "effort": "medium",
       "status": "resolved",
@@ -71,7 +86,11 @@
       "iteration": 3,
       "priority": 1,
       "action": "Create install.sh at repo root to automate plugin installation.",
-      "source_agents": ["cat", "ado", "jason"],
+      "source_agents": [
+        "cat",
+        "ado",
+        "jason"
+      ],
       "impact": "Unblocks adoption -- most-cited weakness across 3 agents",
       "effort": "low",
       "status": "resolved",
@@ -84,7 +103,9 @@
       "iteration": 3,
       "priority": 2,
       "action": "Sync landing page install section with README install flow.",
-      "source_agents": ["cat"],
+      "source_agents": [
+        "cat"
+      ],
       "impact": "Fixes most visible inconsistency between website and README",
       "effort": "low",
       "status": "resolved",
@@ -97,7 +118,10 @@
       "iteration": 3,
       "priority": 3,
       "action": "Extract VERDICT_STYLES, GRADE_STYLES, formatTimestamp to shared ui-constants.ts.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Eliminates triple duplication and style drift",
       "effort": "low",
       "status": "resolved",
@@ -110,7 +134,10 @@
       "iteration": 3,
       "priority": 4,
       "action": "Move error boundary strings to messages.ts.",
-      "source_agents": ["boris", "jason"],
+      "source_agents": [
+        "boris",
+        "jason"
+      ],
       "impact": "Completes string centralization pattern for i18n readiness",
       "effort": "low",
       "status": "resolved",
@@ -123,7 +150,9 @@
       "iteration": 3,
       "priority": 5,
       "action": "Add validation for ProjectState, Timeline, ActionItemsLedger in audit-loader.ts.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Closes remaining data integrity gap -- 3 of 5 loaders bypass validation",
       "effort": "medium",
       "status": "resolved",
@@ -136,7 +165,9 @@
       "iteration": 3,
       "priority": 6,
       "action": "Lazy-load RadarChart and ScoreProgression with next/dynamic.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Reduces audit detail route JS bundle size",
       "effort": "low",
       "status": "resolved",
@@ -149,7 +180,10 @@
       "iteration": 3,
       "priority": 7,
       "action": "Add ScoreProgression.test.tsx.",
-      "source_agents": ["lydia", "cat"],
+      "source_agents": [
+        "lydia",
+        "cat"
+      ],
       "impact": "Closes biggest gap in component test coverage",
       "effort": "medium",
       "status": "resolved",
@@ -162,7 +196,9 @@
       "iteration": 3,
       "priority": 8,
       "action": "Replace hardcoded 'en-US' in formatTimestamp with browser locale.",
-      "source_agents": ["jason"],
+      "source_agents": [
+        "jason"
+      ],
       "impact": "Low effort, high signal for global readiness",
       "effort": "low",
       "status": "resolved",
@@ -175,7 +211,9 @@
       "iteration": 3,
       "priority": 9,
       "action": "Add CHANGELOG.md.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Meets developer expectations for versioned projects",
       "effort": "low",
       "status": "resolved",
@@ -188,7 +226,9 @@
       "iteration": 3,
       "priority": 10,
       "action": "Add screenshots to README.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Visual proof of the product for first impressions",
       "effort": "medium",
       "status": "resolved",
@@ -201,7 +241,11 @@
       "iteration": 4,
       "priority": 1,
       "action": "Add 3 screenshots to docs/screenshots/: dashboard-overview.png (full audit results page), radar-chart.png (composite radar visualization), score-progression.png (iteration timeline chart). Reference these from README.md:68-70.",
-      "source_agents": ["cat", "ado", "jason"],
+      "source_agents": [
+        "cat",
+        "ado",
+        "jason"
+      ],
       "impact": "Fixes broken visual storytelling in README -- most-cited critical issue. High-impact first impression improvement.",
       "effort": "low",
       "status": "resolved",
@@ -214,7 +258,11 @@
       "iteration": 4,
       "priority": 2,
       "action": "Add skip-to-content link at top of app/layout.tsx before nav, add role='main' to main content area, role='banner' to header, role='navigation' to nav. Wrap main with <main role='main'> semantic tag.",
-      "source_agents": ["lydia", "ado", "jason"],
+      "source_agents": [
+        "lydia",
+        "ado",
+        "jason"
+      ],
       "impact": "Foundational accessibility improvement for keyboard navigation and screen readers. Required for WCAG AA compliance.",
       "effort": "low",
       "status": "resolved",
@@ -227,7 +275,10 @@
       "iteration": 4,
       "priority": 3,
       "action": "Consolidate VERDICT_STYLES: remove AgentCard.tsx:26 ring-based definition, extend VERDICT_BADGE_STYLES in ui-constants.ts with ring property, import from both AgentCard and badge components. Document why ring vs border styles exist if they're architecturally distinct.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Closes verification gap in iter-3 action item completion. Eliminates style drift between components.",
       "effort": "low",
       "status": "resolved",
@@ -240,7 +291,10 @@
       "iteration": 4,
       "priority": 4,
       "action": "Remove formatTimestamp duplication: ScoreProgression.tsx:44 should import formatTimestamp from ui-constants.ts instead of defining its own. Ensure format options are consistent.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Completes string/utility extraction pattern. Single source of truth for date formatting.",
       "effort": "low",
       "status": "resolved",
@@ -253,7 +307,9 @@
       "iteration": 4,
       "priority": 5,
       "action": "Add tests for validateProjectState, validateTimeline, validateActionItemsLedger in validate.test.ts. Cover valid inputs, invalid schemas, missing required fields, type mismatches.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Closes biggest test coverage gap. 3 validators with zero tests currently.",
       "effort": "medium",
       "status": "resolved",
@@ -266,7 +322,9 @@
       "iteration": 4,
       "priority": 6,
       "action": "Refactor validate.ts type casts: replace 12 instances of `as Record<string, unknown>` with type guard pattern. Create isRecord(value: unknown): value is Record<string, unknown> helper.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Improves type safety. Type guards are more maintainable and TypeScript-idiomatic than as-casts.",
       "effort": "medium",
       "status": "resolved",
@@ -279,7 +337,10 @@
       "iteration": 4,
       "priority": 7,
       "action": "Add aria-live='polite' to score bars in AgentCard.tsx for dynamic score updates. Add aria-busy during loading states. Add aria-label to loading.tsx spinner.",
-      "source_agents": ["lydia", "ado"],
+      "source_agents": [
+        "lydia",
+        "ado"
+      ],
       "impact": "Screen reader users get live updates when content changes dynamically.",
       "effort": "low",
       "status": "resolved",
@@ -292,7 +353,9 @@
       "iteration": 4,
       "priority": 8,
       "action": "Add demo video poster frame and compression: generate poster image from first frame, compress mp4 to <10MB with ffmpeg, add poster attribute to video tag.",
-      "source_agents": ["cat"],
+      "source_agents": [
+        "cat"
+      ],
       "impact": "Reduces initial page load, improves LCP. 32MB video without poster is a performance gap.",
       "effort": "low",
       "status": "resolved",
@@ -305,7 +368,9 @@
       "iteration": 4,
       "priority": 9,
       "action": "Add visual confirmation in Quick Start section: show terminal output example for successful install.sh run, show expected dashboard screenshot after first audit.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Users know what success looks like. Reduces support questions.",
       "effort": "low",
       "status": "resolved",
@@ -318,7 +383,10 @@
       "iteration": 4,
       "priority": 10,
       "action": "Add lang switcher infrastructure: create LanguageContext in app/layout.tsx, wire to html lang attribute, add Inter font 'latin-ext' subset for broader European language support.",
-      "source_agents": ["jason", "ado"],
+      "source_agents": [
+        "jason",
+        "ado"
+      ],
       "impact": "Foundation for internationalization. Low-effort signal of global readiness.",
       "effort": "medium",
       "status": "resolved",
@@ -331,7 +399,9 @@
       "iteration": 5,
       "priority": 1,
       "action": "Replace Record<string,string> on AGENT_COLORS with 'satisfies Record<string,string>' so 'as const' narrows keys.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Catches entire class of key-typo bugs at compile time.",
       "effort": "low",
       "status": "resolved",
@@ -344,7 +414,10 @@
       "iteration": 5,
       "priority": 2,
       "action": "Define RechartsPolarTickProps interface and replace the eslint-disable 'any' in RadarChart.tsx:55.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Achieves true zero-any compliance. Code quality +1-2 points.",
       "effort": "low",
       "status": "resolved",
@@ -357,7 +430,9 @@
       "iteration": 5,
       "priority": 3,
       "action": "Add isSupportedLocale type predicate to language-context.tsx, replacing 3 'as SupportedLocale' casts.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Eliminates unsafe type assertions. Type safety improvement.",
       "effort": "low",
       "status": "resolved",
@@ -370,7 +445,9 @@
       "iteration": 5,
       "priority": 4,
       "action": "Add focus-visible styling to all landing page CTAs in page.tsx.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Fixes WCAG 2.4.7 Focus Visible (Level AA). Accessibility +2 points.",
       "effort": "low",
       "status": "resolved",
@@ -383,7 +460,9 @@
       "iteration": 5,
       "priority": 5,
       "action": "Move verdict labels and section headers from AgentCard.tsx into messages.ts.",
-      "source_agents": ["jason"],
+      "source_agents": [
+        "jason"
+      ],
       "impact": "Closes gap between i18n infrastructure and extractable strings. Internationalization +5-7 points.",
       "effort": "low",
       "status": "resolved",
@@ -396,7 +475,9 @@
       "iteration": 5,
       "priority": 6,
       "action": "Add one integration test that reads real audit JSON through getAudit() and validateSynthesisReport() and asserts key content.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Verification +3 points. Catches schema-mismatch bugs.",
       "effort": "medium",
       "status": "resolved",
@@ -409,7 +490,9 @@
       "iteration": 5,
       "priority": 7,
       "action": "Add SECURITY.md with API key management, vulnerability disclosure, and input validation sections.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Documentation +3, Community +2 points.",
       "effort": "low",
       "status": "resolved",
@@ -422,7 +505,13 @@
       "iteration": 5,
       "priority": 8,
       "action": "Either ship actual translated message bundles for at least es/ja, or remove LanguageProvider from production until translations exist.",
-      "source_agents": ["boris", "cat", "thariq", "lydia", "jason"],
+      "source_agents": [
+        "boris",
+        "cat",
+        "thariq",
+        "lydia",
+        "jason"
+      ],
       "impact": "Resolves the most widely-cited weakness (5 of 6 agents). Simplicity or internationalization improvement.",
       "effort": "medium",
       "status": "resolved",
@@ -435,7 +524,9 @@
       "iteration": 5,
       "priority": 9,
       "action": "Enable cross-iteration context loading: load 2 most recent audit JSONs into each agent's context for iteration-aware evaluation.",
-      "source_agents": ["thariq"],
+      "source_agents": [
+        "thariq"
+      ],
       "impact": "Transforms agents from stateless to iteration-aware. opus_usage +3-5, emergent_behavior +3-5.",
       "effort": "medium",
       "status": "resolved",
@@ -448,7 +539,9 @@
       "iteration": 5,
       "priority": 10,
       "action": "Add lightweight interactive try-it-now experience on boardclaude.com (single-agent review via API).",
-      "source_agents": ["cat"],
+      "source_agents": [
+        "cat"
+      ],
       "impact": "Dramatically improves adoption_path (+5-8 points). Biggest user conversion improvement.",
       "effort": "high",
       "status": "resolved",
@@ -461,7 +554,11 @@
       "iteration": 6,
       "priority": 1,
       "action": "Add focus-visible styling to all Try-It-Now interactive elements: TryPageClient buttons, HeroTrySection, PanelAgentCard navigation. Use existing focus-visible:ring-2 pattern from NavBar.",
-      "source_agents": ["lydia", "ado", "jason"],
+      "source_agents": [
+        "lydia",
+        "ado",
+        "jason"
+      ],
       "impact": "Resolves accessibility regression affecting 15%+ of users who navigate via keyboard; improves WCAG 2.1 AA compliance",
       "effort": "low",
       "status": "resolved",
@@ -474,7 +571,10 @@
       "iteration": 6,
       "priority": 2,
       "action": "Add useReducedMotion() check to PanelAgentCard, PanelSynthesisView, StreamingAgentCard. Disable framer-motion animations when user prefers reduced motion.",
-      "source_agents": ["lydia", "ado"],
+      "source_agents": [
+        "lydia",
+        "ado"
+      ],
       "impact": "Prevents vestibular disorders for motion-sensitive users; closes critical accessibility gap",
       "effort": "low",
       "status": "resolved",
@@ -487,7 +587,10 @@
       "iteration": 6,
       "priority": 3,
       "action": "Add parseTryPanelResult validator in validate.ts; update try-storage.ts lines 67, 102 to use validator instead of direct JSON casting.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Closes validation bypass; prevents malformed data from reaching UI; maintains type safety guarantees",
       "effort": "low",
       "status": "resolved",
@@ -500,7 +603,10 @@
       "iteration": 6,
       "priority": 4,
       "action": "Add test coverage for /api/try/route.ts (436 lines) and usePanelStream.ts. Mock Anthropic SDK, verify SSE events, test fallback synthesis when <3 agents succeed.",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Recovers from test count regression (73->68); covers highest-risk code paths in Try-It-Now feature",
       "effort": "medium",
       "status": "resolved",
@@ -513,7 +619,10 @@
       "iteration": 6,
       "priority": 5,
       "action": "Replace ephemeral /tmp storage with persistent store (Vercel KV). Add shareable URLs for Try-It-Now results.",
-      "source_agents": ["cat", "boris"],
+      "source_agents": [
+        "cat",
+        "boris"
+      ],
       "impact": "Enables persistence across serverless cold starts; unlocks viral sharing mechanism",
       "effort": "medium",
       "status": "resolved",
@@ -526,7 +635,10 @@
       "iteration": 6,
       "priority": 6,
       "action": "Replace in-memory rate limiter (rate-limit.ts) with durable store (Vercel KV with TTL).",
-      "source_agents": ["boris", "cat"],
+      "source_agents": [
+        "boris",
+        "cat"
+      ],
       "impact": "Prevents abuse of Try-It-Now API; maintains consistent rate limiting across serverless deployments",
       "effort": "medium",
       "status": "resolved",
@@ -539,7 +651,10 @@
       "iteration": 6,
       "priority": 7,
       "action": "Add extended thinking to Opus agent calls in /api/try/route.ts. Set thinking.type='enabled', thinking.budget_tokens calibrated by agent.",
-      "source_agents": ["thariq", "boris"],
+      "source_agents": [
+        "thariq",
+        "boris"
+      ],
       "impact": "Leverages Opus 4.6 extended thinking for deeper analysis; improves evaluation quality",
       "effort": "low",
       "status": "resolved",
@@ -552,7 +667,10 @@
       "iteration": 6,
       "priority": 8,
       "action": "Expand file selection heuristic in github.ts: increase from 3 to 8-10 source files, raise cap from 30KB to 80KB.",
-      "source_agents": ["cat", "thariq"],
+      "source_agents": [
+        "cat",
+        "thariq"
+      ],
       "impact": "Provides more representative codebase sample; improves evaluation accuracy",
       "effort": "medium",
       "status": "resolved",
@@ -565,7 +683,9 @@
       "iteration": 6,
       "priority": 9,
       "action": "Extract EFFORT_STYLES to ui-constants.ts; create shared DivergentOpinions and PrioritizedActionItems components.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Reduces code duplication; ensures consistent styling across plugin and web results",
       "effort": "low",
       "status": "resolved",
@@ -578,7 +698,10 @@
       "iteration": 6,
       "priority": 10,
       "action": "Add 'Files Analyzed' expandable section in Try-It-Now results showing which files were selected and why.",
-      "source_agents": ["cat", "ado"],
+      "source_agents": [
+        "cat",
+        "ado"
+      ],
       "impact": "Increases user trust by making file selection heuristic transparent",
       "effort": "low",
       "status": "resolved",
@@ -591,7 +714,9 @@
       "iteration": 7,
       "priority": 1,
       "action": "Implement adaptive thinking budgets: map agent effort config to budget_tokens (max=20000, high=10000, medium=5000, low=2000). Replace hardcoded 10000 in route.ts.",
-      "source_agents": ["thariq"],
+      "source_agents": [
+        "thariq"
+      ],
       "impact": "Demonstrates genuine Opus 4.6 capability utilization. opus_usage +10 points.",
       "effort": "low",
       "status": "resolved",
@@ -604,7 +729,9 @@
       "iteration": 7,
       "priority": 2,
       "action": "Replace `as unknown as TryPanelResult` in usePanelStream.ts:165 and useReviewStream.ts:132 with runtime validation.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Eliminates the only double-cast in production code. Closes type-safety gap on SSE boundary.",
       "effort": "low",
       "status": "resolved",
@@ -617,7 +744,9 @@
       "iteration": 7,
       "priority": 3,
       "action": "Add lightweight debate round: after all 6 agents complete, identify top 2 divergent agents and send each a follow-up with the other's evaluation. Feed debate to synthesis.",
-      "source_agents": ["thariq"],
+      "source_agents": [
+        "thariq"
+      ],
       "impact": "Transforms parallel opinion collection into genuine multi-agent intelligence. emergent_behavior +15.",
       "effort": "medium",
       "status": "resolved",
@@ -630,11 +759,15 @@
       "iteration": 7,
       "priority": 4,
       "action": "Implement cross-iteration context in web pipeline: check Redis for previous reviews of same repo, include prior scores and action items in agent prompts.",
-      "source_agents": ["thariq", "cat"],
+      "source_agents": [
+        "thariq",
+        "cat"
+      ],
       "impact": "Creates compound intelligence where each review builds on the last. emergent_behavior +8.",
       "effort": "medium",
-      "status": "in_progress",
-      "iterations_open": 1,
+      "status": "resolved",
+      "resolved_at": "2026-02-11T23:18:15.000Z",
+      "resolution": "Cross-iteration context confirmed working by Thariq (iter-9): 'pipeline queries Redis for previous reviews, builds context with prior scores and action items, appends to user prompt.'",
       "fix_attempts": [
         {
           "timestamp": "2026-02-11T22:42:00.000Z",
@@ -655,7 +788,9 @@
       "iteration": 7,
       "priority": 5,
       "action": "Add stable identity keys (crypto.randomUUID()) to BuilderAgent in boards/build/page.tsx. Use key={agent.id} instead of key={idx}.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Fixes real bug where removing an agent could cause stale form state in subsequent agents.",
       "effort": "low",
       "status": "resolved",
@@ -668,7 +803,9 @@
       "iteration": 7,
       "priority": 6,
       "action": "Add dedicated tests for validateTryPanelResult covering valid data, missing fields, and malformed agent arrays.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Closes the last critical untested validation boundary.",
       "effort": "low",
       "status": "resolved",
@@ -681,11 +818,14 @@
       "iteration": 7,
       "priority": 7,
       "action": "Add 30-second quickstart GIF to README showing /bc:audit -> results -> /bc:fix -> score improvement.",
-      "source_agents": ["ado"],
+      "source_agents": [
+        "ado"
+      ],
       "impact": "Reduces time-to-comprehension from 3 minutes to 30 seconds.",
       "effort": "medium",
-      "status": "in_progress",
-      "iterations_open": 1,
+      "status": "resolved",
+      "resolved_at": "2026-02-11T23:18:15.000Z",
+      "resolution": "Animated SVG quickstart demo confirmed by Ado (iter-9): 'Outstanding README.md with animated SVG quickstart demo showing 3-step audit-fix-reaudit flow with score progression.'",
       "fix_attempts": [
         {
           "timestamp": "2026-02-11T20:50:00.000Z",
@@ -706,7 +846,9 @@
       "iteration": 7,
       "priority": 8,
       "action": "Add Open Graph / Twitter Card metadata to /results/web/[auditId] shareable pages with composite score, grade, and repo name.",
-      "source_agents": ["cat"],
+      "source_agents": [
+        "cat"
+      ],
       "impact": "Rich social previews increase click-through on shared audit links.",
       "effort": "low",
       "status": "resolved",
@@ -719,7 +861,9 @@
       "iteration": 8,
       "priority": 1,
       "action": "Wire validateAgentEvaluation into route.ts before constructing TryAgentResult to prevent malformed AI output from passing silently into synthesis.",
-      "source_agents": ["boris"],
+      "source_agents": [
+        "boris"
+      ],
       "impact": "Prevents synthesis crashes, improves verification score +3-5 points.",
       "effort": "low",
       "status": "resolved",
@@ -732,7 +876,9 @@
       "iteration": 8,
       "priority": 3,
       "action": "Implement tier-aware file selection: increase BYOK tier to 400KB+ / 40+ files via getTierLimits(tier) in github.ts.",
-      "source_agents": ["thariq"],
+      "source_agents": [
+        "thariq"
+      ],
       "impact": "Unlocks 1M context window for paying users. opus_usage +8-12 points.",
       "effort": "medium",
       "status": "resolved",
@@ -745,7 +891,9 @@
       "iteration": 8,
       "priority": 5,
       "action": "Consolidate usePanelStream 7 useState hooks into useReducer with PanelStreamState/PanelStreamAction discriminated union.",
-      "source_agents": ["lydia"],
+      "source_agents": [
+        "lydia"
+      ],
       "impact": "Eliminates intermediate renders, makes SSE state machine explicit. Patterns +2-3.",
       "effort": "medium",
       "status": "resolved",
@@ -758,19 +906,212 @@
       "iteration": 8,
       "priority": 7,
       "action": "Create .github/PULL_REQUEST_TEMPLATE.md with checklist (tests, types, prettier, screenshots).",
-      "source_agents": ["ado", "jason"],
+      "source_agents": [
+        "ado",
+        "jason"
+      ],
       "impact": "Completes community infrastructure. Consensus across 2 agents.",
       "effort": "low",
       "status": "resolved",
       "resolved_at": "2026-02-11T22:30:00.000Z",
       "resolution": "Created .github/PULL_REQUEST_TEMPLATE.md with Summary, Changes, Checklist (typecheck, test, format, build, no any, server components, accessibility), Screenshots, and Related Issues sections."
+    },
+    {
+      "id": "ai-068",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 1,
+      "action": "Decompose route.ts into try-invoke.ts, try-debate.ts, try-synthesize.ts",
+      "source_agents": [
+        "boris",
+        "thariq"
+      ],
+      "impact": "Architecture +3-5. Two iterations flagged.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/app/api/try/route.ts"
+      ],
+      "resolved_at": "2026-02-11T22:34:14.051Z",
+      "resolution": "Decomposed 574-line route.ts into try-invoke.ts, try-debate.ts, try-synthesize.ts + thin orchestrator. Zero type errors."
+    },
+    {
+      "id": "ai-069",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 2,
+      "action": "Upgrade debate model to Opus for BYOK tier (one-line fix at route.ts line 306)",
+      "source_agents": [
+        "thariq"
+      ],
+      "impact": "emergent_behavior +5. Two iterations flagged.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/app/api/try/route.ts"
+      ],
+      "resolved_at": "2026-02-11T22:34:14.051Z",
+      "resolution": "Changed debate model from getModelId(\"sonnet\", tier) to getModelId(\"opus\", tier) in try-debate.ts."
+    },
+    {
+      "id": "ai-070",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 3,
+      "action": "Extract shared EvaluationList component from duplicated list pattern across 4 files",
+      "source_agents": [
+        "lydia"
+      ],
+      "impact": "code_quality +2, patterns +2. Three iterations flagged.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/components/AgentCard.tsx",
+        "dashboard/src/components/PanelAgentCard.tsx",
+        "dashboard/src/components/PanelSynthesisView.tsx",
+        "dashboard/src/components/StreamingAgentCard.tsx"
+      ],
+      "resolved_at": "2026-02-11T22:34:14.051Z",
+      "resolution": "Created shared EvaluationList.tsx component. Replaced duplicated icon+list patterns in AgentCard, PanelAgentCard, PanelSynthesisView, StreamingAgentCard."
+    },
+    {
+      "id": "ai-071",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 4,
+      "action": "Add visual audit-fix-re-audit loop section to landing page with score progression",
+      "source_agents": [
+        "cat"
+      ],
+      "impact": "Narrative +3-5. Core differentiator needs hero treatment.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/app/page.tsx"
+      ],
+      "resolved_at": "2026-02-11T22:34:14.051Z",
+      "resolution": "Added Self-Improvement Loop section to landing page with loop diagram, bar chart of real score progression (68→91), and narrative description."
+    },
+    {
+      "id": "ai-072",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 5,
+      "action": "Replace key={i} with content-derived keys in dynamic streaming lists",
+      "source_agents": [
+        "lydia"
+      ],
+      "impact": "Fixes React reconciliation bugs. code_quality +1.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/components/PanelAgentCard.tsx",
+        "dashboard/src/components/PanelSynthesisView.tsx"
+      ],
+      "resolved_at": "2026-02-11T22:34:14.051Z",
+      "resolution": "Replaced key={i} with content-derived keys across PanelAgentCard, PanelSynthesisView, StreamingAgentCard, and page.tsx."
+    },
+    {
+      "id": "ai-073",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 6,
+      "action": "Add 3-5 RSC smoke tests for landing, results, and audit detail pages",
+      "source_agents": [
+        "boris"
+      ],
+      "impact": "Verification +3-4. Closes documented rendering blind spot.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/app/page.tsx",
+        "dashboard/src/app/results/page.tsx"
+      ],
+      "resolved_at": "2026-02-12T08:42:00.694Z",
+      "resolution": "Created 5 RSC smoke tests in src/app/__tests__/pages.test.tsx: module export checks, renderToString render, messages completeness, agent field validation."
+    },
+    {
+      "id": "ai-074",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 7,
+      "action": "Create OG image (opengraph-image.tsx) for social sharing",
+      "source_agents": [
+        "ado"
+      ],
+      "impact": "Social shares get rich previews. ~3x click-through.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/app/opengraph-image.tsx"
+      ],
+      "resolved_at": "2026-02-12T08:42:00.694Z",
+      "resolution": "Created opengraph-image.tsx with edge runtime, 1200x630 PNG. Dark bg, Board+Claude title, tagline, 6 colored agent dots, panel label."
+    },
+    {
+      "id": "ai-075",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 8,
+      "action": "Add BYOK cost guidance and Anthropic API key signup link to TryForm.tsx",
+      "source_agents": [
+        "cat"
+      ],
+      "impact": "Adoption path +3-4. Higher BYOK conversion.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/src/components/TryForm.tsx"
+      ],
+      "resolved_at": "2026-02-12T08:42:00.694Z",
+      "resolution": "Added cost estimate (~$0.15-0.40/review) and Anthropic Console signup link to TryForm BYOK section. New messages: byokCostEstimate, byokGetKey, byokGetKeyLink."
+    },
+    {
+      "id": "ai-076",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 9,
+      "action": "Add tool_use capability for at least one agent in web evaluation pipeline",
+      "source_agents": [
+        "thariq"
+      ],
+      "impact": "ai_innovation +8. Moves from single-turn to agentic.",
+      "effort": "high",
+      "status": "open",
+      "file_refs": [
+        "dashboard/src/app/api/try/route.ts"
+      ]
+    },
+    {
+      "id": "ai-077",
+      "source_audit": "20260211-231815",
+      "iteration": 9,
+      "priority": 10,
+      "action": "Create dashboard/README.md with env var documentation and local setup",
+      "source_agents": [
+        "cat",
+        "jason"
+      ],
+      "impact": "Adoption path +2-3 for contributors.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": [
+        "dashboard/README.md"
+      ],
+      "resolved_at": "2026-02-12T08:42:00.694Z",
+      "resolution": "Created dashboard/README.md with prerequisites, getting started, env vars, scripts table, project structure, tech stack, and deployment info (65 lines)."
     }
   ],
   "metadata": {
-    "total_items": 58,
-    "open": 0,
-    "in_progress": 2,
-    "resolved": 56,
-    "chronic": 0
+    "total_items": 68,
+    "open": 8,
+    "in_progress": 0,
+    "resolved": 58,
+    "blocked": 0,
+    "chronic": 0,
+    "open_items": 1,
+    "resolved_items": 66,
+    "in_progress_items": 0,
+    "last_updated": "2026-02-12T08:42:00.694Z"
   }
 }
