@@ -54,7 +54,7 @@ export default function HomePage() {
                 style={{ backgroundColor: getAgentColor(agent.key) }}
               />
               <span className="font-medium">{agent.fullName}</span>
-              <span className="text-sm text-gray-400">{agent.role}</span>
+              <span className="text-sm text-gray-300">{agent.role}</span>
             </div>
           ))}
         </div>
@@ -143,7 +143,7 @@ export default function HomePage() {
 
         {/* Score progression bar chart */}
         <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-gray-300 mb-4">
             {messages.loop.progression.label}
           </p>
           <div className="flex items-end gap-3 sm:gap-5 h-40">
@@ -181,7 +181,7 @@ export default function HomePage() {
               className="rounded-xl border border-gray-800 bg-gray-900/50 p-6"
             >
               <h3 className="text-lg font-semibold">{feature.title}</h3>
-              <p className="mt-2 text-sm text-gray-400 leading-relaxed">
+              <p className="mt-2 text-sm text-gray-300 leading-relaxed">
                 {feature.description}
               </p>
             </div>
@@ -197,14 +197,14 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold mb-4">{install.heading}</h2>
         <p className="text-gray-400 mb-8 text-lg">{install.description}</p>
         <div className="rounded-xl border border-gray-800 bg-gray-900 p-6 text-left">
-          <p className="text-xs font-mono text-gray-400 mb-3">
+          <p className="text-xs font-mono text-gray-300 mb-3">
             {install.terminalLabel}
           </p>
           <code className="block text-base sm:text-lg font-mono text-indigo-300 break-all">
             {install.command}
           </code>
         </div>
-        <p className="mt-6 text-sm text-gray-400">
+        <p className="mt-6 text-sm text-gray-300">
           Then run{" "}
           <code className="text-gray-300 bg-gray-800 px-2 py-0.5 rounded text-sm">
             {install.hintCommand}
@@ -214,7 +214,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 py-12 text-center text-gray-400 text-sm">
+      <footer className="border-t border-gray-800 py-12 text-center text-gray-300 text-sm">
         <p>
           {footer.builtFor}{" "}
           <span className="text-gray-300">{footer.hackathonName}</span>{" "}

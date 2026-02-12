@@ -23,13 +23,13 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="truncate font-mono text-sm text-gray-400">{audit_id}</p>
-          <p className="text-xs text-gray-400">{formatTimestamp(timestamp)}</p>
+          <p className="truncate font-mono text-sm text-gray-300">{audit_id}</p>
+          <p className="text-xs text-gray-300">{formatTimestamp(timestamp)}</p>
           <div className="flex items-center gap-2 pt-1">
             <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
               {panel}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-gray-300">
               {messages.results.iterationLabel} {iteration}
             </span>
           </div>
@@ -82,7 +82,7 @@ function WebReviewCard({ review }: { review: TryResultSummary }) {
           <p className="truncate text-sm font-medium text-gray-200">
             {repo.owner}/{repo.name}
           </p>
-          <p className="text-xs text-gray-400">{formatTimestamp(timestamp)}</p>
+          <p className="text-xs text-gray-300">{formatTimestamp(timestamp)}</p>
           <div className="flex items-center gap-2 pt-1">
             <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs font-medium text-gray-300">
               web-judges
@@ -176,7 +176,7 @@ export function ResultsPageClient({
       {view === "list" ? (
         sorted.length === 0 ? (
           <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-800">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-300">
               No audits yet. Run your first audit with{" "}
               <code className="rounded bg-gray-800 px-1.5 py-0.5 text-xs">
                 {messages.results.emptyCommand}
@@ -195,7 +195,7 @@ export function ResultsPageClient({
       ) : /* Web Reviews */
       webReviews.length === 0 ? (
         <div className="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-800">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-gray-300">
             No web reviews yet. Try one at{" "}
             <Link href="/try" className="text-indigo-400 hover:text-indigo-300">
               /try

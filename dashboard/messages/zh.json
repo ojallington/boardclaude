@@ -6,7 +6,7 @@
   "hero": {
     "heading": "BoardClaude",
     "tagline": "\u6211\u4eec\u6ca1\u80fd\u83b7\u5f97\u540d\u989d\u3002\u6240\u4ee5\u6211\u4eec\u6784\u5efa\u4e86\u8bc4\u5ba1\u3002",
-    "description": "Six AI agents, each inspired by a real hackathon judge, evaluate your project from different expert perspectives. Whether you\u2019re competing or just building\u2014get the feedback that matters.",
+    "description": "\u516d\u4e2aAI\u4ee3\u7406\uff0c\u6bcf\u4e2a\u90fd\u53d7\u5230\u771f\u5b9e\u9ed1\u5ba2\u677e\u8bc4\u5ba1\u7684\u542f\u53d1\uff0c\u4ece\u4e0d\u540c\u7684\u4e13\u5bb6\u89d2\u5ea6\u8bc4\u4f30\u60a8\u7684\u9879\u76ee\u3002\u65e0\u8bba\u60a8\u662f\u5728\u7ade\u8d5b\u8fd8\u662f\u5728\u6784\u5efa\uff0c\u83b7\u53d6\u771f\u6b63\u91cd\u8981\u7684\u53cd\u9988\u3002",
     "installCta": "\u5b89\u88c5\u63d2\u4ef6",
     "demoCta": "\u89c2\u770b\u6f14\u793a",
     "resultsCta": "\u67e5\u770b\u7ed3\u679c",
@@ -14,9 +14,9 @@
   },
   "story": {
     "heading": "\u6545\u4e8b",
-    "p1": "Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon invited developers to push the boundaries of what\u2019s possible with Claude. 500 spots. We didn\u2019t get one.",
-    "p2": "So we did the next best thing: we studied the judges. Six industry experts, each with a distinct perspective on what makes software great\u2014architecture, product thinking, AI innovation, developer experience, documentation, and community impact. We built AI representations of each one.",
-    "p3": "The result is BoardClaude: a configurable panel of AI agents that evaluate your project the way a real judging panel would. Paste a GitHub URL to try a quick review, or install the CLI for the full six-judge experience with scored dimensions, radar charts, and prioritized action items."
+    "p1": "Anthropic\u7684\u201cBuilt with Opus 4.6\u201d\u9ed1\u5ba2\u677e\u9080\u8bf7\u5f00\u53d1\u8005\u63a2\u7d22Claude\u7684\u65e0\u9650\u53ef\u80fd\u3002500\u4e2a\u540d\u989d\u3002\u6211\u4eec\u6ca1\u80fd\u83b7\u5f97\u4e00\u4e2a\u3002",
+    "p2": "\u4e8e\u662f\u6211\u4eec\u505a\u4e86\u6700\u597d\u7684\u4e8b\u60c5\uff1a\u7814\u7a76\u8bc4\u5ba1\u3002\u516d\u4f4d\u884c\u4e1a\u4e13\u5bb6\uff0c\u6bcf\u4f4d\u90fd\u5bf9\u4f18\u79c0\u8f6f\u4ef6\u7684\u5b9a\u4e49\u6709\u72ec\u7279\u7684\u89c6\u89d2\u2014\u2014\u67b6\u6784\u3001\u4ea7\u54c1\u601d\u7ef4\u3001AI\u521b\u65b0\u3001\u5f00\u53d1\u8005\u4f53\u9a8c\u3001\u6587\u6863\u548c\u793e\u533a\u5f71\u54cd\u529b\u3002\u6211\u4eec\u6784\u5efa\u4e86\u6bcf\u4f4d\u7684AI\u8868\u793a\u3002",
+    "p3": "\u7ed3\u679c\u5c31\u662fBoardClaude\uff1a\u4e00\u4e2a\u53ef\u914d\u7f6e\u7684AI\u4ee3\u7406\u9762\u677f\uff0c\u50cf\u771f\u5b9e\u7684\u8bc4\u5ba1\u56e2\u4e00\u6837\u8bc4\u4f30\u60a8\u7684\u9879\u76ee\u3002\u7c98\u8d34GitHub URL\u5feb\u901f\u8bc4\u5ba1\uff0c\u6216\u5b89\u88c5CLI\u4f53\u9a8c\u5305\u542b\u8bc4\u5206\u7ef4\u5ea6\u3001\u96f7\u8fbe\u56fe\u548c\u4f18\u5148\u64cd\u4f5c\u9879\u7684\u5b8c\u6574\u516d\u4f4d\u8bc4\u5ba1\u4f53\u9a8c\u3002"
   },
   "install": {
     "heading": "\u5f00\u59cb\u4f7f\u7528",
@@ -221,7 +221,7 @@
     "phaseIdle": "",
     "phaseValidating": "\u6b63\u5728\u9a8c\u8bc1\u4ed3\u5e93URL...",
     "phaseFetching": "\u6b63\u5728\u83b7\u53d6\u4ed3\u5e93\u5185\u5bb9...",
-    "phaseReviewing": "\u6b63\u5728\u7528\u2060 6\u4e2a\u4ee3\u7406\u8bc4\u4f30...",
+    "phaseReviewing": "\u6b63\u5728\u7528 6\u4e2a\u4ee3\u7406\u8bc4\u4f30...",
     "phaseDebating": "\u4ee3\u7406\u6b63\u5728\u4ea4\u53c9\u68c0\u67e5\u5206\u6b67\u5206\u6570...",
     "phaseSynthesizing": "\u6b63\u5728\u7efc\u5408\u9762\u677f\u5171\u8bc6...",
     "phaseComplete": "\u9762\u677f\u8bc4\u5ba1\u5b8c\u6210\uff01",

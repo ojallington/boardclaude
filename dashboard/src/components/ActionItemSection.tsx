@@ -70,7 +70,7 @@ export function ActionItemSection({
             {itemsCreated.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start gap-2 text-xs text-gray-400"
+                className="flex items-start gap-2 text-xs text-gray-300"
               >
                 <span
                   className={`mt-0.5 shrink-0 rounded border px-1.5 py-0.5 text-[10px] font-bold ${getPriorityStyle(item.priority)}`}
@@ -100,7 +100,7 @@ export function ActionItemSection({
             {itemsResolved.map((item) => (
               <div
                 key={item.id}
-                className="flex items-start gap-2 text-xs text-gray-400"
+                className="flex items-start gap-2 text-xs text-gray-300"
               >
                 <span className="mt-0.5 shrink-0 text-emerald-400">
                   &#10003;

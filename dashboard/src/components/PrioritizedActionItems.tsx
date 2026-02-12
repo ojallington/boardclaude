@@ -17,7 +17,7 @@ export function PrioritizedActionItems({
     <div
       className={`rounded-xl border border-gray-800 bg-gray-900/60 p-4 ${className}`}
     >
-      <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
+      <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-3">
         Prioritized Action Items
       </h3>
       <div className="space-y-3">

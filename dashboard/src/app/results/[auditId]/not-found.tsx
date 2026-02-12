@@ -7,7 +7,7 @@ export default function AuditNotFound() {
       <h2 className="text-2xl font-bold text-gray-100">
         {messages.errors.auditNotFound.heading}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">
+      <p className="mt-2 text-sm text-gray-300">
         {messages.errors.auditNotFound.description}
       </p>
       <Link

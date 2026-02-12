@@ -102,7 +102,7 @@ export function AgentScoreProgression({
         role="img"
         aria-label="Agent score progression chart with no data"
       >
-        <p className="text-sm text-gray-400">No agent history available</p>
+        <p className="text-sm text-gray-300">No agent history available</p>
       </div>
     );
   }

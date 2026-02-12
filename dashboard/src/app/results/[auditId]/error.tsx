@@ -20,7 +20,7 @@ export default function AuditDetailError({
       <h2 className="text-2xl font-bold text-gray-100">
         {messages.errors.auditDetail.heading}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">
+      <p className="mt-2 text-sm text-gray-300">
         {messages.errors.auditDetail.description}
       </p>
       <div className="mt-6 flex gap-3">

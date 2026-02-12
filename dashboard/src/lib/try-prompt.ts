@@ -61,6 +61,21 @@ export function buildCrossIterationContext(prior: {
     one_line: string;
   }>;
   action_items: Array<{ priority: number; action: string }>;
+  debate?: {
+    triggered: boolean;
+    transcript?: Array<{
+      agent_a: string;
+      agent_b: string;
+      topic: string;
+      exchange: string[];
+    }>;
+    revisions?: Array<{
+      agent: string;
+      criterion: string;
+      original: number;
+      revised: number;
+    }>;
+  };
 }): string {
   const lines = [
     "\n## Previous Review Context",
@@ -83,12 +98,34 @@ export function buildCrossIterationContext(prior: {
     }
   }
 
+  if (prior.debate?.triggered) {
+    lines.push("", "### Prior Debate Summary:");
+    if (prior.debate.transcript && prior.debate.transcript.length > 0) {
+      for (const entry of prior.debate.transcript) {
+        lines.push(
+          `- ${entry.agent_a} vs ${entry.agent_b} debated: ${entry.topic}`,
+        );
+      }
+    }
+    if (prior.debate.revisions && prior.debate.revisions.length > 0) {
+      lines.push("", "Score revisions from debate:");
+      for (const rev of prior.debate.revisions) {
+        lines.push(
+          `- ${rev.agent} revised ${rev.criterion}: ${rev.original} -> ${rev.revised}`,
+        );
+      }
+    }
+  } else {
+    lines.push("", "No debate was triggered in the prior review.");
+  }
+
   lines.push(
     "",
     "### Your Task:",
     "Evaluate the repository as it exists NOW. Compare against the prior review where relevant:",
     "- Note improvements since the last review",
     "- Flag regressions or unresolved issues from prior action items",
+    "- Consider prior debate outcomes and whether contested scores were justified",
     "- Your scores should reflect the current state, not the delta",
   );
 

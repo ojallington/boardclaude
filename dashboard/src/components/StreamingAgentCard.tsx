@@ -36,7 +36,7 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
   const shouldReduceMotion = useReducedMotion();
   return (
     <div className="flex items-center gap-3">
-      <span className="w-32 shrink-0 text-sm text-gray-400 truncate">
+      <span className="w-32 shrink-0 text-sm text-gray-300 truncate">
         {label}
       </span>
       <div
@@ -108,7 +108,7 @@ export function StreamingAgentCard({
             {messages.tryIt.phases.reviewing}
           </span>
           {modelInfo && (
-            <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs text-gray-400">
+            <span className="rounded-md bg-gray-800 px-2 py-0.5 text-xs text-gray-300">
               {modelInfo}
             </span>
           )}
@@ -151,7 +151,7 @@ export function StreamingAgentCard({
                 ? `${result.repo.owner}/${result.repo.name}`
                 : "Review"}
             </h3>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-300">
               BoardClaude Reviewer
               {result.model_used && (
                 <span className="ml-2 rounded-md bg-gray-800 px-2 py-0.5 text-xs">
@@ -181,7 +181,7 @@ export function StreamingAgentCard({
 
         {/* One-line summary */}
         {result.one_line && (
-          <p className="mt-3 text-sm italic text-gray-400">{result.one_line}</p>
+          <p className="mt-3 text-sm italic text-gray-300">{result.one_line}</p>
         )}
 
         {/* Score bars */}
@@ -222,7 +222,7 @@ export function StreamingAgentCard({
         {/* Action Items */}
         {result.action_items && result.action_items.length > 0 && (
           <div className="mt-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
               Action Items
             </h4>
             <ol className="space-y-1.5">
