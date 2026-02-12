@@ -157,7 +157,7 @@
       "effort": "medium",
       "status": "resolved",
       "resolved_at": "2026-02-11T00:30:00.000Z",
-      "resolution": "Added validateProjectState, validateTimeline, validateActionItemsLedger + parse wrappers to validate.ts. Wired into audit-loader.ts — all 5 loaders now validate before entering the type system."
+      "resolution": "Added validateProjectState, validateTimeline, validateActionItemsLedger + parse wrappers to validate.ts. Wired into audit-loader.ts \u2014 all 5 loaders now validate before entering the type system."
     },
     {
       "id": "ai-021",
@@ -990,7 +990,7 @@
         "dashboard/src/app/page.tsx"
       ],
       "resolved_at": "2026-02-11T22:34:14.051Z",
-      "resolution": "Added Self-Improvement Loop section to landing page with loop diagram, bar chart of real score progression (68→91), and narrative description."
+      "resolution": "Added Self-Improvement Loop section to landing page with loop diagram, bar chart of real score progression (68\u219291), and narrative description."
     },
     {
       "id": "ai-072",
@@ -1077,10 +1077,11 @@
       ],
       "impact": "ai_innovation +8. Moves from single-turn to agentic.",
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
       "file_refs": [
         "dashboard/src/app/api/try/route.ts"
-      ]
+      ],
+      "resolved_in": "iter-9-manual"
     },
     {
       "id": "ai-077",
@@ -1100,18 +1101,60 @@
       ],
       "resolved_at": "2026-02-12T08:42:00.694Z",
       "resolution": "Created dashboard/README.md with prerequisites, getting started, env vars, scripts table, project structure, tech stack, and deployment info (65 lines)."
+    },
+    {
+      "id": "ai-078",
+      "source_audit": "20260212-194024",
+      "iteration": 10,
+      "priority": 1,
+      "action": "Add validation step in buildSynthesizedResult (try-synthesize.ts): replace 5 type assertions with validated field access, fall through to safe defaults on failure",
+      "source_agents": ["boris", "lydia"],
+      "impact": "Closes last unvalidated LLM output boundary. Verification +3-5, code_quality +2.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": ["dashboard/src/lib/try-synthesize.ts"],
+      "resolved_at": "2026-02-12T19:49:00.000Z",
+      "resolution": "Added isRecord, extractNumber, extractRadar, extractStringArray, extractDivergentOpinion, extractHighlights, extractSynthesisActionItem, extractActionItems local validators. Replaced all 5 flagged 'as' casts with validated field access. Graceful degradation to computed defaults on malformed LLM output."
+    },
+    {
+      "id": "ai-079",
+      "source_audit": "20260212-194024",
+      "iteration": 10,
+      "priority": 2,
+      "action": "Parallelize file fetching in github.ts: replace sequential for-loop with Promise.all + concurrency limiter (limit=6)",
+      "source_agents": ["boris", "thariq"],
+      "impact": "BYOK fetch time from ~8s to ~2s. Efficiency +5. Two iterations flagged.",
+      "effort": "medium",
+      "status": "resolved",
+      "file_refs": ["dashboard/src/lib/github.ts"],
+      "resolved_at": "2026-02-12T19:49:00.000Z",
+      "resolution": "Added inline pMap<T,R> concurrency utility (no deps). Replaced serial for-loop with parallel fetch (concurrency=6) + sequential budget accounting. BYOK 40 files: ~7 batches instead of 40 sequential requests."
+    },
+    {
+      "id": "ai-080",
+      "source_audit": "20260212-194024",
+      "iteration": 10,
+      "priority": 3,
+      "action": "Add type narrowing guards for SSE event data in usePanelStream.ts: validate agent_complete payloads before dispatching",
+      "source_agents": ["boris", "lydia"],
+      "impact": "Runtime safety for streaming protocol. Code_quality +2-3.",
+      "effort": "low",
+      "status": "resolved",
+      "file_refs": ["dashboard/src/hooks/usePanelStream.ts"],
+      "resolved_at": "2026-02-12T19:49:00.000Z",
+      "resolution": "Added isRecord, isRepoInfo, isAgentResult type guards. Replaced all 9 bare 'as' casts with typeof/equality narrowing. agent_complete now validates via isAgentResult guard, dispatches AGENT_ERROR on failure."
     }
   ],
   "metadata": {
-    "total_items": 68,
-    "open": 8,
+    "total_items": 71,
+    "open": 7,
     "in_progress": 0,
-    "resolved": 58,
+    "resolved": 61,
     "blocked": 0,
     "chronic": 0,
-    "open_items": 1,
-    "resolved_items": 66,
+    "open_items": 7,
+    "resolved_items": 61,
     "in_progress_items": 0,
-    "last_updated": "2026-02-12T08:42:00.694Z"
+    "last_updated": "2026-02-12T19:49:00.000Z"
   }
 }

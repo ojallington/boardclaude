@@ -216,6 +216,32 @@ export function getTierLimits(tier: "free" | "byok"): TierLimits {
   return { maxTotalChars: 80_000, maxSourceFiles: 10 };
 }
 
+// ─── Concurrency Utility ─────────────────────────────────────────────────────
+
+/** Concurrency-limited parallel map. Preserves input order in results. */
+async function pMap<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+  concurrency: number,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const i = nextIndex++;
+      const item = items[i];
+      if (item !== undefined) {
+        results[i] = await fn(item);
+      }
+    }
+  }
+
+  const workerCount = Math.min(concurrency, items.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return results;
+}
+
 // ─── Main Fetch Function ────────────────────────────────────────────────────
 
 export interface FetchedRepo {
@@ -225,6 +251,9 @@ export interface FetchedRepo {
   totalFiles: number;
   treeSize: number;
 }
+
+/** Max concurrent file-content HTTP requests */
+const FILE_FETCH_CONCURRENCY = 6;
 
 export async function fetchRepoContents(
   owner: string,
@@ -237,31 +266,36 @@ export async function fetchRepoContents(
   const filePaths = selectFiles(tree, limits.maxSourceFiles);
   const prioritySet = new Set(PRIORITY_FILES);
 
+  // Fetch all file contents in parallel (concurrency-limited)
+  const fetched = await pMap(
+    filePaths,
+    async (filePath) => ({
+      path: filePath,
+      content: await fetchFileContent(owner, repo, defaultBranch, filePath),
+    }),
+    FILE_FETCH_CONCURRENCY,
+  );
+
+  // Apply character budget sequentially (preserves file-priority order)
   const files: Array<{ path: string; content: string }> = [];
   const filesDetail: FileDetail[] = [];
   let totalChars = 0;
 
-  for (const filePath of filePaths) {
+  for (const { path: filePath, content } of fetched) {
     if (totalChars >= limits.maxTotalChars) break;
-    const content = await fetchFileContent(
-      owner,
-      repo,
-      defaultBranch,
-      filePath,
-    );
-    if (content) {
-      const trimmed =
-        totalChars + content.length > limits.maxTotalChars
-          ? content.slice(0, limits.maxTotalChars - totalChars)
-          : content;
-      files.push({ path: filePath, content: trimmed });
-      filesDetail.push({
-        path: filePath,
-        size: trimmed.length,
-        category: prioritySet.has(filePath) ? "priority" : "source",
-      });
-      totalChars += trimmed.length;
-    }
+    if (!content) continue;
+
+    const trimmed =
+      totalChars + content.length > limits.maxTotalChars
+        ? content.slice(0, limits.maxTotalChars - totalChars)
+        : content;
+    files.push({ path: filePath, content: trimmed });
+    filesDetail.push({
+      path: filePath,
+      size: trimmed.length,
+      category: prioritySet.has(filePath) ? "priority" : "source",
+    });
+    totalChars += trimmed.length;
   }
 
   return {
