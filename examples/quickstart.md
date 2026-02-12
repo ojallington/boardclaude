@@ -9,13 +9,18 @@
 ## Install
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/ojallington/boardclaude.git
+# Option 1: npx (recommended)
+npx boardclaude install .
 
-# 2. Install into your project
+# Option 2: Global install
+npm install -g boardclaude
+boardclaude install your-project/
+
+# Option 3: From source
+git clone https://github.com/ojallington/boardclaude.git
 ./boardclaude/install.sh your-project/
 
-# 3. Verify the plugin is detected
+# Verify the plugin is detected
 cd your-project
 claude /bc:init
 ```

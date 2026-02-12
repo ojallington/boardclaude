@@ -40,10 +40,10 @@ ${bold("USAGE")}
 
 ${bold("EXAMPLES")}
   ${dim("# Install into current directory")}
-  npx @boardclaude/cli install .
+  npx boardclaude install .
 
   ${dim("# Install into a specific project")}
-  npx @boardclaude/cli install ./my-project
+  npx boardclaude install ./my-project
 
 ${bold("AFTER INSTALL")}
   Run ${bold("/bc:init")} in any Claude Code session to get started.
