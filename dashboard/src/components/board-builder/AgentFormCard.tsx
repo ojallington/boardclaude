@@ -22,7 +22,7 @@ export function AgentFormCard({
         <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
           {/* Name */}
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.agentName}
             </span>
             <input
@@ -43,7 +43,7 @@ export function AgentFormCard({
 
           {/* Role */}
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.agentRole}
             </span>
             <input
@@ -64,7 +64,7 @@ export function AgentFormCard({
 
           {/* Weight */}
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.agentWeight}: {(agent.weight * 100).toFixed(0)}%
             </span>
             <input
@@ -86,7 +86,7 @@ export function AgentFormCard({
 
           {/* Model */}
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.agentModel}
             </span>
             <select
@@ -120,7 +120,7 @@ export function AgentFormCard({
 
       {/* Prompt */}
       <label className="mt-3 block">
-        <span className="text-xs font-medium text-gray-400">
+        <span className="text-xs font-medium text-gray-300">
           {messages.builder.agentPrompt}
         </span>
         <textarea
@@ -142,7 +142,7 @@ export function AgentFormCard({
       {/* Criteria */}
       <div className="mt-4">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-medium text-gray-400">Criteria</span>
+          <span className="text-xs font-medium text-gray-300">Criteria</span>
           <button
             onClick={() =>
               dispatch({ type: "ADD_CRITERION", agentIndex: index })

@@ -20,7 +20,7 @@ export default function TimelineError({
       <h2 className="text-2xl font-bold text-gray-100">
         {messages.errors.timeline.heading}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">
+      <p className="mt-2 text-sm text-gray-300">
         {messages.errors.timeline.description}
       </p>
       <div className="mt-6 flex gap-3">

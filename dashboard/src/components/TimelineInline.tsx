@@ -67,7 +67,7 @@ export async function TimelineInline() {
           <h2 className="text-lg font-semibold">
             {messages.timeline.agentProgression}
           </h2>
-          <p className="mb-4 text-sm text-gray-400">
+          <p className="mb-4 text-sm text-gray-300">
             {messages.timeline.agentProgressionDesc}
           </p>
           <AgentScoreProgressionLoader
@@ -134,7 +134,7 @@ export async function TimelineInline() {
                     </div>
                   )}
 
-                  <p className="mt-2 text-sm leading-relaxed text-gray-400">
+                  <p className="mt-2 text-sm leading-relaxed text-gray-300">
                     {event.description}
                   </p>
 

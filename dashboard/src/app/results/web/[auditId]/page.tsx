@@ -214,7 +214,7 @@ export default async function WebReviewDetailPage({
                   </div>
 
                   {agent.one_line && (
-                    <p className="text-xs italic text-gray-400 mb-3">
+                    <p className="text-xs italic text-gray-300 mb-3">
                       {agent.one_line}
                     </p>
                   )}

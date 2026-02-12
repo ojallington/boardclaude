@@ -109,7 +109,7 @@ export function EvaluationList({
   const headerClass =
     size === "sm"
       ? "text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1"
-      : "text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2";
+      : "text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2";
 
   return (
     <div>

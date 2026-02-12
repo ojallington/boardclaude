@@ -63,7 +63,7 @@ export default function BoardsPage() {
       <section className="mt-16">
         <h2 className="mb-4 text-xl font-semibold">{messages.boards.useCli}</h2>
         <div className="rounded-xl border border-gray-800 bg-gray-900 p-6">
-          <p className="mb-4 text-sm text-gray-400">
+          <p className="mb-4 text-sm text-gray-300">
             Install BoardClaude and run any template from the CLI:
           </p>
           <div className="space-y-3 font-mono text-sm">
@@ -132,7 +132,7 @@ function TemplateCard({
             {template.name}
           </h3>
           <p
-            className={`mt-1 leading-relaxed text-gray-400 ${featured ? "text-base" : "text-sm"}`}
+            className={`mt-1 leading-relaxed ${featured ? "text-base text-gray-400" : "text-sm text-gray-300"}`}
           >
             {template.description}
           </p>

@@ -42,7 +42,7 @@ export function FilesAnalyzedSection({
         className="flex w-full items-center justify-between p-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-xl"
         aria-expanded={expanded}
       >
-        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-300">
           Files Analyzed ({filesAnalyzed})
         </h3>
         <svg

@@ -345,7 +345,7 @@ export default function BuilderPage() {
       <section className="mb-8 rounded-xl border border-gray-800 bg-gray-900/50 p-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.panelName}
             </span>
             <input
@@ -363,7 +363,7 @@ export default function BuilderPage() {
             />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.panelType}
             </span>
             <select
@@ -382,7 +382,7 @@ export default function BuilderPage() {
           </label>
         </div>
         <label className="mt-4 block">
-          <span className="text-xs font-medium text-gray-400">
+          <span className="text-xs font-medium text-gray-300">
             {messages.builder.panelDescription}
           </span>
           <textarea
@@ -401,7 +401,7 @@ export default function BuilderPage() {
         </label>
         <div className="mt-4 grid grid-cols-2 gap-4">
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.passingThreshold}
             </span>
             <input
@@ -420,7 +420,7 @@ export default function BuilderPage() {
             />
           </label>
           <label className="block">
-            <span className="text-xs font-medium text-gray-400">
+            <span className="text-xs font-medium text-gray-300">
               {messages.builder.iterationTarget}
             </span>
             <input
@@ -443,7 +443,7 @@ export default function BuilderPage() {
 
       {/* Weight distribution */}
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-medium text-gray-400">
+        <h2 className="mb-3 text-sm font-medium text-gray-300">
           {messages.builder.weightDistribution}
         </h2>
         <WeightBar

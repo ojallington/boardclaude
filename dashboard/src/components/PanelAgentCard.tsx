@@ -25,7 +25,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
       <div className="rounded-xl border border-gray-800 bg-gray-900/40 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium capitalize text-gray-400">
+            <p className="text-sm font-medium capitalize text-gray-300">
               {agent}
             </p>
             <p className="text-xs text-gray-600">{role}</p>
@@ -159,7 +159,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
       </div>
 
       {result.one_line && (
-        <p className="mt-1.5 text-xs italic text-gray-400 line-clamp-1">
+        <p className="mt-1.5 text-xs italic text-gray-300 line-clamp-1">
           {result.one_line}
         </p>
       )}

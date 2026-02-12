@@ -8,6 +8,7 @@ import type {
   SynthesisActionItem,
   EffortLevel,
   ScoreRevision,
+  DebateExchange,
 } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import {
@@ -211,6 +212,7 @@ export async function synthesizeResults(
   tier: "free" | "byok",
   send: SSESender,
   revisions: ScoreRevision[] = [],
+  debateExchanges: DebateExchange[] = [],
 ): Promise<TryPanelResult> {
   await send("status", { phase: "synthesizing" });
 
@@ -296,6 +298,19 @@ export async function synthesizeResults(
       tier,
     );
   }
+
+  // Persist debate data for cross-iteration context
+  const debateTriggered = debateExchanges.length > 0 || revisions.length > 0;
+  panelResult.debate = {
+    triggered: debateTriggered,
+    transcript: debateExchanges.map((ex) => ({
+      agent_a: ex.agent_a,
+      agent_b: ex.agent_b,
+      topic: `${ex.criterion_a} vs ${ex.criterion_b} (scores: ${ex.score_a} vs ${ex.score_b})`,
+      exchange: [ex.response_a, ex.response_b].filter(Boolean),
+    })),
+    revisions: revisions.length > 0 ? revisions : undefined,
+  };
 
   saveWebReview(panelResult).catch(() => {});
   await send("complete", panelResult);

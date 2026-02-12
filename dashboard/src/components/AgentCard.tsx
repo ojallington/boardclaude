@@ -57,7 +57,7 @@ function ScoreBar({ label, score }: { label: string; score: number }) {
   return (
     <div className="flex items-center gap-3" aria-live="polite">
       <span
-        className="w-36 shrink-0 text-sm text-gray-400 truncate"
+        className="w-36 shrink-0 text-sm text-gray-300 truncate"
         title={label}
       >
         {label}
@@ -144,7 +144,7 @@ export function AgentCard({
             <h3 className="text-lg font-semibold capitalize text-gray-100 truncate">
               {agent}
             </h3>
-            <p className="text-sm text-gray-400">{role}</p>
+            <p className="text-sm text-gray-300">{role}</p>
           </div>
 
           <div className="flex flex-col items-end gap-1.5 shrink-0">
@@ -193,7 +193,7 @@ export function AgentCard({
 
         {/* ── One-line Summary ────────────────────────────────── */}
         {one_line && (
-          <p className="text-sm italic text-gray-400 border-t border-gray-800 pt-4">
+          <p className="text-sm italic text-gray-300 border-t border-gray-800 pt-4">
             {one_line}
           </p>
         )}

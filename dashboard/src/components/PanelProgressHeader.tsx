@@ -33,7 +33,7 @@ export function PanelProgressHeader({
         <h3 className="text-sm font-medium text-gray-200">
           {messages.tryIt.phases.reviewing}
         </h3>
-        <span className="rounded-full border border-gray-700 bg-gray-800 px-3 py-0.5 text-xs text-gray-400">
+        <span className="rounded-full border border-gray-700 bg-gray-800 px-3 py-0.5 text-xs text-gray-300">
           {tierLabel} &mdash; {tierDesc}
         </span>
       </div>

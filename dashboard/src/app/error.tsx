@@ -19,7 +19,7 @@ export default function GlobalError({
       <h2 className="text-2xl font-bold text-gray-100">
         {messages.errors.global.heading}
       </h2>
-      <p className="mt-2 text-sm text-gray-400">
+      <p className="mt-2 text-sm text-gray-300">
         {messages.errors.global.description}
       </p>
       <button

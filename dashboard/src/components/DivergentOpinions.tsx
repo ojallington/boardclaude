@@ -20,8 +20,11 @@ export function DivergentOpinions({
         Divergent Opinions
       </h3>
       <div className="space-y-4">
-        {opinions.map((d, i) => (
-          <div key={d.topic || i} className="space-y-2">
+        {opinions.map((d) => (
+          <div
+            key={`${d.agent_a.agent}-${d.agent_b.agent}-${d.topic.slice(0, 30)}`}
+            className="space-y-2"
+          >
             <p className="text-sm font-medium text-gray-200">{d.topic}</p>
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg border border-gray-800 bg-gray-900/40 p-3">
@@ -31,7 +34,7 @@ export function DivergentOpinions({
                 >
                   {d.agent_a.agent}
                 </p>
-                <p className="text-xs text-gray-400">{d.agent_a.position}</p>
+                <p className="text-xs text-gray-300">{d.agent_a.position}</p>
               </div>
               <div className="rounded-lg border border-gray-800 bg-gray-900/40 p-3">
                 <p
@@ -40,7 +43,7 @@ export function DivergentOpinions({
                 >
                   {d.agent_b.agent}
                 </p>
-                <p className="text-xs text-gray-400">{d.agent_b.position}</p>
+                <p className="text-xs text-gray-300">{d.agent_b.position}</p>
               </div>
             </div>
             <p className="text-xs italic text-gray-500">{d.analysis}</p>

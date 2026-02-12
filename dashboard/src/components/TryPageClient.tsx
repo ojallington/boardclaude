@@ -75,7 +75,7 @@ export function TryPageClient() {
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gray-400 opacity-75" />
               <span className="relative inline-flex h-3 w-3 rounded-full bg-gray-400" />
             </span>
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-300">
               {messages.tryIt.phases[phase]}
             </span>
           </div>

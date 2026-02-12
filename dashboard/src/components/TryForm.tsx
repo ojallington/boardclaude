@@ -76,7 +76,7 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
               {showByok ? "Hide API key" : messages.tryIt.byokToggle}
             </button>
             {/* Tier badge */}
-            <span className="rounded-full border border-gray-700 bg-gray-800 px-3 py-0.5 text-xs text-gray-400">
+            <span className="rounded-full border border-gray-700 bg-gray-800 px-3 py-0.5 text-xs text-gray-300">
               {showByok && apiKey
                 ? `${messages.tryIt.byokModeLabel}: ${messages.tryIt.byokModeDescription}`
                 : `${messages.tryIt.demoModeLabel}: ${messages.tryIt.demoModeDescription}`}
@@ -88,7 +88,7 @@ export function TryForm({ onSubmit, isLoading, compact }: TryFormProps) {
               <div className="flex-1 min-w-0">
                 <label
                   htmlFor="byok-key"
-                  className="mb-1.5 block text-xs font-medium text-gray-400"
+                  className="mb-1.5 block text-xs font-medium text-gray-300"
                 >
                   Anthropic API Key
                 </label>
