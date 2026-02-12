@@ -1,170 +1,134 @@
 ---
 name: audit-runner
 description: Run multi-agent panel audits on codebases. Use when evaluating code quality, running board reviews, or scoring projects against configurable criteria. Triggers on "audit", "evaluate", "review", "score", "panel", "board".
-allowed-tools: Read, Grep, Glob, Bash, Write, Task, TeamCreate, TeamDelete, SendMessage
+allowed-tools: Read, Task, TeamCreate, TeamDelete, SendMessage
 context: fork
 agent: general-purpose
 ---
 
-# Audit Runner — ultrathink
+# Audit Runner — Delegate Launcher
 
 ## Overview
 
-Execute the full BoardClaude audit pipeline: load a panel configuration, spawn one agent per panel member, collect structured evaluations, run synthesis, calculate composite scores, generate radar chart data, and persist results to the `.boardclaude/` state directory. Supports delta comparison against previous audits for iteration tracking.
+Thin launcher that loads panel config, creates a team, and delegates the entire audit pipeline to an autonomous audit-coordinator agent. The launcher never ingests codebase files or spawns judge agents directly — it only coordinates at a high level and relays results to the user.
 
 ## Prerequisites
 
 Before running, verify:
 - Panel config exists: !`ls panels/*.yaml 2>/dev/null | head -5`
 - BoardClaude state dir: !`ls .boardclaude/ 2>/dev/null || echo "NOT FOUND — will create"`
-- Git status: !`git log --oneline -3 2>/dev/null || echo "No git history"`
 - Previous audits: !`ls .boardclaude/audits/*.json 2>/dev/null | tail -3 || echo "None — this is the first audit"`
 
 ## Steps
 
-1. **Load panel config** from `panels/[name].yaml` (default: `panels/hackathon-judges.yaml`). Parse the YAML to extract:
-   - Panel name, type (professional/personal), version
-   - Agent list with: name, role, weight, model, effort level, criteria
-   - Debate configuration (rounds, format, verdict options)
-   - Scoring config (scale, passing threshold, iteration target)
-   - Verify all agent weights sum to 1.0
+### Step 1: Load Panel Config
 
-2. **Verify `.boardclaude/` directory** exists. If not, create the full structure:
-   ```
-   .boardclaude/
-   ├── state.json
-   ├── timeline.json
-   └── audits/
-   ```
-   Initialize `state.json` with defaults and `timeline.json` with empty events array.
+Read `panels/[name].yaml` (default: `panels/hackathon-judges.yaml`). Parse the YAML to extract:
+- Panel name, type (professional/personal), version
+- Agent list with: name, role, weight, model, effort level, criteria
+- Debate configuration (rounds, format, verdict options)
+- Scoring config (scale, passing threshold, iteration target)
+- Verify all agent weights sum to 1.0
 
-3. **Load previous audit** for delta comparison (if exists):
-   - Read `.boardclaude/state.json` to find `latest_audit`
-   - Load the corresponding audit JSON from `.boardclaude/audits/`
-   - Extract previous scores per agent for comparison
-   - If no previous audit exists, this is iteration 0 (baseline)
+### Step 2: Load State
 
-4. **For each agent in the panel**, spawn a teammate via Agent Teams (or subagent for quick reviews):
-   a. Load the agent persona from the file specified in `prompt_file` (e.g., `agents/boris.md`)
-   b. Pass to the agent:
-      - Full codebase path and scope
-      - Agent persona and evaluation criteria with weights
-      - Previous scores for this agent (if available) for delta tracking
-      - Instructions to cite specific files and line numbers
-   c. Each agent must output structured JSON matching the Agent Evaluation Schema (below)
-   d. Use the model specified in the panel config (Opus for deep evaluators, Sonnet for formulaic ones)
+Read `.boardclaude/state.json` to get:
+- Current iteration number (`audit_count`)
+- Latest audit ID (`latest_audit`)
+- Score history for trend tracking
+- If state.json doesn't exist, this is the first audit (iteration 0)
 
-5. **Wait for all agents to complete**. Do NOT proceed to debate or synthesis until every agent has reported. Track completion status.
+### Step 3: Create Team
 
-6. **Run debate round** (Team Lead orchestrates via SendMessage):
+Create a team for this audit run:
 
-   All agents remain alive (idle) after Round 1. The lead re-engages them via SendMessage — no new agents are spawned.
+```
+TeamCreate("audit-{timestamp}")
+```
 
-   a. Read the panel's `debate:` config section. If `debate.enabled` is false or missing, skip to synthesis.
+Use current epoch seconds for the timestamp.
 
-   b. **Identify divergent pairs**: For each pair in `debate.related_criteria` (e.g. `[boris.architecture, jason.integration]`), extract the scores from the respective agent evaluations. Calculate the absolute delta. Flag pairs where delta >= `debate.divergence_threshold`. Sort by delta descending. Take top `debate.max_pairs`.
+### Step 4: Spawn Audit Coordinator
 
-   c. **For each divergent pair** (Agent A = higher scorer, Agent B = lower scorer):
+Read the full content of `agents/audit-coordinator.md` and spawn the coordinator as an autonomous teammate:
 
-      1. Send `SendMessage` to Agent A (type: "message", recipient: agent_a_name):
-         ```
-         {agent_b_name} ({role}) scored {criterion} at {score}.
-         Their reasoning: {B's relevant strengths/weaknesses}.
-         You scored {related_criterion} at {your_score}.
-         In 2-3 sentences, respond: where do you agree, where do you disagree?
-         If you'd revise any score, include: REVISED: {criterion}: {new_score} (max +/-5 from original).
-         ```
+```
+Task(
+  subagent_type: "general-purpose",
+  team_name: "audit-{timestamp}",
+  name: "audit-coordinator",
+  mode: "bypassPermissions",
+  prompt: [see below]
+)
+```
 
-      2. Wait for Agent A's response (they wake from idle, respond via SendMessage).
+The coordinator prompt must include:
+- The full `agents/audit-coordinator.md` content (inline — the coordinator has no prior context)
+- The panel config YAML (inline)
+- Iteration metadata: iteration number, latest audit ID, score history
+- Project root path
+- Any CLI flags passed by the user: `--panel`, `--effort`, `--target`, `--previous`
+- The Agent Evaluation Schema and Synthesis Output Schema (from the schemas below)
 
-      3. Forward Agent A's response to Agent B via SendMessage:
-         ```
-         {agent_a_name} responded: '{A's reply}'.
-         Your counter-response? Same revision format if applicable.
-         ```
+### Step 5: Wait for Completion
 
-      4. Wait for Agent B's response.
+The coordinator will run the full pipeline autonomously:
+1. Ingest the codebase
+2. Spawn 6 judge agents (all with `mode: "bypassPermissions"`)
+3. Collect evaluations
+4. Run debate round
+5. Spawn synthesis agent (with `mode: "bypassPermissions"`)
+6. Write all output files
+7. Send a structured completion report via SendMessage
 
-      5. Parse both responses for score revisions using regex: `REVISED:\s*(\w+):\s*(\d+)`.
+Wait for the coordinator's completion report, delimited by `AUDIT_COMPLETE_START` and `AUDIT_COMPLETE_END`. Parse the structured fields from the delimited block (audit_id, composite, grade, verdict, top items, file paths, timed_out_agents, effective_weights).
 
-      6. Record the exchange: `{ pair: [A, B], criterion_a, criterion_b, a_response, b_response, revisions: [...] }`.
+Timeout: 15 minutes wall clock. If timeout: send shutdown to coordinator, report timeout to user, call TeamDelete.
 
-   d. **Apply revisions**: For any `REVISED:` lines found, update the agent's score on that criterion. Bound changes to +/-`debate.score_revision_bound` from the original. Recalculate that agent's composite.
+If `AUDIT_FAILED` is received instead of `AUDIT_COMPLETE_START/END` (meaning < 4 judges reported), relay the error to the user with the list of timed-out and collected agents, then teardown.
 
-   e. **Pass to synthesis**: Include the full debate transcript and revised scores alongside original agent evaluations.
+If the completion report includes `timed_out_agents`, note which agents timed out in the user-facing report.
 
-7. **Run synthesis agent** to merge all findings:
-   a. Pass ALL agent evaluations to the synthesis agent
-   b. The synthesis agent must NOT invent findings — only merge what agents reported
-   c. Present conflicts with analysis (e.g., Boris says architecture is strong but Jason says error handling is weak)
-   d. Calculate composite scores using panel-defined weights
-   e. Generate radar chart data with one axis per panel dimension
-   f. Produce prioritized action items with effort estimates
+### Step 6: Report to User
 
-7. **Calculate composite scores** (weighted averages):
-   - Per-agent composite: sum of (criterion_score * criterion_weight) for each agent
-   - Panel composite: sum of (agent_composite * agent_weight) for all agents
-   - Grade mapping: A+ (95-100), A (90-94), A- (85-89), B+ (80-84), B (75-79), B- (70-74), C+ (65-69), C (60-64), C- (55-59), D (50-54), F (<50)
-   - Verdict: STRONG_PASS (>=85), PASS (>=70), MARGINAL (>=55), FAIL (<55)
+Relay the coordinator's completion report. Display:
 
-8. **Generate radar chart data** with axes matching panel evaluation dimensions:
-   - architecture, product, innovation, code_quality, documentation, integration (for hackathon panel)
-   - Map each agent's scores to the corresponding dimension
-   - Average across agents for each dimension
+```
+Audit Complete — Iteration {N}
+================================
+Composite: {score} ({grade}) — {verdict}
 
-9. **Save machine-readable output** to `.boardclaude/audits/audit-{timestamp}.json`
+Top Strengths:
+  1. {strength}
+  2. {strength}
+  3. {strength}
 
-10. **Save human-readable report** to `.boardclaude/audits/audit-{timestamp}.md` with:
-    - Summary header with composite score and grade
-    - Per-agent cards with scores, strengths, weaknesses, verdict
-    - Radar chart data (as ASCII or data for dashboard)
-    - Prioritized action items
-    - Iteration delta (if previous audit exists)
+Top Weaknesses:
+  1. {weakness}
+  2. {weakness}
+  3. {weakness}
 
-11. **Update `.boardclaude/state.json`**:
-    ```json
-    {
-      "project": "<project name>",
-      "panel": "<panel name>",
-      "branch": "<current git branch>",
-      "audit_count": <incremented>,
-      "latest_audit": "audit-{timestamp}",
-      "latest_score": <composite score>,
-      "score_history": [<append new score>],
-      "worktrees": [<active worktrees>],
-      "status": "active"
-    }
-    ```
+Top Action Items:
+  1. {item}
+  2. {item}
+  3. {item}
+  4. {item}
+  5. {item}
 
-12. **Append to `.boardclaude/timeline.json`**:
-    ```json
-    {
-      "id": "audit-{timestamp}",
-      "type": "audit",
-      "branch": "<current branch>",
-      "timestamp": "<ISO 8601>",
-      "parent": "<previous audit id or null>",
-      "commit": "<git commit hash>",
-      "scores": { "<agent>": <agent_composite>, "..." : "..." },
-      "composite": <panel composite>,
-      "label": "Iteration <N>: <grade> (<composite>)",
-      "status": "active"
-    }
-    ```
+Score Delta: {delta} (from {previous} to {current})
 
-13. **Seed action items ledger** (if this is the first audit or new items exist):
-    - If `.boardclaude/action-items.json` does not exist, create it from the synthesis `action_items` array
-    - If it already exists, merge new action items (match by `action` text to avoid duplicates; new items get `status: "open"`)
-    - Items open for 3+ consecutive audits should be flagged as `chronic`
-    - Update `stats` counts to reflect current ledger state
+Output files:
+  JSON: .boardclaude/audits/{audit-id}.json
+  Report: .boardclaude/audits/{audit-id}.md
 
-14. **Report results** to the user:
-    - Composite score with grade and verdict
-    - Top 3 strengths and top 3 weaknesses across all agents
-    - Any critical issues flagged
-    - Top 5 prioritized action items
-    - Iteration delta summary (if applicable)
-    - Path to full report files
+To view in the dashboard: cd dashboard && npm run dev
+Then open http://localhost:3000/results
+```
+
+### Step 7: Teardown
+
+1. Send shutdown requests to the coordinator (who will shut down its children)
+2. Call `TeamDelete` to clean up the team
 
 ## Agent Evaluation Schema (per-agent output)
 
@@ -207,7 +171,7 @@ Each agent must produce JSON in this format:
   "agents": [
     {
       "agent": "<name>",
-      "scores": { "<criterion>": <score>, "..." : "..." },
+      "scores": { "<criterion>": <score> },
       "composite": <number>,
       "strengths": ["..."],
       "weaknesses": ["..."],
@@ -244,7 +208,7 @@ Each agent must produce JSON in this format:
     {
       "priority": 1,
       "action": "<specific action>",
-      "source_agent": "<who recommended it>",
+      "source_agents": ["<who recommended it>"],
       "impact": "<expected score improvement>",
       "effort": "<low | medium | high>"
     }
@@ -259,22 +223,7 @@ Each agent must produce JSON in this format:
 }
 ```
 
-## Agent Team Configuration
-
-When using Agent Teams for a full panel audit:
-
-- **Create team** with one agent per panel member plus one synthesis agent
-- **Team Lead coordinates** — the lead does NOT evaluate. It spawns teammates, assigns tasks, waits, then synthesizes.
-- **Each teammate** receives:
-  - The full agent persona prompt (from `agents/<name>.md`)
-  - The codebase path and scope to evaluate
-  - Previous scores for delta tracking
-  - Output format requirements (the Agent Evaluation Schema above)
-- **Teammates do NOT inherit conversation context** — pass all task-specific details in the spawn prompt
-- **Wait for ALL agents to complete** before running synthesis
-- **Synthesis runs as a subagent** (not a teammate) since it needs no peer interaction, only the collected results
-
-### Model Routing
+## Model Routing
 
 | Agent | Model | Effort | Rationale |
 |-------|-------|--------|-----------|
@@ -285,35 +234,31 @@ When using Agent Teams for a full panel audit:
 | Ado | Sonnet 4.5 | medium | Documentation checks are formulaic |
 | Jason | Sonnet 4.5 | medium | Integration checks are structured |
 | Synthesis | Sonnet 4.5 | medium | Merging is mechanical |
-
-## Audit State Machine
-
-The audit follows this state progression:
-
-```
-IDLE → INGEST → PANEL_AUDIT → DEBATE → SYNTHESIZE → REPORT → COMPLETE
-                                 ↓
-                           (if debate.enabled)
-                         Identify pairs → Cross-examine → Apply revisions
-```
-
-Track current state in `.boardclaude/state.json` under `current_audit.state`.
+| Coordinator | Sonnet 4.5 | medium | Orchestration, not evaluation |
 
 ## Error Handling
 
-- If an agent fails to produce valid JSON, retry once with explicit format instructions
-- If an agent times out, record a null evaluation and note it in synthesis
-- If `.boardclaude/` is missing, create it silently and proceed
-- If no panel config is found, prompt the user to run init or specify a panel
-- Never overwrite previous audit files — always create new timestamped files
+- **Coordinator timeout (15 min)**: Send shutdown to coordinator, report timeout to user with any partial context available, call TeamDelete.
+- **`AUDIT_FAILED` relay**: If coordinator sends `AUDIT_FAILED` (< 4 judges reported), relay the error to the user including which agents timed out and which reported successfully. Suggest re-running with `--effort low` for faster execution.
+- **Partial results**: If coordinator sends `AUDIT_COMPLETE_START/END` with `timed_out_agents`, include a note in the user report: "Note: {N} agent(s) timed out ({names}). Weights were redistributed among reporting agents."
+- If `.boardclaude/` is missing, the coordinator will create it.
+- If no panel config is found, prompt the user to run `/bc:init` or specify a panel.
+- Never overwrite previous audit files — always create new timestamped files.
 
 ## Personal Panel Mode
 
-When the panel type is `personal`, the audit pipeline adds a deliberation phase:
+When the panel type is `personal`, the coordinator adds a deliberation phase:
 
 1. **Round 1**: Independent assessment (same as professional)
-2. **Round 2**: Cross-examination — each agent reads other agents' evaluations and responds:
-   - Agreements are noted
-   - Disagreements are argued with evidence
-   - Agents with veto power can block scope additions
+2. **Round 2**: Cross-examination — each agent reads other agents' evaluations and responds
 3. **Synthesis**: Produces verdict (SHIP / CONTINUE / PIVOT / PAUSE) plus single most important action
+
+## Notes
+
+- The main agent stays lightweight (~5-8 tool calls total)
+- All codebase ingestion happens inside the coordinator
+- No permission prompts appear — all spawned agents use `mode: "bypassPermissions"`
+- Agent Teams use approximately 7x more tokens than standard sessions
+- Use `--effort low` for quick baseline checks, `--effort max` for final audits
+
+$ARGUMENTS
