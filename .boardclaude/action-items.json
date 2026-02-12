@@ -1108,11 +1108,16 @@
       "iteration": 10,
       "priority": 1,
       "action": "Add validation step in buildSynthesizedResult (try-synthesize.ts): replace 5 type assertions with validated field access, fall through to safe defaults on failure",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Closes last unvalidated LLM output boundary. Verification +3-5, code_quality +2.",
       "effort": "medium",
       "status": "resolved",
-      "file_refs": ["dashboard/src/lib/try-synthesize.ts"],
+      "file_refs": [
+        "dashboard/src/lib/try-synthesize.ts"
+      ],
       "resolved_at": "2026-02-12T19:49:00.000Z",
       "resolution": "Added isRecord, extractNumber, extractRadar, extractStringArray, extractDivergentOpinion, extractHighlights, extractSynthesisActionItem, extractActionItems local validators. Replaced all 5 flagged 'as' casts with validated field access. Graceful degradation to computed defaults on malformed LLM output."
     },
@@ -1122,11 +1127,16 @@
       "iteration": 10,
       "priority": 2,
       "action": "Parallelize file fetching in github.ts: replace sequential for-loop with Promise.all + concurrency limiter (limit=6)",
-      "source_agents": ["boris", "thariq"],
+      "source_agents": [
+        "boris",
+        "thariq"
+      ],
       "impact": "BYOK fetch time from ~8s to ~2s. Efficiency +5. Two iterations flagged.",
       "effort": "medium",
       "status": "resolved",
-      "file_refs": ["dashboard/src/lib/github.ts"],
+      "file_refs": [
+        "dashboard/src/lib/github.ts"
+      ],
       "resolved_at": "2026-02-12T19:49:00.000Z",
       "resolution": "Added inline pMap<T,R> concurrency utility (no deps). Replaced serial for-loop with parallel fetch (concurrency=6) + sequential budget accounting. BYOK 40 files: ~7 batches instead of 40 sequential requests."
     },
@@ -1136,13 +1146,215 @@
       "iteration": 10,
       "priority": 3,
       "action": "Add type narrowing guards for SSE event data in usePanelStream.ts: validate agent_complete payloads before dispatching",
-      "source_agents": ["boris", "lydia"],
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
       "impact": "Runtime safety for streaming protocol. Code_quality +2-3.",
       "effort": "low",
       "status": "resolved",
-      "file_refs": ["dashboard/src/hooks/usePanelStream.ts"],
+      "file_refs": [
+        "dashboard/src/hooks/usePanelStream.ts"
+      ],
       "resolved_at": "2026-02-12T19:49:00.000Z",
       "resolution": "Added isRecord, isRepoInfo, isAgentResult type guards. Replaced all 9 bare 'as' casts with typeof/equality narrowing. agent_complete now validates via isAgentResult guard, dispatches AGENT_ERROR on failure."
+    },
+    {
+      "id": "ai-081",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 1,
+      "action": "Apply validated-field-access pattern to try-invoke.ts fallback path (lines 329-361)",
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
+      "impact": "Closes last unvalidated LLM boundary. Verification +2-3.",
+      "effort": "medium",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/lib/try-invoke.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Applied validated-field-access pattern to try-invoke.ts fallback path. Replaced all `as` casts with extractStringArray/extractActionItems validators with type narrowing."
+    },
+    {
+      "id": "ai-082",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 2,
+      "action": "Enable tool_use for Cat and Thariq agents (Opus agents benefiting most from code investigation)",
+      "source_agents": [
+        "boris",
+        "thariq"
+      ],
+      "impact": "1/6 to 3/6 agentic evaluators. ai_innovation +5-8.",
+      "effort": "medium",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/lib/try-agents.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Enabled toolEnabled:true for Cat and Thariq agents in try-agents.ts. Added tool instruction prompts for code investigation. 3/6 agents now have tool_use."
+    },
+    {
+      "id": "ai-083",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 3,
+      "action": "Add Copy Link share button to PanelSynthesisView using getShareableUrl()",
+      "source_agents": [
+        "cat"
+      ],
+      "impact": "Enables viral sharing loop. market_fit +3.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/components/PanelSynthesisView.tsx"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Added Copy Link share button to PanelSynthesisView using audit_id for URL generation. Includes clipboard API with copied feedback state."
+    },
+    {
+      "id": "ai-084",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 4,
+      "action": "Extract isRecord into shared @/lib/type-guards.ts module",
+      "source_agents": [
+        "lydia"
+      ],
+      "impact": "Eliminates triple-definition DRY violation.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/lib/type-guards.ts",
+        "dashboard/src/lib/try-synthesize.ts",
+        "dashboard/src/lib/validate.ts",
+        "dashboard/src/hooks/usePanelStream.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Extracted isRecord into shared @/lib/type-guards.ts module. Updated try-synthesize.ts, validate.ts, and usePanelStream.ts to import from shared module."
+    },
+    {
+      "id": "ai-085",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 5,
+      "action": "Map route.ts error codes to specific messages in usePanelStream.ts",
+      "source_agents": [
+        "jason"
+      ],
+      "impact": "Actionable error messages. integration +5.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/hooks/usePanelStream.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Added ERROR_MESSAGES map in usePanelStream.ts mapping 6 route.ts error codes (INVALID_URL, RATE_LIMITED, INVALID_API_KEY, FETCH_FAILED, NO_API_KEY, INSUFFICIENT_AGENTS) to user-friendly messages."
+    },
+    {
+      "id": "ai-086",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 6,
+      "action": "Make debate influence synthesis structurally: revised scores after debate",
+      "source_agents": [
+        "thariq"
+      ],
+      "impact": "emergent_behavior +8-12.",
+      "effort": "high",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/lib/try-debate.ts",
+        "dashboard/src/app/api/try/route.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Made debate influence synthesis structurally: synthesizeResults now accepts ScoreRevision[] and builds structured revision context showing before/after scores. Synthesis prompt explicitly instructs weighing revised scores."
+    },
+    {
+      "id": "ai-087",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 7,
+      "action": "Add Prerequisites section to README before Quick Start",
+      "source_agents": [
+        "ado"
+      ],
+      "impact": "Prevents false starts. documentation +6.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "README.md"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Added Prerequisites section to README before Quick Start listing Claude Code CLI, Node.js 20+, and Git as requirements."
+    },
+    {
+      "id": "ai-088",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 8,
+      "action": "Backport type guards to useReviewStream.ts or remove if deprecated",
+      "source_agents": [
+        "lydia"
+      ],
+      "impact": "Eliminates last cluster of unsafe client casts.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/hooks/useReviewStream.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Backported type guards to useReviewStream.ts. All 5 bare `as` casts replaced with typeof checks and isRecord-style validation before narrowing."
+    },
+    {
+      "id": "ai-089",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 9,
+      "action": "Add unit tests for 8 validators in try-synthesize.ts and pMap utility",
+      "source_agents": [
+        "boris"
+      ],
+      "impact": "Verification +3.",
+      "effort": "medium",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/lib/__tests__/try-synthesize.test.ts"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Added 32 unit tests for 7 exported validators in try-synthesize.ts (extractNumber, extractRadar, extractStringArray, extractDivergentOpinion, extractHighlights, extractSynthesisActionItem, extractActionItems). Added 5 unit tests for pMap concurrency utility. Total tests: 148."
+    },
+    {
+      "id": "ai-090",
+      "source_audit": "20260212-185848",
+      "iteration": 11,
+      "priority": 10,
+      "action": "Replace key={i} in web results detail page with content-derived keys",
+      "source_agents": [
+        "boris",
+        "lydia"
+      ],
+      "impact": "Completes key={i} cleanup.",
+      "effort": "low",
+      "status": "resolved",
+      "iterations_open": 0,
+      "file_refs": [
+        "dashboard/src/app/results/web/[auditId]/page.tsx"
+      ],
+      "resolved_at": "2026-02-12T19:58:42.152288+00:00",
+      "resolution": "Replaced key={i} with content-derived keys (key={`item-${s}`} / key={`item-${w}`}) in 4 locations in web results detail page."
     }
   ],
   "metadata": {

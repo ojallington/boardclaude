@@ -107,25 +107,30 @@ export function useReviewStream(): UseReviewStreamReturn {
       function handleSSEEvent(event: string, data: Record<string, unknown>) {
         switch (event) {
           case "status": {
-            const statusPhase = data.phase as string;
-            if (statusPhase === "fetching") {
+            if (typeof data.phase !== "string") break;
+            if (data.phase === "fetching") {
               setPhase("fetching");
-              if (data.repo) {
-                const repo = data.repo as { owner: string; name: string };
-                setRepoInfo(repo);
+              if (
+                typeof data.repo === "object" &&
+                data.repo !== null &&
+                !Array.isArray(data.repo) &&
+                typeof (data.repo as Record<string, unknown>).owner ===
+                  "string" &&
+                typeof (data.repo as Record<string, unknown>).name === "string"
+              ) {
+                setRepoInfo(data.repo as { owner: string; name: string });
               }
-            } else if (statusPhase === "reviewing") {
+            } else if (data.phase === "reviewing") {
               setPhase("reviewing");
-              if (data.model) setModelInfo(data.model as string);
+              if (typeof data.model === "string") setModelInfo(data.model);
             }
             break;
           }
           case "partial": {
-            const field = data.field as string;
-            const value = data.value;
+            if (typeof data.field !== "string") break;
             setResult((prev) => ({
               ...prev,
-              [field]: value,
+              [data.field as string]: data.value,
             }));
             break;
           }
@@ -141,7 +146,11 @@ export function useReviewStream(): UseReviewStreamReturn {
             break;
           }
           case "error": {
-            setError(data.message as string);
+            const message =
+              typeof data.message === "string"
+                ? data.message
+                : "Unknown error occurred.";
+            setError(message);
             setPhase("error");
             break;
           }

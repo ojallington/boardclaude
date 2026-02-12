@@ -219,7 +219,7 @@ export function getTierLimits(tier: "free" | "byok"): TierLimits {
 // ─── Concurrency Utility ─────────────────────────────────────────────────────
 
 /** Concurrency-limited parallel map. Preserves input order in results. */
-async function pMap<T, R>(
+export async function pMap<T, R>(
   items: T[],
   fn: (item: T) => Promise<R>,
   concurrency: number,

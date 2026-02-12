@@ -161,6 +161,7 @@ export async function POST(request: Request) {
         repoData,
         tier,
         send,
+        debateResult.revisions,
       );
     } catch (err) {
       if (err instanceof Error && err.message === "INSUFFICIENT_AGENTS") return;

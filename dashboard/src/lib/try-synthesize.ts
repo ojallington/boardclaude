@@ -7,6 +7,7 @@ import type {
   DivergentOpinion,
   SynthesisActionItem,
   EffortLevel,
+  ScoreRevision,
 } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import {
@@ -18,17 +19,12 @@ import {
 import { saveWebReview } from "@/lib/try-storage";
 import type { FetchedRepo } from "@/lib/github";
 import type { SSESender } from "@/app/api/try/route";
-
-// ─── Type Guard ─────────────────────────────────────────────────────
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
+import { isRecord } from "@/lib/type-guards";
 
 // ─── Synthesis Data Validators ──────────────────────────────────────
 
 /** Validate and extract a number from a record field, returning fallback on failure. */
-function extractNumber(
+export function extractNumber(
   obj: Record<string, unknown>,
   key: string,
   fallback: number,
@@ -38,7 +34,7 @@ function extractNumber(
 }
 
 /** Validate radar data from LLM output, falling back to score for missing axes. */
-function extractRadar(
+export function extractRadar(
   synthesisData: Record<string, unknown>,
   fallbackScore: number,
 ): RadarData {
@@ -69,7 +65,7 @@ function extractRadar(
 }
 
 /** Validate a string array from unknown data, returning empty on failure. */
-function extractStringArray(value: unknown): string[] {
+export function extractStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is string => typeof item === "string");
 }
@@ -77,7 +73,9 @@ function extractStringArray(value: unknown): string[] {
 const VALID_EFFORT_LEVELS = new Set<string>(["low", "medium", "high", "max"]);
 
 /** Validate a single DivergentOpinion from unknown data. */
-function extractDivergentOpinion(value: unknown): DivergentOpinion | null {
+export function extractDivergentOpinion(
+  value: unknown,
+): DivergentOpinion | null {
   if (!isRecord(value)) return null;
   if (typeof value.topic !== "string") return null;
   if (typeof value.analysis !== "string") return null;
@@ -106,7 +104,9 @@ function extractDivergentOpinion(value: unknown): DivergentOpinion | null {
 }
 
 /** Validate highlights from LLM output, returning safe defaults on failure. */
-function extractHighlights(synthesisData: Record<string, unknown>): Highlights {
+export function extractHighlights(
+  synthesisData: Record<string, unknown>,
+): Highlights {
   const raw = isRecord(synthesisData.highlights)
     ? synthesisData.highlights
     : null;
@@ -138,7 +138,7 @@ function extractHighlights(synthesisData: Record<string, unknown>): Highlights {
 }
 
 /** Validate a single SynthesisActionItem from unknown data. */
-function extractSynthesisActionItem(
+export function extractSynthesisActionItem(
   value: unknown,
 ): SynthesisActionItem | null {
   if (!isRecord(value)) return null;
@@ -165,7 +165,7 @@ function extractSynthesisActionItem(
 }
 
 /** Validate action items array from LLM output, dropping invalid entries. */
-function extractActionItems(
+export function extractActionItems(
   synthesisData: Record<string, unknown>,
 ): SynthesisActionItem[] {
   if (!Array.isArray(synthesisData.action_items)) return [];
@@ -210,12 +210,30 @@ export async function synthesizeResults(
   repoData: FetchedRepo,
   tier: "free" | "byok",
   send: SSESender,
+  revisions: ScoreRevision[] = [],
 ): Promise<TryPanelResult> {
   await send("status", { phase: "synthesizing" });
 
   const weights: Record<string, number> = {};
   for (const a of WEB_AGENTS) {
     weights[a.name] = a.panelWeight;
+  }
+
+  // Build structured revision summary for synthesis context
+  let revisionContext = "";
+  if (revisions.length > 0) {
+    const lines = ["\n## Debate Score Revisions\n"];
+    lines.push(
+      "The following scores were revised by agents after debate. These revised scores are already reflected in the agent evaluations above. Factor these revisions into your synthesis — they represent considered adjustments after peer challenge.\n",
+    );
+    for (const rev of revisions) {
+      const direction = rev.delta > 0 ? "+" : "";
+      lines.push(
+        `- **${rev.agent}** revised **${rev.criterion}**: ${rev.original} → ${rev.revised} (${direction}${rev.delta})`,
+      );
+    }
+    lines.push("");
+    revisionContext = lines.join("\n");
   }
 
   const synthesisUserPrompt =
@@ -236,7 +254,9 @@ export async function synthesizeResults(
         },
       })),
       weights,
-    ) + debateTranscript;
+    ) +
+    revisionContext +
+    debateTranscript;
 
   const synthesisModelId = getModelId("sonnet", tier);
   const synthesisResponse = await client.messages.create({
