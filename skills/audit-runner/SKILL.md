@@ -54,9 +54,46 @@ Before running, verify:
    c. Each agent must output structured JSON matching the Agent Evaluation Schema (below)
    d. Use the model specified in the panel config (Opus for deep evaluators, Sonnet for formulaic ones)
 
-5. **Wait for all agents to complete**. Do NOT proceed to synthesis until every agent has reported. Track completion status.
+5. **Wait for all agents to complete**. Do NOT proceed to debate or synthesis until every agent has reported. Track completion status.
 
-6. **Run synthesis agent** to merge all findings:
+6. **Run debate round** (Team Lead orchestrates via SendMessage):
+
+   All agents remain alive (idle) after Round 1. The lead re-engages them via SendMessage — no new agents are spawned.
+
+   a. Read the panel's `debate:` config section. If `debate.enabled` is false or missing, skip to synthesis.
+
+   b. **Identify divergent pairs**: For each pair in `debate.related_criteria` (e.g. `[boris.architecture, jason.integration]`), extract the scores from the respective agent evaluations. Calculate the absolute delta. Flag pairs where delta >= `debate.divergence_threshold`. Sort by delta descending. Take top `debate.max_pairs`.
+
+   c. **For each divergent pair** (Agent A = higher scorer, Agent B = lower scorer):
+
+      1. Send `SendMessage` to Agent A (type: "message", recipient: agent_a_name):
+         ```
+         {agent_b_name} ({role}) scored {criterion} at {score}.
+         Their reasoning: {B's relevant strengths/weaknesses}.
+         You scored {related_criterion} at {your_score}.
+         In 2-3 sentences, respond: where do you agree, where do you disagree?
+         If you'd revise any score, include: REVISED: {criterion}: {new_score} (max +/-5 from original).
+         ```
+
+      2. Wait for Agent A's response (they wake from idle, respond via SendMessage).
+
+      3. Forward Agent A's response to Agent B via SendMessage:
+         ```
+         {agent_a_name} responded: '{A's reply}'.
+         Your counter-response? Same revision format if applicable.
+         ```
+
+      4. Wait for Agent B's response.
+
+      5. Parse both responses for score revisions using regex: `REVISED:\s*(\w+):\s*(\d+)`.
+
+      6. Record the exchange: `{ pair: [A, B], criterion_a, criterion_b, a_response, b_response, revisions: [...] }`.
+
+   d. **Apply revisions**: For any `REVISED:` lines found, update the agent's score on that criterion. Bound changes to +/-`debate.score_revision_bound` from the original. Recalculate that agent's composite.
+
+   e. **Pass to synthesis**: Include the full debate transcript and revised scores alongside original agent evaluations.
+
+7. **Run synthesis agent** to merge all findings:
    a. Pass ALL agent evaluations to the synthesis agent
    b. The synthesis agent must NOT invent findings — only merge what agents reported
    c. Present conflicts with analysis (e.g., Boris says architecture is strong but Jason says error handling is weak)
@@ -254,10 +291,10 @@ When using Agent Teams for a full panel audit:
 The audit follows this state progression:
 
 ```
-IDLE → INGEST → PANEL_AUDIT → SYNTHESIZE → REPORT → COMPLETE
-                                    ↓
-                              (if auto-implement)
-                            IMPLEMENT → VERIFY → RE-AUDIT?
+IDLE → INGEST → PANEL_AUDIT → DEBATE → SYNTHESIZE → REPORT → COMPLETE
+                                 ↓
+                           (if debate.enabled)
+                         Identify pairs → Cross-examine → Apply revisions
 ```
 
 Track current state in `.boardclaude/state.json` under `current_audit.state`.

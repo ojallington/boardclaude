@@ -261,6 +261,15 @@ STRONG_PASS >= 85, PASS >= 70, MARGINAL >= 55, FAIL < 55
 A+ (95+), A (90-94), A- (85-89), B+ (80-84), B (75-79), B- (70-74),
 C+ (65-69), C (60-64), C- (55-59), D (50-54), F (<50)`;
 
+/** Schema instruction appended to debate revision prompts. */
+export const DEBATE_REVISION_SCHEMA = `If you want to revise any of your scores after this exchange, list each revision on its own line in this exact format:
+REVISED: <criterion_name>: <new_score>
+
+Rules:
+- You may revise at most +/-5 points from your original score on any criterion.
+- Only revise if the other agent's argument genuinely changed your assessment.
+- If you stand by your original scores, say "No revisions." and explain briefly.`;
+
 /** Build the user prompt for synthesis from agent results */
 export function buildSynthesisUserPrompt(
   agentResults: Array<{ agent: string; role: string; result: unknown }>,

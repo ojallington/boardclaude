@@ -19,11 +19,10 @@ Thin launcher that loads audit data, filters actionable items, and delegates all
 
 **These constraints are non-negotiable:**
 
-- **Effort cap**: Only attempt items with `effort: "low"` or `effort: "medium"`. Skip `"high"`.
-- **Batch limit**: Maximum 5 items per run (configurable via `--max`).
 - **Scope lock**: Never modify files outside the project root directory.
 - **No destructive operations**: Never delete files, drop data, or remove functionality.
 - **Conservative parallelism**: Items sharing ANY file ref are never executed in parallel.
+- **Two-attempt limit**: Each item gets at most 2 attempts (batch + retry) before being marked blocked.
 
 ## Prerequisites
 
@@ -50,11 +49,11 @@ At `.boardclaude/action-items.json`:
 
 ### Step 3: Filter to Actionable Items
 
-- `priority <= P` where P comes from `--priority` flag (default: 3)
-- `effort` is `"low"` or `"medium"`
+- `priority <= P` where P comes from `--priority` flag (if set; default: no limit)
+- All effort levels are attempted (`"low"`, `"medium"`, and `"high"`)
 - `status` is `"open"` (skip already resolved, blocked, or in-progress)
 - Sort by priority ascending (most important first)
-- Take at most N items where N comes from `--max` flag (default: 5)
+- Take at most N items where N comes from `--max` flag (if set; default: all matching items)
 
 If zero items remain after filtering, report "No actionable items found" and stop.
 
@@ -69,7 +68,7 @@ If zero items remain after filtering, report "No actionable items found" and sto
    - Lead prompt includes:
      - The full fix-lead agent instructions (from `agents/fix-lead.md`)
      - The filtered action items array as JSON
-     - CLI flags: `--dry-run`, `--no-reaudit`, `--serial`, `--max`
+     - CLI flags: `--dry-run`, `--audit`, `--loop N`, `--serial`, `--max`
      - Safety rails summary from this skill
 
 3. **Wait for the lead's completion message** (timeout: 10 minutes).
@@ -85,13 +84,13 @@ Fix Implementer Report
 Items attempted: X of Y open
 Items fixed:     N (resolved)
 Items blocked:   M (reverted)
-Items skipped:   S (high effort or low priority)
 
 Execution mode: parallel|serial
-Score delta:     A → B (+/-C)
+Validation:      tsc ✓/✗ | vitest ✓/✗ | lint ✓/✗
+Score delta:     A → B (+/-C)  [only if --audit or --loop was used]
 
 Still open: R items
-Next step:  Run /bc:audit for full re-evaluation or /bc:fix again for next batch
+Next step:  Run /bc:audit for full re-evaluation or /bc:fix again
 ```
 
 Then shutdown the team via SendMessage shutdown requests and TeamDelete.
