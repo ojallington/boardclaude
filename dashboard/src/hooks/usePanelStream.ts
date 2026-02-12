@@ -320,6 +320,13 @@ export function usePanelStream(): UsePanelStreamReturn {
           }
           break;
         }
+        case "debate_exchange":
+        case "debate_score_revision":
+        case "debate_complete":
+          // Debate events are informational — phase is already "debating"
+          // from the status event. No state change needed; the UI shows
+          // the debating phase indicator until synthesis begins.
+          break;
         case "error": {
           const message =
             typeof data.message === "string"

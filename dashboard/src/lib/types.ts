@@ -469,6 +469,36 @@ export interface TryResultSummary {
   timestamp: string;
 }
 
+// ─── Debate Types (Web Pipeline) ─────────────────────────────────────
+
+export interface ScoreRevision {
+  agent: string;
+  criterion: string;
+  original: number;
+  revised: number;
+  delta: number;
+}
+
+export interface DebateExchange {
+  agent_a: string;
+  agent_b: string;
+  criterion_a: string;
+  criterion_b: string;
+  score_a: number;
+  score_b: number;
+  response_a: string;
+  response_b: string;
+  revisions: ScoreRevision[];
+}
+
+export interface DebateResult {
+  exchanges: DebateExchange[];
+  revisions: ScoreRevision[];
+  transcript: string;
+  pairs_debated: number;
+  scores_revised: number;
+}
+
 // ─── Design System Constants ─────────────────────────────────────────
 
 export const AGENT_COLORS = {

@@ -138,6 +138,19 @@ agents:
         weight: 0.20
         description: "Extracted strings, locale-aware formatting, RTL awareness, inclusive design, WCAG basics"
 
+debate:
+  enabled: true
+  max_pairs: 3
+  divergence_threshold: 15
+  score_revision_bound: 5
+  related_criteria:
+    - [boris.architecture, jason.integration]
+    - [boris.verification, lydia.code_quality]
+    - [cat.user_value, ado.examples]
+    - [cat.narrative, jason.narrative]
+    - [thariq.ai_innovation, boris.compound_learning]
+    - [lydia.code_quality, boris.architecture]
+
 scoring:
   scale: 100
   passing_threshold: 70

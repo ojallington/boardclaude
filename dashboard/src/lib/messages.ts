@@ -385,7 +385,7 @@ export const messages = {
       validating: "Validating repository URL...",
       fetching: "Fetching repository contents...",
       reviewing: "Evaluating with 6 agents...",
-      debating: "Agents debating divergent opinions...",
+      debating: "Agents cross-examining divergent scores...",
       synthesizing: "Synthesizing panel consensus...",
       complete: "Panel review complete!",
       error: "Something went wrong.",

@@ -73,7 +73,39 @@ synthesis agent merges all findings into a unified report.
    - Prioritized action items with expected impact
    - Verdict: STRONG_PASS | PASS | MARGINAL | FAIL
 
-8. **Run synthesis**: Spawn a synthesis subagent (using agents/synthesis.md) that merges all reports into a unified output:
+8. **Run debate round** (Team Lead orchestrates cross-examination):
+
+   All agents remain alive (idle) after Round 1. The lead re-engages them via SendMessage for debate — no new agents are spawned.
+
+   a. Read the panel's `debate:` config from the YAML (enabled, max_pairs, divergence_threshold, related_criteria).
+
+   b. **Identify divergent pairs**: Compare each pair of agents on related criteria (from `debate.related_criteria`). Flag pairs where the score delta >= `divergence_threshold`. Sort by delta descending. Take top `max_pairs`.
+
+   c. **For each divergent pair** (Agent A = higher scorer, Agent B = lower scorer on the compared criteria):
+
+      1. Team lead sends `SendMessage` to Agent A:
+         - type: "message", recipient: "{agent_a_name}"
+         - content: "{agent_b_name} ({role}) scored {criterion} at {score}. Their view: {B's relevant findings}. You scored {related_criterion} at {your_score}. In 2-3 sentences, respond: where do you agree, where do you disagree? If you'd revise any score, include `REVISED: {criterion}: {new_score}` (max +/-5 from your original)."
+
+      2. Wait for Agent A's response (they wake from idle).
+
+      3. Team lead sends `SendMessage` to Agent B:
+         - type: "message", recipient: "{agent_b_name}"
+         - content: "{agent_a_name} responded to your assessment: '{A's reply}'. Your counter-response? Same revision format if applicable."
+
+      4. Wait for Agent B's response.
+
+      5. Parse both responses for score revisions (regex: `REVISED:\s*\w+:\s*\d+`).
+
+      6. Record the debate exchange in a transcript.
+
+   d. **Apply score revisions**: Update agent evaluations with any revised scores (bounded +/-5 from original).
+
+   e. **Pass debate transcript** + original and revised scores to synthesis.
+
+   If debate is disabled in the panel config or no pairs meet the divergence threshold, skip to synthesis.
+
+9. **Run synthesis**: Spawn a synthesis subagent (using agents/synthesis.md) that merges all reports into a unified output:
    - Weighted composite score across all agents
    - Radar chart data (one axis per agent dimension)
    - Top strengths agreed by 2+ agents
@@ -83,13 +115,13 @@ synthesis agent merges all findings into a unified report.
    - Iteration delta (improvement/regression from previous audit)
    - Overall verdict and letter grade
 
-9. **Save outputs**:
-   - Write JSON report to `.boardclaude/audits/audit-{timestamp}.json`
-   - Write Markdown summary to `.boardclaude/audits/audit-{timestamp}.md`
-   - Update `.boardclaude/state.json` with latest audit info and score history
-   - Append audit event to `.boardclaude/timeline.json`
+10. **Save outputs**:
+    - Write JSON report to `.boardclaude/audits/audit-{timestamp}.json`
+    - Write Markdown summary to `.boardclaude/audits/audit-{timestamp}.md`
+    - Update `.boardclaude/state.json` with latest audit info and score history
+    - Append audit event to `.boardclaude/timeline.json`
 
-10. **Display results**: Show the Markdown summary to the user including:
+11. **Display results**: Show the Markdown summary to the user including:
     - Composite score with grade
     - Per-agent score breakdown
     - Top 3 action items

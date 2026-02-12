@@ -96,21 +96,32 @@ Items that failed in a parallel batch get one more attempt serially:
 
 **Termination condition**: All items are either accepted or blocked. No unbounded loops.
 
-### Phase 5: Re-audit (Optional)
+### Phase 5: Re-audit (Optional — only if `--audit` or `--loop` is set)
 
-Unless `--no-reaudit` is set:
+By default, **skip this phase entirely**. Only run a re-audit if the caller explicitly passed `--audit` or `--loop N`.
+
+If `--audit` is set (single re-audit):
 - Run the audit skill to get new scores.
 - Compare new composite score against the pre-fix baseline.
 - Record the score delta.
 
-If `--no-reaudit` is set: skip this phase.
+If `--loop N` is set (autonomous fix-validate-audit cycles):
+- This is the start of an iteration loop. After the re-audit:
+  1. Extract new action items from the audit. Merge into the ledger (new items get `status: "open"`).
+  2. Check termination conditions:
+     - **Max iterations reached**: Current iteration >= N → exit.
+     - **No new items**: Audit produced no new actionable items → exit.
+     - **Score plateau**: Composite score unchanged for 2 consecutive iterations → exit.
+     - **All blocked**: All remaining items are blocked → exit.
+  3. If none met: go back to Phase 2 (re-plan batches from newly open items) and repeat.
+- Report cumulative results across all iterations when the loop terminates.
 
 ### Phase 6: Update Ledger
 
 Read `.boardclaude/action-items.json` and update:
 
-- Items where validation passed and (if re-audited) the relevant agent's score improved: set `status: "resolved"`, set `resolved_at` to current ISO timestamp.
-- Items where fix was applied but no re-audit: set `status: "in_progress"`.
+- Items where validation passed and (if `--audit` or `--loop` was used) the relevant agent's score improved: set `status: "resolved"`, set `resolved_at` to current ISO timestamp.
+- Items where fix was applied but no re-audit was run: set `status: "in_progress"` (validation passed but score delta unknown).
 - Items that were reverted: set `status: "blocked"`, set `blocked_reason`.
 - Record `fix_attempts` on each item:
   ```json
