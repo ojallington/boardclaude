@@ -11,6 +11,37 @@ import { validateTryPanelResult } from "@/lib/validate";
 
 const AGENT_NAMES = ["boris", "cat", "thariq", "lydia", "ado", "jason"];
 
+// ─── SSE Data Type Guards ─────────────────────────────────────────────
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isRepoInfo(value: unknown): value is { owner: string; name: string } {
+  return (
+    isRecord(value) &&
+    typeof value.owner === "string" &&
+    typeof value.name === "string"
+  );
+}
+
+/** Lightweight type guard for TryAgentResult shape validation. */
+function isAgentResult(value: unknown): value is TryAgentResult {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.agent === "string" &&
+    typeof value.role === "string" &&
+    typeof value.composite === "number" &&
+    typeof value.grade === "string" &&
+    typeof value.verdict === "string" &&
+    typeof value.one_line === "string" &&
+    typeof value.model_used === "string" &&
+    Array.isArray(value.strengths) &&
+    Array.isArray(value.weaknesses) &&
+    isRecord(value.scores)
+  );
+}
+
 function initialAgents(): TryAgentProgress[] {
   return AGENT_NAMES.map((name) => ({ agent: name, status: "pending" }));
 }
@@ -229,17 +260,19 @@ export function usePanelStream(): UsePanelStreamReturn {
     function handleSSEEvent(event: string, data: Record<string, unknown>) {
       switch (event) {
         case "status": {
-          const statusPhase = data.phase as string;
+          if (typeof data.phase !== "string") break;
+          const statusPhase = data.phase;
           if (statusPhase === "fetching") {
             dispatch({
               type: "STATUS_FETCHING",
-              repo: data.repo as { owner: string; name: string } | undefined,
+              repo: isRepoInfo(data.repo) ? data.repo : undefined,
             });
           } else if (statusPhase === "reviewing") {
-            dispatch({
-              type: "STATUS_REVIEWING",
-              tier: data.tier as "free" | "byok" | undefined,
-            });
+            const tier =
+              data.tier === "free" || data.tier === "byok"
+                ? data.tier
+                : undefined;
+            dispatch({ type: "STATUS_REVIEWING", tier });
           } else if (statusPhase === "debating") {
             dispatch({ type: "STATUS_DEBATING" });
           } else if (statusPhase === "synthesizing") {
@@ -247,22 +280,34 @@ export function usePanelStream(): UsePanelStreamReturn {
           }
           break;
         }
-        case "agent_start":
-          dispatch({ type: "AGENT_START", agent: data.agent as string });
+        case "agent_start": {
+          if (typeof data.agent !== "string") break;
+          dispatch({ type: "AGENT_START", agent: data.agent });
           break;
-        case "agent_tool_use":
-          dispatch({ type: "AGENT_TOOL_USE", agent: data.agent as string });
+        }
+        case "agent_tool_use": {
+          if (typeof data.agent !== "string") break;
+          dispatch({ type: "AGENT_TOOL_USE", agent: data.agent });
           break;
-        case "agent_complete":
+        }
+        case "agent_complete": {
+          if (typeof data.agent !== "string") break;
+          if (!isAgentResult(data.result)) {
+            dispatch({ type: "AGENT_ERROR", agent: data.agent });
+            break;
+          }
           dispatch({
             type: "AGENT_COMPLETE",
-            agent: data.agent as string,
-            result: data.result as TryAgentResult,
+            agent: data.agent,
+            result: data.result,
           });
           break;
-        case "agent_error":
-          dispatch({ type: "AGENT_ERROR", agent: data.agent as string });
+        }
+        case "agent_error": {
+          if (typeof data.agent !== "string") break;
+          dispatch({ type: "AGENT_ERROR", agent: data.agent });
           break;
+        }
         case "complete": {
           const validation = validateTryPanelResult(data);
           if (validation.valid && validation.data) {
@@ -275,9 +320,14 @@ export function usePanelStream(): UsePanelStreamReturn {
           }
           break;
         }
-        case "error":
-          dispatch({ type: "ERROR", message: data.message as string });
+        case "error": {
+          const message =
+            typeof data.message === "string"
+              ? data.message
+              : "Unknown error occurred.";
+          dispatch({ type: "ERROR", message });
           break;
+        }
       }
     }
   }, []);

@@ -1,5 +1,13 @@
 import type Anthropic from "@anthropic-ai/sdk";
-import type { TryAgentResult, TryPanelResult } from "@/lib/types";
+import type {
+  TryAgentResult,
+  TryPanelResult,
+  RadarData,
+  Highlights,
+  DivergentOpinion,
+  SynthesisActionItem,
+  EffortLevel,
+} from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import {
   WEB_AGENTS,
@@ -10,6 +18,167 @@ import {
 import { saveWebReview } from "@/lib/try-storage";
 import type { FetchedRepo } from "@/lib/github";
 import type { SSESender } from "@/app/api/try/route";
+
+// ─── Type Guard ─────────────────────────────────────────────────────
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+// ─── Synthesis Data Validators ──────────────────────────────────────
+
+/** Validate and extract a number from a record field, returning fallback on failure. */
+function extractNumber(
+  obj: Record<string, unknown>,
+  key: string,
+  fallback: number,
+): number {
+  const val = obj[key];
+  return typeof val === "number" && isFinite(val) ? val : fallback;
+}
+
+/** Validate radar data from LLM output, falling back to score for missing axes. */
+function extractRadar(
+  synthesisData: Record<string, unknown>,
+  fallbackScore: number,
+): RadarData {
+  const comp = isRecord(synthesisData.composite)
+    ? synthesisData.composite
+    : null;
+  const radar = comp !== null && isRecord(comp.radar) ? comp.radar : null;
+
+  if (radar === null) {
+    return {
+      architecture: fallbackScore,
+      product: fallbackScore,
+      innovation: fallbackScore,
+      code_quality: fallbackScore,
+      documentation: fallbackScore,
+      integration: fallbackScore,
+    };
+  }
+
+  return {
+    architecture: extractNumber(radar, "architecture", fallbackScore),
+    product: extractNumber(radar, "product", fallbackScore),
+    innovation: extractNumber(radar, "innovation", fallbackScore),
+    code_quality: extractNumber(radar, "code_quality", fallbackScore),
+    documentation: extractNumber(radar, "documentation", fallbackScore),
+    integration: extractNumber(radar, "integration", fallbackScore),
+  };
+}
+
+/** Validate a string array from unknown data, returning empty on failure. */
+function extractStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((item): item is string => typeof item === "string");
+}
+
+const VALID_EFFORT_LEVELS = new Set<string>(["low", "medium", "high", "max"]);
+
+/** Validate a single DivergentOpinion from unknown data. */
+function extractDivergentOpinion(value: unknown): DivergentOpinion | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.topic !== "string") return null;
+  if (typeof value.analysis !== "string") return null;
+
+  const agentA = isRecord(value.agent_a) ? value.agent_a : null;
+  const agentB = isRecord(value.agent_b) ? value.agent_b : null;
+  if (
+    agentA === null ||
+    typeof agentA.agent !== "string" ||
+    typeof agentA.position !== "string"
+  )
+    return null;
+  if (
+    agentB === null ||
+    typeof agentB.agent !== "string" ||
+    typeof agentB.position !== "string"
+  )
+    return null;
+
+  return {
+    topic: value.topic,
+    analysis: value.analysis,
+    agent_a: { agent: agentA.agent, position: agentA.position },
+    agent_b: { agent: agentB.agent, position: agentB.position },
+  };
+}
+
+/** Validate highlights from LLM output, returning safe defaults on failure. */
+function extractHighlights(synthesisData: Record<string, unknown>): Highlights {
+  const raw = isRecord(synthesisData.highlights)
+    ? synthesisData.highlights
+    : null;
+
+  if (raw === null) {
+    return {
+      top_strengths: [],
+      top_weaknesses: [],
+      divergent_opinions: [],
+    };
+  }
+
+  const divergentRaw = Array.isArray(raw.divergent_opinions)
+    ? raw.divergent_opinions
+    : [];
+  const divergentOpinions: DivergentOpinion[] = [];
+  for (const item of divergentRaw) {
+    const validated = extractDivergentOpinion(item);
+    if (validated !== null) {
+      divergentOpinions.push(validated);
+    }
+  }
+
+  return {
+    top_strengths: extractStringArray(raw.top_strengths),
+    top_weaknesses: extractStringArray(raw.top_weaknesses),
+    divergent_opinions: divergentOpinions,
+  };
+}
+
+/** Validate a single SynthesisActionItem from unknown data. */
+function extractSynthesisActionItem(
+  value: unknown,
+): SynthesisActionItem | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.priority !== "number") return null;
+  if (typeof value.action !== "string") return null;
+  if (typeof value.impact !== "string") return null;
+
+  const sourceAgents = Array.isArray(value.source_agents)
+    ? value.source_agents.filter((s): s is string => typeof s === "string")
+    : [];
+
+  const effort: EffortLevel =
+    typeof value.effort === "string" && VALID_EFFORT_LEVELS.has(value.effort)
+      ? (value.effort as EffortLevel)
+      : "medium";
+
+  return {
+    priority: value.priority,
+    action: value.action,
+    source_agents: sourceAgents,
+    impact: value.impact,
+    effort,
+  };
+}
+
+/** Validate action items array from LLM output, dropping invalid entries. */
+function extractActionItems(
+  synthesisData: Record<string, unknown>,
+): SynthesisActionItem[] {
+  if (!Array.isArray(synthesisData.action_items)) return [];
+
+  const result: SynthesisActionItem[] = [];
+  for (const item of synthesisData.action_items) {
+    const validated = extractSynthesisActionItem(item);
+    if (validated !== null) {
+      result.push(validated);
+    }
+  }
+  return result;
+}
 
 function parseJSON(text: string): Record<string, unknown> | null {
   let jsonStr = text.trim();
@@ -183,26 +352,30 @@ function buildSynthesizedResult(
   repoData: FetchedRepo,
   tier: "free" | "byok",
 ): TryPanelResult {
-  const comp = synthesisData.composite as Record<string, unknown>;
-  const radar = (comp?.radar ?? {}) as Record<string, number>;
-  const score =
-    typeof comp?.score === "number"
-      ? comp.score
-      : Math.round(
-          agentResults.reduce((sum, r) => {
-            const w = weights[r.agent] ?? 1 / agentResults.length;
-            return sum + r.composite * w;
-          }, 0) /
-            agentResults.reduce(
-              (sum, r) => sum + (weights[r.agent] ?? 1 / agentResults.length),
-              0,
-            ),
-        );
+  // Compute weighted fallback score from agent results
+  const weightedSum = agentResults.reduce((sum, r) => {
+    const w = weights[r.agent] ?? 1 / agentResults.length;
+    return sum + r.composite * w;
+  }, 0);
+  const totalWeight = agentResults.reduce(
+    (sum, r) => sum + (weights[r.agent] ?? 1 / agentResults.length),
+    0,
+  );
+  const fallbackScore = Math.round(weightedSum / totalWeight);
 
-  const highlights = (synthesisData.highlights ?? {}) as Record<
-    string,
-    unknown
-  >;
+  // Extract composite score with validated field access
+  const comp = isRecord(synthesisData.composite)
+    ? synthesisData.composite
+    : null;
+  const score =
+    comp !== null && typeof comp.score === "number" && isFinite(comp.score)
+      ? comp.score
+      : fallbackScore;
+
+  // Extract radar, highlights, and action items with full validation
+  const radar = extractRadar(synthesisData, score);
+  const highlights = extractHighlights(synthesisData);
+  const actionItems = extractActionItems(synthesisData);
 
   return {
     audit_id: auditId,
@@ -212,26 +385,12 @@ function buildSynthesizedResult(
     agents: agentResults,
     composite: {
       score,
-      radar: {
-        architecture: radar.architecture ?? score,
-        product: radar.product ?? score,
-        innovation: radar.innovation ?? score,
-        code_quality: radar.code_quality ?? score,
-        documentation: radar.documentation ?? score,
-        integration: radar.integration ?? score,
-      },
+      radar,
       grade: getGrade(score),
       verdict: getVerdict(score),
     },
-    highlights: {
-      top_strengths: (highlights.top_strengths as string[]) ?? [],
-      top_weaknesses: (highlights.top_weaknesses as string[]) ?? [],
-      divergent_opinions:
-        (highlights.divergent_opinions as TryPanelResult["highlights"]["divergent_opinions"]) ??
-        [],
-    },
-    action_items:
-      (synthesisData.action_items as TryPanelResult["action_items"]) ?? [],
+    highlights,
+    action_items: actionItems,
     files_analyzed: repoData.totalFiles,
     files_detail: repoData.filesDetail,
     tier,
