@@ -26,8 +26,11 @@ export default function HomePage() {
       <section className="px-6 pb-20 max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold text-center mb-8">{story.heading}</h2>
         <div className="space-y-5">
-          {story.paragraphs.map((paragraph, i) => (
-            <p key={i} className="text-gray-400 leading-relaxed text-lg">
+          {story.paragraphs.map((paragraph) => (
+            <p
+              key={paragraph.slice(0, 40)}
+              className="text-gray-400 leading-relaxed text-lg"
+            >
               {paragraph}
             </p>
           ))}
@@ -90,6 +93,79 @@ export default function HomePage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Self-Improvement Loop */}
+      <section className="px-6 pb-20 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          {messages.loop.heading}
+        </h2>
+        <p className="text-gray-400 text-lg text-center max-w-2xl mx-auto mb-12">
+          {messages.loop.description}
+        </p>
+
+        {/* Loop diagram */}
+        <div className="flex items-center justify-center gap-4 sm:gap-6 mb-12">
+          {messages.loop.steps.map((step, i) => (
+            <div key={step.label} className="flex items-center gap-4 sm:gap-6">
+              <div className="flex flex-col items-center gap-2">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-indigo-500/50 bg-indigo-500/10 flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl">
+                    {step.icon === "scan" && "\uD83D\uDD0D"}
+                    {step.icon === "wrench" && "\uD83D\uDD27"}
+                    {step.icon === "repeat" && "\uD83D\uDD01"}
+                  </span>
+                </div>
+                <span className="text-sm font-semibold text-gray-300">
+                  {step.label}
+                </span>
+              </div>
+              {i < messages.loop.steps.length - 1 && (
+                <svg
+                  className="w-6 h-6 text-indigo-500/50 shrink-0 -mt-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M13 7l5 5m0 0l-5 5m5-5H6"
+                  />
+                </svg>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Score progression bar chart */}
+        <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+          <p className="text-sm text-gray-400 mb-4">
+            {messages.loop.progression.label}
+          </p>
+          <div className="flex items-end gap-3 sm:gap-5 h-40">
+            {messages.loop.progression.scores.map((s) => (
+              <div
+                key={s.iteration}
+                className="flex-1 flex flex-col items-center gap-2"
+              >
+                <span className="text-sm font-bold tabular-nums text-indigo-300">
+                  {s.score}
+                </span>
+                <div
+                  className="w-full rounded-t-md bg-gradient-to-t from-indigo-600 to-indigo-400 transition-all"
+                  style={{ height: `${(s.score / 100) * 100}%` }}
+                />
+                <span className="text-xs text-gray-500">#{s.iteration}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm text-gray-500 italic text-center">
+            {messages.loop.cta}
+          </p>
         </div>
       </section>
 

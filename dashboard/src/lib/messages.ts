@@ -115,6 +115,28 @@ export const messages = {
     ],
   },
 
+  loop: {
+    heading: "The Self-Improvement Loop",
+    description:
+      "BoardClaude doesn\u2019t just evaluate\u2014it drives iterative improvement. Audit your project, fix the top issues, and re-audit to measure progress.",
+    steps: [
+      { label: "Audit", icon: "scan" },
+      { label: "Fix", icon: "wrench" },
+      { label: "Re-audit", icon: "repeat" },
+    ],
+    progression: {
+      label: "Real score progression from this project:",
+      scores: [
+        { iteration: 0, score: 68 },
+        { iteration: 1, score: 81 },
+        { iteration: 2, score: 84 },
+        { iteration: 4, score: 87 },
+        { iteration: 6, score: 91 },
+      ],
+    },
+    cta: "Each cycle finds new issues, fixes them, and proves the improvement with data.",
+  },
+
   features: {
     heading: "Features",
     items: [
@@ -332,6 +354,10 @@ export const messages = {
     byokPlaceholder: "sk-ant-...",
     byokHint:
       "Your key is sent over HTTPS for this request only. Never stored.",
+    byokCostEstimate:
+      "Estimated cost: ~$0.15\u20130.40 per review (Opus + Sonnet models)",
+    byokGetKey: "Don\u2019t have a key?",
+    byokGetKeyLink: "Get one from Anthropic Console",
     exampleRepos: "Try an example",
     rateLimitFree: "3 free reviews per hour",
     rateLimitByok: "30 reviews per hour with your key",
