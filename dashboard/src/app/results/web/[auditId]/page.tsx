@@ -11,6 +11,7 @@ import {
   formatTimestamp,
 } from "@/lib/ui-constants";
 import { RadarChart } from "@/components/RadarChart";
+import { EvaluationList } from "@/components/EvaluationList";
 import { DivergentOpinions } from "@/components/DivergentOpinions";
 import { PrioritizedActionItems } from "@/components/PrioritizedActionItems";
 import { FilesAnalyzedSection } from "@/components/FilesAnalyzedSection";
@@ -140,33 +141,21 @@ export default async function WebReviewDetailPage({
             <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-3">
               Top Strengths
             </h2>
-            <ul className="space-y-2">
-              {highlights.top_strengths.filter(Boolean).map((s, i) => (
-                <li
-                  key={`item-${s ?? i}`}
-                  className="flex items-start gap-2 text-sm text-gray-300"
-                >
-                  <span className="mt-0.5 shrink-0 text-emerald-500">+</span>
-                  <span>{s}</span>
-                </li>
-              ))}
-            </ul>
+            <EvaluationList
+              items={highlights.top_strengths}
+              variant="strengths"
+              iconColor="text-emerald-500"
+            />
           </div>
           <div className="rounded-xl border border-gray-800 bg-gray-900/60 p-5">
             <h2 className="text-xs font-semibold uppercase tracking-wider text-amber-400 mb-3">
               Top Weaknesses
             </h2>
-            <ul className="space-y-2">
-              {highlights.top_weaknesses.filter(Boolean).map((w, i) => (
-                <li
-                  key={`item-${w ?? i}`}
-                  className="flex items-start gap-2 text-sm text-gray-300"
-                >
-                  <span className="mt-0.5 shrink-0 text-amber-500">-</span>
-                  <span>{w}</span>
-                </li>
-              ))}
-            </ul>
+            <EvaluationList
+              items={highlights.top_weaknesses}
+              variant="weaknesses"
+              iconColor="text-amber-500"
+            />
           </div>
         </div>
 
@@ -231,38 +220,20 @@ export default async function WebReviewDetailPage({
                   )}
 
                   <div className="space-y-2">
-                    <div>
-                      <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                        Strengths
-                      </h4>
-                      <ul className="space-y-0.5">
-                        {agent.strengths.filter(Boolean).map((s, i) => (
-                          <li
-                            key={`item-${s ?? i}`}
-                            className="text-xs text-gray-300 flex items-start gap-1"
-                          >
-                            <span className="text-emerald-500 shrink-0">+</span>
-                            <span>{s}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="text-[10px] font-semibold uppercase tracking-wider text-gray-500 mb-1">
-                        Weaknesses
-                      </h4>
-                      <ul className="space-y-0.5">
-                        {agent.weaknesses.filter(Boolean).map((w, i) => (
-                          <li
-                            key={`item-${w ?? i}`}
-                            className="text-xs text-gray-300 flex items-start gap-1"
-                          >
-                            <span className="text-amber-500 shrink-0">-</span>
-                            <span>{w}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <EvaluationList
+                      items={[...agent.strengths]}
+                      variant="strengths"
+                      size="sm"
+                      label="Strengths"
+                      iconColor="text-emerald-500"
+                    />
+                    <EvaluationList
+                      items={[...agent.weaknesses]}
+                      variant="weaknesses"
+                      size="sm"
+                      label="Weaknesses"
+                      iconColor="text-amber-500"
+                    />
                   </div>
 
                   <p className="mt-2 text-[10px] text-gray-600">

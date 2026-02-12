@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from "react";
 import type { TryResult, TryStreamPhase } from "@/lib/types";
 import { validateTryResult } from "@/lib/validate";
+import { isRecord, isRepoInfo } from "@/lib/type-guards";
 
 interface UseReviewStreamReturn {
   phase: TryStreamPhase;
@@ -104,21 +105,15 @@ export function useReviewStream(): UseReviewStreamReturn {
         }
       })();
 
-      function handleSSEEvent(event: string, data: Record<string, unknown>) {
+      function handleSSEEvent(event: string, data: unknown) {
+        if (!isRecord(data)) return;
         switch (event) {
           case "status": {
             if (typeof data.phase !== "string") break;
             if (data.phase === "fetching") {
               setPhase("fetching");
-              if (
-                typeof data.repo === "object" &&
-                data.repo !== null &&
-                !Array.isArray(data.repo) &&
-                typeof (data.repo as Record<string, unknown>).owner ===
-                  "string" &&
-                typeof (data.repo as Record<string, unknown>).name === "string"
-              ) {
-                setRepoInfo(data.repo as { owner: string; name: string });
+              if (isRepoInfo(data.repo)) {
+                setRepoInfo(data.repo);
               }
             } else if (data.phase === "reviewing") {
               setPhase("reviewing");

@@ -8,17 +8,9 @@ import type {
   TryAgentResult,
 } from "@/lib/types";
 import { validateTryPanelResult } from "@/lib/validate";
-import { isRecord } from "@/lib/type-guards";
+import { isRecord, isRepoInfo } from "@/lib/type-guards";
 
 const AGENT_NAMES = ["boris", "cat", "thariq", "lydia", "ado", "jason"];
-
-function isRepoInfo(value: unknown): value is { owner: string; name: string } {
-  return (
-    isRecord(value) &&
-    typeof value.owner === "string" &&
-    typeof value.name === "string"
-  );
-}
 
 /** Lightweight type guard for TryAgentResult shape validation. */
 function isAgentResult(value: unknown): value is TryAgentResult {

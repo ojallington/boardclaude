@@ -104,6 +104,17 @@ BoardClaude's first self-audit scored **68.4 / 100 (C+, MARGINAL)** with 6 agent
 
 See the full audit JSON: [`examples/audit-example.json`](examples/audit-example.json)
 
+## Examples
+
+The [`examples/`](examples/) directory contains starter files and guides:
+
+| File | Description |
+|------|-------------|
+| [`quickstart.md`](examples/quickstart.md) | Copy-pasteable install and first-audit walkthrough |
+| [`minimal-panel.yaml`](examples/minimal-panel.yaml) | Annotated minimal panel with 2 agents |
+| [`custom-agent.md`](examples/custom-agent.md) | Step-by-step guide to creating a custom agent |
+| [`audit-example.json`](examples/audit-example.json) | Full audit output from a real self-evaluation |
+
 ## Architecture
 
 ```

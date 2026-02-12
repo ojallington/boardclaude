@@ -2,6 +2,8 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { TryAgentResult } from "@/lib/types";
 import { getGrade, getVerdict } from "@/lib/types";
 import { validateAgentEvaluation } from "@/lib/validate";
+import { extractStringArray } from "@/lib/try-synthesize";
+import { isRecord } from "@/lib/type-guards";
 import {
   WEB_AGENTS,
   getModelId,
@@ -327,12 +329,7 @@ export async function invokeAgents(
           model_used: modelId,
         };
       } else {
-        const rawScores =
-          typeof data.scores === "object" &&
-          data.scores !== null &&
-          !Array.isArray(data.scores)
-            ? (data.scores as Record<string, unknown>)
-            : {};
+        const rawScores = isRecord(data.scores) ? data.scores : {};
         const scores: Record<string, number> = {};
         for (const [k, v] of Object.entries(rawScores)) {
           if (typeof v === "number" && isFinite(v)) scores[k] = v;
@@ -347,26 +344,23 @@ export async function invokeAgents(
                 )
               : 50;
 
-        const extractStringArray = (val: unknown, len: number): string[] => {
-          if (!Array.isArray(val)) return Array.from({ length: len }, () => "");
-          return val.map((v) => (typeof v === "string" ? v : "")).slice(0, len);
-        };
+        const padToThree = (arr: string[]): [string, string, string] => [
+          arr[0] ?? "",
+          arr[1] ?? "",
+          arr[2] ?? "",
+        ];
 
-        const extractActionItems = (
-          val: unknown,
-        ): TryAgentResult["action_items"] => {
-          if (!Array.isArray(val)) return [];
-          return val
-            .filter(
-              (item): item is Record<string, unknown> =>
-                typeof item === "object" && item !== null,
-            )
-            .map((item) => ({
+        const actionItems: TryAgentResult["action_items"] = [];
+        if (Array.isArray(data.action_items)) {
+          for (const item of data.action_items) {
+            if (!isRecord(item)) continue;
+            actionItems.push({
               priority: typeof item.priority === "number" ? item.priority : 99,
               action: typeof item.action === "string" ? item.action : "",
               impact: typeof item.impact === "string" ? item.impact : "",
-            }));
-        };
+            });
+          }
+        }
 
         result = {
           agent: agent.name,
@@ -375,23 +369,10 @@ export async function invokeAgents(
           composite,
           grade: getGrade(composite),
           verdict: getVerdict(composite),
-          strengths: extractStringArray(data.strengths, 3) as [
-            string,
-            string,
-            string,
-          ],
-          weaknesses: extractStringArray(data.weaknesses, 3) as [
-            string,
-            string,
-            string,
-          ],
-          critical_issues: extractStringArray(
-            data.critical_issues,
-            Array.isArray(data.critical_issues)
-              ? data.critical_issues.length
-              : 0,
-          ),
-          action_items: extractActionItems(data.action_items),
+          strengths: padToThree(extractStringArray(data.strengths)),
+          weaknesses: padToThree(extractStringArray(data.weaknesses)),
+          critical_issues: extractStringArray(data.critical_issues),
+          action_items: actionItems,
           one_line: typeof data.one_line === "string" ? data.one_line : "",
           model_used: modelId,
         };

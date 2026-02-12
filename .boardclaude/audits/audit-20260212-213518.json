@@ -383,11 +383,11 @@
       "effort": "high"
     },
     {
-      "priority": 10,
-      "action": "Implement next-intl with en/es locale switching proof-of-concept",
+      "priority": 3,
+      "action": "Implement full next-intl i18n: wire messages.ts through next-intl, add real translations for en/es/fr/de/ja/zh/ar (with RTL support for ar), locale switcher in UI, dynamic HTML lang attribute. Key languages must have complete translations, not stubs.",
       "source_agents": ["jason"],
-      "impact": "Proves global readiness. internationalization +30-35.",
-      "effort": "max"
+      "impact": "Proves global readiness and real international awareness. Internationalization scores +30-35 across Jason and other agents. Previous half-implementation caused score regression — must be complete.",
+      "effort": "high"
     }
   ],
   "iteration_delta": {
