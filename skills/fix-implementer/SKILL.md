@@ -4,7 +4,7 @@ description: >
   Thin launcher for the fix pipeline. Loads audit data, filters action items,
   spawns a fix-lead team to orchestrate workers, and reports results.
   Triggers on "fix", "implement", "resolve", "address findings".
-allowed-tools: Read, Bash, Glob, Grep, Task, TeamCreate, TeamDelete, SendMessage
+allowed-tools: Read, Task, TeamCreate, TeamDelete, SendMessage
 context: fork
 agent: general-purpose
 ---
@@ -25,6 +25,8 @@ Thin launcher that loads audit data, filters actionable items, and delegates all
 - **Two-attempt limit**: Each item gets at most 2 attempts (batch + retry) before being marked blocked.
 
 ## Prerequisites
+
+**Your role**: You are ONLY a launcher. You do NOT implement fixes, run validation, read source code, or edit any files. Your only job is to load data from `.boardclaude/`, filter items, spawn the fix-lead team, and relay results.
 
 Before running, verify:
 - Latest audit exists: !`ls .boardclaude/audits/*.json 2>/dev/null | tail -1 || echo "NO AUDIT — run /bc:audit first"`
@@ -65,6 +67,7 @@ If zero items remain after filtering, report "No actionable items found" and sto
    - `subagent_type`: `"general-purpose"`
    - `team_name`: the team name from TeamCreate
    - `name`: `"fix-lead"`
+   - `mode`: `"bypassPermissions"`
    - Lead prompt includes:
      - The full fix-lead agent instructions (from `agents/fix-lead.md`)
      - The filtered action items array as JSON
@@ -72,7 +75,8 @@ If zero items remain after filtering, report "No actionable items found" and sto
      - Safety rails summary from this skill
 
 3. **Wait for the lead's completion message** (timeout: 10 minutes).
-   - The lead sends a structured completion report via SendMessage.
+   - The launcher never implements fixes — all work happens inside the fix-lead and its workers.
+   - The lead sends a structured completion report via SendMessage wrapped in `FIX_LEAD_REPORT_START/FIX_LEAD_REPORT_END`.
    - If timeout: send shutdown to lead, report timeout to user, clean up team.
 
 ### Step 5: Report Results
