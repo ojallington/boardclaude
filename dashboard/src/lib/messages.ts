@@ -213,7 +213,7 @@ export const messages = {
     results: {
       heading: "Failed to load audit results",
       description:
-        "Could not read audit data. Make sure .boardclaude/ exists and contains valid audit files.",
+        "Could not read audit data. Run an audit first or check that audit files are valid.",
       retry: "Try again",
       goHome: "Go home",
     },
@@ -237,7 +237,7 @@ export const messages = {
     timeline: {
       heading: "Failed to load timeline",
       description:
-        "Could not read timeline data. Make sure .boardclaude/timeline.json exists.",
+        "Could not read timeline data. Run an audit first to generate timeline events.",
       retry: "Try again",
       goHome: "Go home",
     },

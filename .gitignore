@@ -27,8 +27,13 @@ Thumbs.db
 .vscode/
 .idea/
 
-# BoardClaude runtime state
-.boardclaude/
+# BoardClaude transient state
+.boardclaude/tmp/
+.boardclaude/validation/
+.boardclaude/worktrees/
+
+# Dashboard data (build artifact, synced from .boardclaude/)
+dashboard/data/
 
 # Large media files
 *.mp4

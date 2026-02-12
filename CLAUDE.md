@@ -6,7 +6,7 @@ Claude Code plugin: configurable AI agent panels for multi-perspective project e
 
 - Plugin: `.claude-plugin/plugin.json`, `agents/`, `commands/`, `skills/`, `hooks/`
 - Dashboard: Next.js 15 App Router in `dashboard/`
-- State: `.boardclaude/state.json`, `timeline.json`, `audits/`
+- State: `.boardclaude/` (tracked in git; synced to `dashboard/data/` at build time)
 - Panels: `panels/*.yaml` define agent configurations
 - Reference: `context/` -- consolidated research docs (see below)
 

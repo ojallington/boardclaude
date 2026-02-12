@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/sync-data.mjs && next build",
+    "sync-data": "node scripts/sync-data.mjs",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
