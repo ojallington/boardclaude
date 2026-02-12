@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getTimelineEnriched } from "@/lib/audit-loader";
@@ -26,7 +27,20 @@ const VERDICT_DOT: Record<string, string> = {
   FAIL: "bg-red-400",
 };
 
-export default async function TimelinePage() {
+function TimelineLoadingSkeleton() {
+  return (
+    <div className="animate-pulse space-y-6">
+      <div className="h-8 w-48 rounded bg-gray-800" />
+      <div className="h-4 w-72 rounded bg-gray-800" />
+      <div className="h-24 rounded-xl bg-gray-800/50" />
+      {Array.from({ length: 3 }, (_, i) => (
+        <div key={`tl-skel-${i}`} className="h-40 rounded-xl bg-gray-800/50" />
+      ))}
+    </div>
+  );
+}
+
+async function TimelineContent() {
   const enriched = await getTimelineEnriched();
   const events = enriched?.events ?? [];
 
@@ -37,7 +51,7 @@ export default async function TimelinePage() {
         className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8"
       >
         <h1 className="text-3xl font-bold">{messages.timeline.heading}</h1>
-        <p className="mt-6 text-gray-400">{messages.timeline.noEvents}</p>
+        <p className="mt-6 text-gray-300">{messages.timeline.noEvents}</p>
       </main>
     );
   }
@@ -49,7 +63,7 @@ export default async function TimelinePage() {
     >
       <div className="mb-10">
         <h1 className="text-3xl font-bold">{messages.timeline.heading}</h1>
-        <p className="mt-2 text-gray-400">{messages.timeline.subheading}</p>
+        <p className="mt-2 text-gray-300">{messages.timeline.subheading}</p>
       </div>
 
       {/* Score summary banner */}
@@ -199,5 +213,13 @@ export default async function TimelinePage() {
         </ol>
       </div>
     </main>
+  );
+}
+
+export default function TimelinePage() {
+  return (
+    <Suspense fallback={<TimelineLoadingSkeleton />}>
+      <TimelineContent />
+    </Suspense>
   );
 }

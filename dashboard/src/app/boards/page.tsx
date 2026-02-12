@@ -34,7 +34,7 @@ export default function BoardsPage() {
     >
       <div className="mb-10 text-center">
         <h1 className="text-3xl font-bold">{messages.boards.heading}</h1>
-        <p className="mt-2 text-gray-400">{messages.boards.subheading}</p>
+        <p className="mt-2 text-gray-300">{messages.boards.subheading}</p>
       </div>
 
       {/* Featured template */}
@@ -132,7 +132,7 @@ function TemplateCard({
             {template.name}
           </h3>
           <p
-            className={`mt-1 leading-relaxed ${featured ? "text-base text-gray-400" : "text-sm text-gray-300"}`}
+            className={`mt-1 leading-relaxed ${featured ? "text-base text-gray-300" : "text-sm text-gray-300"}`}
           >
             {template.description}
           </p>

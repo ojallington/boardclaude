@@ -128,7 +128,8 @@
     "tryIt": "Ausprobieren",
     "results": "Ergebnisse",
     "timeline": "Zeitleiste",
-    "boards": "Panels"
+    "boards": "Panels",
+    "install": "Installieren"
   },
   "timeline": {
     "title": "Audit-Zeitleiste - BoardClaude",

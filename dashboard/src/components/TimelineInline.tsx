@@ -25,7 +25,7 @@ export async function TimelineInline() {
   const events = enriched?.events ?? [];
 
   if (events.length === 0) {
-    return <p className="mt-6 text-gray-400">{messages.timeline.noEvents}</p>;
+    return <p className="mt-6 text-gray-300">{messages.timeline.noEvents}</p>;
   }
 
   return (

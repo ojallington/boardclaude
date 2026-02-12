@@ -161,7 +161,7 @@ export function ResultsPageClient({
             <h1 className="text-3xl font-bold tracking-tight text-gray-100">
               {messages.results.heading}
             </h1>
-            <p className="mt-1 text-gray-400">
+            <p className="mt-1 text-gray-300">
               {sorted.length} audit{sorted.length !== 1 ? "s" : ""} across{" "}
               {new Set(sorted.map((a) => a.panel)).size} panel
               {new Set(sorted.map((a) => a.panel)).size !== 1 ? "s" : ""}

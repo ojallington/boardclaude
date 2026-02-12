@@ -17,7 +17,7 @@ export default function HomePage() {
         <p className="mt-4 text-2xl sm:text-3xl font-medium text-indigo-300">
           {hero.tagline}
         </p>
-        <p className="mt-6 max-w-2xl text-lg text-gray-400 leading-relaxed">
+        <p className="mt-6 max-w-2xl text-lg text-gray-300 leading-relaxed">
           {hero.description}
         </p>
       </section>
@@ -29,7 +29,7 @@ export default function HomePage() {
           {story.paragraphs.map((paragraph) => (
             <p
               key={paragraph.slice(0, 40)}
-              className="text-gray-400 leading-relaxed text-lg"
+              className="text-gray-300 leading-relaxed text-lg"
             >
               {paragraph}
             </p>
@@ -40,7 +40,7 @@ export default function HomePage() {
       {/* The Panel */}
       <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-4">{panel.heading}</h2>
-        <p className="text-gray-400 mb-10 text-lg max-w-2xl mx-auto">
+        <p className="text-gray-300 mb-10 text-lg max-w-2xl mx-auto">
           {panel.description}
         </p>
         <div className="flex flex-wrap justify-center gap-4">
@@ -66,7 +66,7 @@ export default function HomePage() {
       {/* Try It Now */}
       <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-4">Try It Now</h2>
-        <p className="text-gray-400 mb-8 text-lg max-w-2xl mx-auto">
+        <p className="text-gray-300 mb-8 text-lg max-w-2xl mx-auto">
           Paste a public GitHub repo URL and get an instant AI code review. No
           install required.
         </p>
@@ -88,7 +88,7 @@ export default function HomePage() {
                 {step.number}
               </span>
               <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-3 text-gray-400 leading-relaxed">
+              <p className="mt-3 text-gray-300 leading-relaxed">
                 {step.description}
               </p>
             </div>
@@ -101,7 +101,7 @@ export default function HomePage() {
         <h2 className="text-3xl font-bold text-center mb-4">
           {messages.loop.heading}
         </h2>
-        <p className="text-gray-400 text-lg text-center max-w-2xl mx-auto mb-12">
+        <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-12">
           {messages.loop.description}
         </p>
 
@@ -195,7 +195,7 @@ export default function HomePage() {
         className="px-6 pb-20 max-w-3xl mx-auto text-center"
       >
         <h2 className="text-3xl font-bold mb-4">{install.heading}</h2>
-        <p className="text-gray-400 mb-8 text-lg">{install.description}</p>
+        <p className="text-gray-300 mb-8 text-lg">{install.description}</p>
         <div className="rounded-xl border border-gray-800 bg-gray-900 p-6 text-left">
           <p className="text-xs font-mono text-gray-300 mb-3">
             {install.terminalLabel}

@@ -40,7 +40,7 @@ function indent(text: string, spaces: number): string {
     .join("\n");
 }
 
-function escapeYaml(str: string): string {
+export function escapeYaml(str: string): string {
   if (
     str.includes(":") ||
     str.includes("#") ||

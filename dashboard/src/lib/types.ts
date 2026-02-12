@@ -764,6 +764,11 @@ export interface DebateResult {
   scores_revised: number;
 }
 
+// ─── SSE Types ──────────────────────────────────────────────────────
+
+/** Callback for sending Server-Sent Events during "Try It Now" evaluation pipeline. */
+export type SSESender = (event: string, data: unknown) => Promise<void>;
+
 // ─── Design System Constants ─────────────────────────────────────────
 
 /** Hex color values for each agent, used consistently across the dashboard UI. */

@@ -33,10 +33,16 @@ export default async function RootLayout({
     href: string;
     label: string;
     highlight?: boolean;
+    external?: boolean;
   }> = [
     { href: "/try", label: t("tryIt"), highlight: true },
     { href: "/results", label: t("results") },
     { href: "/boards", label: t("boards") },
+    {
+      href: "https://github.com/ojallington/boardclaude",
+      label: t("install"),
+      external: true,
+    },
   ];
 
   return (
@@ -62,16 +68,27 @@ export default async function RootLayout({
               <ul className="flex items-center gap-1 sm:gap-2">
                 {navLinks.map((link) => (
                   <li key={link.href}>
-                    <Link
-                      href={link.href}
-                      className={
-                        link.highlight
-                          ? "rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-950/60 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-                          : "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-                      }
-                    >
-                      {link.label}
-                    </Link>
+                    {link.external ? (
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={link.href}
+                        className={
+                          link.highlight
+                            ? "rounded-lg px-3 py-1.5 text-sm font-medium text-indigo-400 transition-colors hover:bg-indigo-950/60 hover:text-indigo-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                            : "rounded-lg px-3 py-1.5 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+                        }
+                      >
+                        {link.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
                 <li>

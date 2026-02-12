@@ -4,13 +4,13 @@ import type {
   DebateExchange,
   DebateResult,
   ScoreRevision,
+  SSESender,
 } from "@/lib/types";
 import {
   WEB_AGENTS,
   DEBATE_REVISION_SCHEMA,
   getModelId,
 } from "@/lib/try-agents";
-import type { SSESender } from "@/app/api/try/route";
 
 const MAX_PAIRS = 3;
 const DIVERGENCE_THRESHOLD = 10;

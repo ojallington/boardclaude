@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type Anthropic from "@anthropic-ai/sdk";
-import type { TryAgentResult, DebateResult } from "@/lib/types";
-import type { SSESender } from "@/app/api/try/route";
+import type { TryAgentResult, DebateResult, SSESender } from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Mock: @anthropic-ai/sdk

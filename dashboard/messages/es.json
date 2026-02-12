@@ -128,7 +128,8 @@
     "tryIt": "Probar",
     "results": "Resultados",
     "timeline": "Cronología",
-    "boards": "Paneles"
+    "boards": "Paneles",
+    "install": "Instalar"
   },
   "timeline": {
     "title": "Cronología de Auditorías - BoardClaude",

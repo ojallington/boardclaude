@@ -5,10 +5,15 @@
 
 ---
 
-## 1. Audit Pipeline (Main Flow)
+## 1. Audit Pipeline (Two-Tier Delegation)
 
-The core `/bc:audit` command drives this pipeline. It follows a state machine
-tracked in `.boardclaude/state.json` under `current_audit.state`.
+The core `/bc:audit` command uses a two-tier delegation model:
+- **Main agent** (launcher): Reads config, spawns coordinator, relays results. ~5-8 tool calls.
+- **Coordinator** (autonomous): Ingests codebase, spawns judges, runs debate, writes files.
+
+All spawned agents use `mode: "bypassPermissions"` — no permission prompts appear.
+
+### Tier 1: Main Agent (Delegate Launcher)
 
 ```
 User runs /bc:audit [--panel name] [--effort level]
@@ -16,37 +21,75 @@ User runs /bc:audit [--panel name] [--effort level]
   v
 +------------------+
 |   LOAD CONFIG    |  Read panels/<name>.yaml
-|                  |  Parse agents, weights, criteria, scoring thresholds
-|                  |  Verify all agent weights sum to 1.0
+|                  |  Parse agents, weights, criteria
+|                  |  Verify weights sum to 1.0
 +--------+---------+
          |
          v
 +------------------+
-|  VERIFY STATE    |  Check .boardclaude/ exists
-|                  |    If missing: create state.json, timeline.json, audits/
-|                  |  Read state.json for current status
+|   LOAD STATE     |  Read .boardclaude/state.json
+|                  |  Get iteration number, latest audit ID
+|                  |  Get score history for trend data
 +--------+---------+
          |
          v
 +------------------+
-|   LOAD HISTORY   |  Find latest_audit from state.json
-|                  |  Load previous audit JSON (if exists)
-|                  |  Extract per-agent scores for delta tracking
-|                  |  If no previous audit: iteration = 0 (baseline)
+|  CREATE TEAM     |  TeamCreate("audit-{timestamp}")
 +--------+---------+
          |
          v
 +------------------+
-|  SPAWN AGENTS    |  Create Agent Team (1 teammate per panel agent)
-|                  |  Each agent receives:
-|                  |    - Full persona prompt from agents/<name>.md
-|                  |    - Codebase path and evaluation scope
-|                  |    - Previous scores for this agent (delta tracking)
-|                  |    - Output format: Agent Evaluation Schema
-|                  |  Model routing per panel config (Opus/Sonnet)
+| SPAWN COORDINATOR|  Task(subagent_type: "general-purpose",
+|                  |       name: "audit-coordinator",
+|                  |       mode: "bypassPermissions")
+|                  |  Pass: coordinator instructions, panel YAML,
+|                  |        iteration metadata, CLI flags, schemas
 +--------+---------+
          |
-         |  (all agents run in parallel)
+         |  (main agent idles — coordinator handles everything)
+         |
+         v
++------------------+
+| RECEIVE REPORT   |  Coordinator sends AUDIT_COMPLETE via SendMessage
+|                  |  Contains: score, grade, verdict, top items, paths
++--------+---------+
+         |
+         v
++------------------+
+| REPORT TO USER   |  Relay composite + grade + verdict
+|                  |  Top 3 strengths / weaknesses
+|                  |  Top 5 action items
+|                  |  Iteration delta + file paths
++--------+---------+
+         |
+         v
++------------------+
+|    TEARDOWN      |  Shutdown coordinator → TeamDelete
++------------------+
+```
+
+### Tier 2: Audit Coordinator (Autonomous)
+
+```
+Coordinator receives panel config + iteration metadata
+  |
+  v
++------------------+
+|  SETUP & INGEST  |  mkdir -p .boardclaude/audits
+|                  |  Load 2 most recent audit JSONs
+|                  |  Glob + Read codebase files
+|                  |  Build project summary
++--------+---------+
+         |
+         v
++------------------+
+|  SPAWN 6 JUDGES  |  Task per agent, mode: "bypassPermissions"
+|                  |  Each receives: persona, project summary,
+|                  |    cross-iteration context, criteria, schema
+|                  |  Model routing: Opus/Sonnet per panel config
++--------+---------+
+         |
+         |  (all 6 judges run in parallel)
          |
     +----+----+----+----+----+----+
     |    |    |    |    |    |    |
@@ -56,29 +99,21 @@ User runs /bc:audit [--panel name] [--effort level]
     |    |    |    |    |    |    |
     +----+----+----+----+----+----+
          |
-         |  (wait for ALL agents to complete)
+         |  (wait for ALL 6 evaluations via SendMessage)
          v
 +------------------+
-|   SYNTHESIZE     |  Run synthesis agent (Sonnet, subagent not teammate)
-|                  |  Input: all 6 agent evaluation JSONs
-|                  |  Rules: never invent findings, only merge
-|                  |  Present conflicts with analysis
-|                  |  Calculate weighted composite scores
+|     DEBATE       |  Identify divergent score pairs
+|                  |  SendMessage cross-examination to idle judges
+|                  |  Parse REVISED: scores, apply revisions
+|                  |  Record debate transcript
 +--------+---------+
          |
          v
 +------------------+
-|  CALCULATE       |  Per-agent composite: sum(criterion_score * criterion_weight)
-|  SCORES          |  Panel composite: sum(agent_composite * agent_weight)
-|                  |  Grade: A+ (95-100) ... F (<50)
-|                  |  Verdict: STRONG_PASS / PASS / MARGINAL / FAIL
-+--------+---------+
-         |
-         v
-+------------------+
-|  GENERATE        |  Radar chart axes: architecture, product, innovation,
-|  RADAR DATA      |    code_quality, documentation, integration
-|                  |  Average agent scores per dimension
+|   SYNTHESIZE     |  Spawn synthesis agent (mode: "bypassPermissions")
+|                  |  Input: all 6 evaluations + debate + weights
+|                  |  Rules: never invent, only merge
+|                  |  Calculate composite, radar, action items
 +--------+---------+
          |
          v
@@ -91,39 +126,41 @@ v                  v                   v
 | audit-{ts}  | | audit-{ts}  | |  audit_count++ |
 | .json       | | .md         | |  latest_audit  |
 +-------------+ +-------------+ |  latest_score  |
-                                | |  score_history |
-                                | +-------+--------+
-                                |         |
-                                v         v
-                          +----------------+
-                          | APPEND TO      |
-                          | timeline.json  |
-                          |  type: "audit" |
-                          |  score, branch |
-                          |  parent ref    |
-                          +-------+--------+
-                                  |
-                                  v
-                          +----------------+
-                          | REPORT TO USER |
-                          |  Composite + grade + verdict
-                          |  Top 3 strengths / weaknesses
-                          |  Critical issues
-                          |  Top 5 action items
-                          |  Iteration delta
-                          |  Paths to output files
-                          +----------------+
+                               | |  score_history |
+                               | +-------+--------+
+                               |         |
+                               v         v
+                         +----------------+
+                         | APPEND TO      |
+                         | timeline.json  |
+                         |  type: "audit" |
+                         |  score, branch |
+                         |  parent ref    |
+                         +-------+--------+
+                                 |
+                                 v
+                         +----------------+
+                         | SEND REPORT    |
+                         | to launcher    |
+                         | via SendMessage|
+                         +-------+--------+
+                                 |
+                                 v
+                         +----------------+
+                         | SHUTDOWN       |
+                         | judges +       |
+                         | synthesis      |
+                         +----------------+
 ```
 
 ### State Machine
 
 ```
-IDLE ──/bc:audit──> INGEST ──> PANEL_AUDIT ──> SYNTHESIZE ──> REPORT ──> COMPLETE
-                                                    |                       |
-                                              (if auto-implement)      back to IDLE
-                                                    |
-                                                    v
-                                              IMPLEMENT ──> VERIFY ──> RE-AUDIT?
+IDLE ──/bc:audit──> DELEGATE ──> [coordinator runs autonomously] ──> REPORT ──> COMPLETE
+                                                                        |
+                                  coordinator internally:          back to IDLE
+                                  INGEST → PANEL_AUDIT → DEBATE →
+                                  SYNTHESIZE → WRITE → REPORT_BACK
 ```
 
 ---
@@ -473,26 +510,29 @@ After ledger reconciliation:
 ### Data Dependencies
 
 ```
-panels/*.yaml ─────> Audit Runner ─────> agents/*.md
-    (config)            (skill)           (personas)
-                          |
-                          v
-                   .boardclaude/state.json  (read previous state)
-                          |
-                          v
-                   Agent Team (6 agents in parallel)
-                          |
-                          v
-                   Synthesis Agent (merges findings)
-                          |
-                   +------+------+
-                   |             |
-                   v             v
-            audits/*.json  audits/*.md
+panels/*.yaml ─────> Audit Launcher ─────> agents/audit-coordinator.md
+    (config)           (skill)                  (coordinator)
+                          |                          |
+                          v                          v
+                   .boardclaude/state.json    agents/*.md (personas)
+                          |                          |
+                          v                          v
+                   Audit Coordinator          Agent Team (6 judges)
+                   (autonomous)               (parallel, bypassPermissions)
+                          |                          |
+                          v                          v
+                   Synthesis Agent            evaluations via SendMessage
+                   (bypassPermissions)               |
+                          |                          |
+                   +------+------+                   |
+                   |             |                   |
+                   v             v                   |
+            audits/*.json  audits/*.md          debate transcript
                    |
                    v
             state.json (updated)
             timeline.json (appended)
+            action-items.json (seeded/merged)
                    |
                    v
             Dashboard (reads JSON files)

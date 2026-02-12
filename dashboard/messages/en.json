@@ -128,7 +128,8 @@
     "tryIt": "Try It",
     "results": "Results",
     "timeline": "Timeline",
-    "boards": "Boards"
+    "boards": "Boards",
+    "install": "Install"
   },
   "timeline": {
     "title": "Audit Timeline - BoardClaude",
