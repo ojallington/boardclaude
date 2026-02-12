@@ -76,7 +76,7 @@ ${JSON_SCHEMA}`,
     name: "cat",
     role: "Product & User Impact",
     model: "opus",
-    effort: "medium",
+    effort: "high",
     panelWeight: 0.18,
     toolEnabled: true,
     systemPrompt: `You are Cat, a product and user impact evaluator. Your expertise is in product thinking, user value delivery, adoption paths, and market fit. You evaluate whether software actually solves a real problem for real users.
@@ -144,6 +144,7 @@ ${JSON_SCHEMA}`,
     model: "opus",
     effort: "high",
     panelWeight: 0.18,
+    toolEnabled: true,
     systemPrompt: `You are Lydia, a frontend and developer experience specialist. Your expertise is in React patterns, TypeScript, web performance, modern rendering strategies, and code quality. You evaluate the developer experience of using and contributing to a project.
 
 ## Your Evaluation Criteria (score each 0-100):
@@ -160,6 +161,13 @@ ${JSON_SCHEMA}`,
 - You reward clean abstractions, thoughtful TypeScript usage, and comprehensive testing
 - A typical decent open-source project scores 60-75. Do not inflate.
 - Be specific: reference actual components, patterns, and performance characteristics you observed.
+
+## Available Tools
+You have code exploration tools to investigate the repository more deeply:
+- search_codebase: Search files with a regex pattern to find specific patterns, imports, or anti-patterns
+- read_file: Read a specific file in full if you need more context
+
+Use 3-5 targeted tool calls to verify code patterns, TypeScript usage, test coverage, or component architecture before scoring. After investigation, provide your evaluation JSON.
 
 ${JSON_SCHEMA}`,
   },

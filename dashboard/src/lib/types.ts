@@ -38,6 +38,12 @@ export interface PanelCriterion {
   description?: string;
 }
 
+/**
+ * An individual agent within a panel, including its persona, scoring weight, and evaluation criteria.
+ *
+ * Agent weights across a panel must sum to 1.0. The `prompt_file` points to
+ * the agent's persona markdown (e.g., `agents/boris.md`).
+ */
 export interface PanelAgent {
   name: string;
   role: string;
@@ -73,6 +79,24 @@ export interface PanelContext {
   definition_of_done: string[];
 }
 
+/**
+ * Top-level configuration for an evaluation panel, loaded from a YAML file in `panels/`.
+ *
+ * Defines the agent roster, scoring parameters, optional debate rules, and
+ * contextual information that shapes how the panel evaluates a target.
+ *
+ * @example
+ * ```json
+ * {
+ *   "name": "hackathon-judges",
+ *   "type": "professional",
+ *   "version": "1.0.0",
+ *   "description": "Six-judge hackathon evaluation panel",
+ *   "agents": [{ "name": "boris", "role": "Tech Lead", "weight": 0.2, "prompt_file": "agents/boris.md", "criteria": [] }],
+ *   "scoring": { "scale": 100, "passing_threshold": 70, "iteration_target": 85 }
+ * }
+ * ```
+ */
 export interface PanelConfig {
   name: string;
   type: "professional" | "personal";
@@ -92,6 +116,27 @@ export interface AgentActionItem {
   impact: string;
 }
 
+/**
+ * Output from a single agent's evaluation of the target project.
+ *
+ * Contains per-criterion scores, a composite score, exactly three strengths
+ * and weaknesses, and prioritized action items. Used as input to synthesis.
+ *
+ * @example
+ * ```json
+ * {
+ *   "agent": "boris",
+ *   "scores": { "architecture": 82, "code_quality": 78 },
+ *   "composite": 80,
+ *   "strengths": ["Clean module boundaries", "Good error handling", "Typed API layer"],
+ *   "weaknesses": ["Missing tests", "No CI pipeline", "Inconsistent naming"],
+ *   "critical_issues": [],
+ *   "action_items": [{ "priority": 1, "action": "Add unit tests", "impact": "Prevents regressions" }],
+ *   "verdict": "PASS",
+ *   "one_line": "Solid architecture with testing gaps"
+ * }
+ * ```
+ */
 export interface AgentEvaluation {
   agent: string;
   scores: Record<string, number>;
@@ -115,6 +160,10 @@ export interface RadarData {
   integration: number;
 }
 
+/**
+ * Weighted composite score combining all agent evaluations into a single
+ * numeric score, letter grade, pass/fail verdict, and six-axis radar breakdown.
+ */
 export interface CompositeScore {
   score: number;
   radar: RadarData;
@@ -129,12 +178,20 @@ export interface DivergentOpinion {
   analysis: string;
 }
 
+/**
+ * Aggregated highlights from synthesis: the most impactful strengths, weaknesses,
+ * and points of disagreement between agents.
+ */
 export interface Highlights {
   top_strengths: string[];
   top_weaknesses: string[];
   divergent_opinions: DivergentOpinion[];
 }
 
+/**
+ * A prioritized action item produced during synthesis, merging overlapping
+ * recommendations from multiple agents into a single deduplicated entry.
+ */
 export interface SynthesisActionItem {
   priority: number;
   action: string;
@@ -151,6 +208,30 @@ export interface IterationDelta {
   regressions: string[];
 }
 
+/**
+ * The complete output of a `/bc:audit` run, combining all agent evaluations
+ * into a single report with composite scoring, highlights, and action items.
+ *
+ * This is the canonical audit format stored in `.boardclaude/audits/` and
+ * consumed by the dashboard. Agent entries omit `action_items` and `one_line`
+ * because those are merged into the top-level `action_items` array.
+ *
+ * @example
+ * ```json
+ * {
+ *   "audit_id": "audit-20260212-143000",
+ *   "panel": "hackathon-judges",
+ *   "target": "dashboard/",
+ *   "iteration": 3,
+ *   "timestamp": "2026-02-12T14:30:00.000Z",
+ *   "agents": [{ "agent": "boris", "scores": { "architecture": 85 }, "composite": 82, "strengths": ["...", "...", "..."], "weaknesses": ["...", "...", "..."], "critical_issues": [], "verdict": "PASS" }],
+ *   "composite": { "score": 81, "radar": { "architecture": 85, "product": 78, "innovation": 80, "code_quality": 82, "documentation": 75, "integration": 83 }, "grade": "B+", "verdict": "PASS" },
+ *   "highlights": { "top_strengths": [], "top_weaknesses": [], "divergent_opinions": [] },
+ *   "action_items": [],
+ *   "iteration_delta": { "previous_score": 74, "current_score": 81, "delta": 7, "improvements": [], "regressions": [] }
+ * }
+ * ```
+ */
 export interface SynthesisReport {
   audit_id: string;
   panel: string;
@@ -268,6 +349,11 @@ export interface TimelineDisplay {
 
 // ─── Action Items Ledger ─────────────────────────────────────────────
 
+/**
+ * A tracked action item in the persistent ledger, created from audit findings
+ * and updated across iterations. Items that remain unresolved for multiple
+ * iterations are flagged as `"chronic"`.
+ */
 export interface ActionItem {
   id: string;
   source_audit: string;
@@ -408,6 +494,12 @@ export type TryStreamPhase =
 
 // ─── Try Panel (Full 6-Agent) Types ─────────────────────────────────────
 
+/**
+ * Result from a single agent in the web "Try It Now" pipeline.
+ *
+ * Similar to {@link AgentEvaluation} but includes `role` and `model_used`
+ * metadata for display in the web UI.
+ */
 export interface TryAgentResult {
   agent: string;
   role: string;
@@ -429,6 +521,14 @@ export interface FileDetail {
   category: "priority" | "source";
 }
 
+/**
+ * Full panel result from the web "Try It Now" pipeline, analogous to
+ * {@link SynthesisReport} but scoped to the web evaluation flow.
+ *
+ * Includes all agent results, composite score, highlights, and repo metadata.
+ * The `tier` field indicates whether the evaluation used the free tier or
+ * a user-provided API key (`"byok"`).
+ */
 export interface TryPanelResult {
   audit_id: string;
   repo: TryRepoMeta;

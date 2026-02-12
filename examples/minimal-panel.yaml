@@ -1,0 +1,36 @@
+# Minimal BoardClaude Panel Configuration
+# A panel defines a group of AI agents that evaluate your project.
+# Agent weights must sum to 1.0 across the panel.
+
+name: code-review                # Unique panel identifier (kebab-case)
+type: professional               # Panel type: professional | personal | custom
+version: "1.0.0"                 # Semver version string
+description: "Minimal two-agent code review panel"
+
+agents:
+  - name: architect              # Agent identifier (used in output and logs)
+    role: "Architecture Review"  # Human-readable role description
+    weight: 0.60                 # Share of composite score (0.0-1.0)
+    model: opus                  # Model: opus | sonnet | haiku | inherit
+    prompt_file: "agents/architect.md"  # Path to persona markdown file
+    criteria:                    # What this agent evaluates (weights sum to 1.0)
+      - name: structure
+        weight: 0.50
+      - name: modularity
+        weight: 0.50
+
+  - name: tester
+    role: "Test Coverage & Quality"
+    weight: 0.40
+    model: sonnet
+    prompt_file: "agents/tester.md"
+    criteria:
+      - name: coverage
+        weight: 0.60
+      - name: reliability
+        weight: 0.40
+
+scoring:
+  scale: 100                    # Maximum score
+  passing_threshold: 70         # Minimum score to pass
+  iteration_target: 85          # Target score for audit-fix loops
