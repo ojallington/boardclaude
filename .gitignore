@@ -42,6 +42,9 @@ dashboard/data/
 # Vercel
 .vercel/
 
+# Remotion
+.remotion/
+
 # Misc
 *.tsbuildinfo
 next-env.d.ts
