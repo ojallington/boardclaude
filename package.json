@@ -1,5 +1,5 @@
 {
-  "name": "@boardclaude/cli",
+  "name": "boardclaude",
   "version": "0.1.0",
   "description": "Multi-perspective AI evaluation panels for Claude Code",
   "type": "module",
