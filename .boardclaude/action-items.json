@@ -25,9 +25,10 @@
         "cat"
       ],
       "effort": "low",
-      "status": "open",
+      "status": "resolved",
       "chronic": false,
-      "iterations_open": 1
+      "iterations_open": 1,
+      "resolution": "Changed TryPageClient.tsx CTA to href='/#install', changed nav Install link from external GitHub URL to internal /#install"
     },
     {
       "priority": 3,
@@ -78,9 +79,10 @@
         "ado"
       ],
       "effort": "medium",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 3
+      "iterations_open": 3,
+      "resolution": "Made HomePage async server component, imported getProjectState, displays real score_history with fallback to static data"
     },
     {
       "priority": 7,
@@ -104,9 +106,10 @@
         "lydia"
       ],
       "effort": "medium",
-      "status": "open",
+      "status": "resolved",
       "chronic": false,
-      "iterations_open": 1
+      "iterations_open": 1,
+      "resolution": "Created TimelineEventCard.tsx component, moved VERDICT_STYLES/VERDICT_DOT to ui-constants.ts, updated timeline/page.tsx and TimelineInline.tsx"
     },
     {
       "priority": 9,
@@ -117,9 +120,10 @@
         "ado"
       ],
       "effort": "medium",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 3
+      "iterations_open": 3,
+      "resolution": "Fixed 10 instances of text-gray-400 on bg-gray-800 backgrounds across 7 files, improving contrast from ~3.9:1 to ~7.5:1"
     },
     {
       "priority": 10,
@@ -129,9 +133,10 @@
         "thariq"
       ],
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 4
+      "iterations_open": 4,
+      "resolution": "Added getAdaptiveBudget() to try-agents.ts that scales thinking tokens 1x-1.75x based on content size, integrated into both tool-enabled and single-turn paths in try-invoke.ts"
     },
     {
       "priority": 11,
@@ -141,9 +146,10 @@
         "ado"
       ],
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 3
+      "iterations_open": 3,
+      "resolution": "Created examples/demo-repo/ with before-audit.json (iter 0, 68.4), after-audit.json (iter 15, 90.13), and score-progression.json showing full 17-iteration arc"
     },
     {
       "priority": 12,
@@ -153,9 +159,10 @@
         "thariq"
       ],
       "effort": "low",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 3
+      "iterations_open": 3,
+      "resolution": "Changed maxTotalChars from 800_000 to 1_200_000 in getTierLimits, updated test expectation"
     }
   ]
 }

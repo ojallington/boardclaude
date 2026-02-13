@@ -32,6 +32,11 @@ vi.mock("@/components/HeroTrySection", () => ({
   HeroTrySection: () => <div data-testid="hero-try-section">TrySection</div>,
 }));
 
+// Mock audit-loader so the async server component doesn't hit the filesystem
+vi.mock("@/lib/audit-loader", () => ({
+  getProjectState: vi.fn().mockResolvedValue(null),
+}));
+
 // ─── Tests ──────────────────────────────────────────────────────────
 
 describe("Page smoke tests", () => {
@@ -56,7 +61,8 @@ describe("Page smoke tests", () => {
 
   it("landing page renders to HTML without throwing", async () => {
     const { default: HomePage } = await import("../page");
-    const html = renderToString(<HomePage />);
+    const element = await HomePage();
+    const html = renderToString(element);
 
     // Should contain key structural elements
     expect(html).toContain("BoardClaude");

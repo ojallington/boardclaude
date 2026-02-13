@@ -91,7 +91,7 @@ function WebReviewCard({ review }: { review: TryResultSummary }) {
               className={`rounded-md border px-2 py-0.5 text-[10px] font-medium ${
                 tier === "byok"
                   ? "border-indigo-700 bg-indigo-900/30 text-indigo-400"
-                  : "border-gray-700 bg-gray-800 text-gray-400"
+                  : "border-gray-700 bg-gray-800 text-gray-300"
               }`}
             >
               {tier === "byok" ? "Full Panel" : "Demo"}

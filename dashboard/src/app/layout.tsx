@@ -38,11 +38,7 @@ export default async function RootLayout({
     { href: "/try", label: t("tryIt"), highlight: true },
     { href: "/results", label: t("results") },
     { href: "/boards", label: t("boards") },
-    {
-      href: "https://github.com/ojallington/boardclaude",
-      label: t("install"),
-      external: true,
-    },
+    { href: "/#install", label: t("install") },
   ];
 
   return (

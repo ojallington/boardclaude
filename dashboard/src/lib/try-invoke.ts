@@ -11,7 +11,7 @@ import { isRecord, parseToRecord } from "@/lib/type-guards";
 import {
   WEB_AGENTS,
   getModelId,
-  EFFORT_BUDGET_MAP,
+  getAdaptiveBudget,
   type WebAgentConfig,
 } from "@/lib/try-agents";
 import type { SSESender } from "@/lib/types";
@@ -159,7 +159,8 @@ async function invokeAgentWithTools(
 ): Promise<string> {
   const modelId = getModelId(agent.model, tier);
   const useThinking = tier === "byok" && agent.model === "opus";
-  const budgetTokens = EFFORT_BUDGET_MAP[agent.effort];
+  const contentChars = files.reduce((sum, f) => sum + f.content.length, 0);
+  const budgetTokens = getAdaptiveBudget(agent.effort, contentChars);
 
   const msgs: Anthropic.Messages.MessageParam[] = [
     {
@@ -287,7 +288,11 @@ export async function invokeAgents(
         // Single-turn: standard invocation
         const modelId = getModelId(agent.model, tier);
         const useThinking = tier === "byok" && agent.model === "opus";
-        const budgetTokens = EFFORT_BUDGET_MAP[agent.effort];
+        const contentChars = files.reduce(
+          (sum, f) => sum + f.content.length,
+          0,
+        );
+        const budgetTokens = getAdaptiveBudget(agent.effort, contentChars);
         const response = await client.messages.create({
           model: modelId,
           max_tokens: useThinking ? budgetTokens + 6000 : 2048,

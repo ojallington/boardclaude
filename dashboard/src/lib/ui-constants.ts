@@ -35,6 +35,23 @@ export const AGENT_ROLES: Record<string, string> = {
   jason: "Community Impact & Integration",
 };
 
+// ─── Verdict Timeline Styles ────────────────────────────────────────────────
+// Shared across timeline/page.tsx, TimelineInline.tsx, and TimelineEventCard.tsx
+
+export const VERDICT_STYLES: Record<string, string> = {
+  STRONG_PASS: "bg-emerald-900/40 text-emerald-400 border-emerald-700/50",
+  PASS: "bg-blue-900/40 text-blue-400 border-blue-700/50",
+  MARGINAL: "bg-amber-900/40 text-amber-400 border-amber-700/50",
+  FAIL: "bg-red-900/40 text-red-400 border-red-700/50",
+};
+
+export const VERDICT_DOT: Record<string, string> = {
+  STRONG_PASS: "bg-emerald-400",
+  PASS: "bg-blue-400",
+  MARGINAL: "bg-amber-400",
+  FAIL: "bg-red-400",
+};
+
 // ─── Effort Styles ──────────────────────────────────────────────────────────
 // Shared across PanelSynthesisView and web review detail page
 

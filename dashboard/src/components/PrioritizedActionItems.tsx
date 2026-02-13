@@ -24,7 +24,7 @@ export function PrioritizedActionItems({
         {items.map((item: SynthesisActionItem) => {
           const effortStyle =
             EFFORT_STYLES[item.effort] ??
-            "bg-gray-800 text-gray-400 border-gray-700";
+            "bg-gray-800 text-gray-300 border-gray-700";
 
           return (
             <div key={item.priority} className="flex items-start gap-3 text-sm">

@@ -1,0 +1,39 @@
+{
+  "project": "boardclaude",
+  "panel": "hackathon-judges",
+  "description": "Score progression across 17 audit-fix-re-audit cycles, demonstrating BoardClaude's self-improvement loop.",
+  "score_history": [
+    { "iteration": 0,  "score": 68.4,  "grade": "C+", "verdict": "MARGINAL" },
+    { "iteration": 1,  "score": 80.7,  "grade": "B+", "verdict": "PASS" },
+    { "iteration": 2,  "score": 83.5,  "grade": "B+", "verdict": "PASS" },
+    { "iteration": 3,  "score": 86.2,  "grade": "A-", "verdict": "STRONG_PASS" },
+    { "iteration": 4,  "score": 87.37, "grade": "A-", "verdict": "STRONG_PASS" },
+    { "iteration": 5,  "score": 90.02, "grade": "A",  "verdict": "STRONG_PASS" },
+    { "iteration": 6,  "score": 90.80, "grade": "A",  "verdict": "STRONG_PASS" },
+    { "iteration": 7,  "score": 83.87, "grade": "B",  "verdict": "PASS" },
+    { "iteration": 8,  "score": 83.51, "grade": "B",  "verdict": "PASS" },
+    { "iteration": 9,  "score": 83.51, "grade": "B",  "verdict": "PASS" },
+    { "iteration": 10, "score": 83.45, "grade": "B",  "verdict": "PASS" },
+    { "iteration": 11, "score": 83.91, "grade": "B+", "verdict": "PASS" },
+    { "iteration": 12, "score": 85.46, "grade": "A-", "verdict": "STRONG_PASS" },
+    { "iteration": 13, "score": 86.72, "grade": "A-", "verdict": "STRONG_PASS" },
+    { "iteration": 14, "score": 88.83, "grade": "B+", "verdict": "PASS" },
+    { "iteration": 15, "score": 90.13, "grade": "A",  "verdict": "STRONG_PASS" },
+    { "iteration": 16, "score": 89.82, "grade": "A-", "verdict": "PASS" }
+  ],
+  "summary": {
+    "total_iterations": 17,
+    "start_score": 68.4,
+    "peak_score": 90.80,
+    "current_score": 89.82,
+    "total_improvement": 21.42,
+    "key_milestones": [
+      "Iter 0: First audit -- MARGINAL (68.4). Zero tests, no pipeline execution.",
+      "Iter 1: +12.3 jump. Test infrastructure added, pipeline proven end-to-end.",
+      "Iter 5: First A grade (90.02). Try It Now feature, 200+ tests.",
+      "Iter 7: Score dip to 83.87 after major refactor (new web evaluation system).",
+      "Iter 12-15: Steady recovery arc. Chronic items resolved, 267 tests.",
+      "Iter 16: Stabilized at 89.82 with 11/12 action items resolved."
+    ]
+  }
+}
