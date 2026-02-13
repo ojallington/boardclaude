@@ -223,33 +223,58 @@ export default async function AuditDetailPage({
             Divergent Opinions
           </h2>
           <div className="space-y-6">
-            {highlights.divergent_opinions.map((d) => (
-              <div
-                key={d.topic}
-                className="rounded-lg border border-gray-700 bg-gray-800/50 p-4"
-              >
-                <h3 className="mb-3 font-medium text-gray-200">{d.topic}</h3>
-                <div className="mb-3 grid gap-3 md:grid-cols-2">
-                  <div className="rounded-md bg-gray-900/60 p-3">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-300">
-                      {d.agent_a.agent}
-                    </p>
-                    <p className="text-sm text-gray-300">
-                      {d.agent_a.position}
-                    </p>
+            {highlights.divergent_opinions.map((d) => {
+              const isV1 = "agent_a" in d;
+              const agentAName = isV1
+                ? d.agent_a.agent
+                : (d.agents?.[0] ?? "\u2014");
+              const agentBName = isV1
+                ? d.agent_b.agent
+                : (d.agents?.[1] ?? "\u2014");
+              const agentAPosition = isV1 ? d.agent_a.position : "";
+              const agentBPosition = isV1 ? d.agent_b.position : "";
+              const analysisText = isV1 ? d.analysis : (d.summary ?? "");
+              const delta = !isV1 ? d.delta : undefined;
+
+              return (
+                <div
+                  key={d.topic}
+                  className="rounded-lg border border-gray-700 bg-gray-800/50 p-4"
+                >
+                  <div className="mb-3 flex items-center gap-3">
+                    <h3 className="font-medium text-gray-200">{d.topic}</h3>
+                    {delta !== undefined && (
+                      <span className="rounded-md border border-amber-700/50 bg-amber-900/30 px-1.5 py-0.5 text-xs font-semibold text-amber-400">
+                        &Delta; {delta.toFixed(1)}
+                      </span>
+                    )}
                   </div>
-                  <div className="rounded-md bg-gray-900/60 p-3">
-                    <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-300">
-                      {d.agent_b.agent}
-                    </p>
-                    <p className="text-sm text-gray-300">
-                      {d.agent_b.position}
-                    </p>
+                  <div className="mb-3 grid gap-3 md:grid-cols-2">
+                    <div className="rounded-md bg-gray-900/60 p-3">
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-300">
+                        {agentAName}
+                      </p>
+                      {agentAPosition && (
+                        <p className="text-sm text-gray-300">
+                          {agentAPosition}
+                        </p>
+                      )}
+                    </div>
+                    <div className="rounded-md bg-gray-900/60 p-3">
+                      <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-gray-300">
+                        {agentBName}
+                      </p>
+                      {agentBPosition && (
+                        <p className="text-sm text-gray-300">
+                          {agentBPosition}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                  <p className="text-sm italic text-gray-300">{analysisText}</p>
                 </div>
-                <p className="text-sm italic text-gray-300">{d.analysis}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

@@ -224,8 +224,7 @@ export interface CompositeScore {
 }
 
 /**
- * A point of significant disagreement between two agents on a specific topic,
- * surfaced during synthesis for transparency.
+ * Divergent opinion with named agent positions and analysis.
  *
  * @example
  * ```json
@@ -237,12 +236,36 @@ export interface CompositeScore {
  * }
  * ```
  */
-export interface DivergentOpinion {
+export interface DivergentOpinionV1 {
   topic: string;
   agent_a: { agent: string; position: string };
   agent_b: { agent: string; position: string };
   analysis: string;
 }
+
+/**
+ * Divergent opinion with agent list, numeric delta, and summary.
+ * Used by some audit iterations (e.g., iter 9-10).
+ *
+ * @example
+ * ```json
+ * {
+ *   "topic": "AI system maturity",
+ *   "agents": ["thariq", "lydia"],
+ *   "delta": 13.6,
+ *   "summary": "Thariq scores 74.35; Lydia scores 87.95..."
+ * }
+ * ```
+ */
+export interface DivergentOpinionV2 {
+  topic: string;
+  agents: string[];
+  delta: number;
+  summary: string;
+}
+
+/** Discriminated union of both divergent opinion schemas. */
+export type DivergentOpinion = DivergentOpinionV1 | DivergentOpinionV2;
 
 /**
  * Aggregated highlights from synthesis: the most impactful strengths, weaknesses,
