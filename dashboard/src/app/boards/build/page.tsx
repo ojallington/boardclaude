@@ -208,7 +208,13 @@ function builderReducer(
     case "UPDATE_AGENT": {
       const agents = state.agents.map((a, i) => {
         if (i !== action.index) return a;
-        return { ...a, [action.field]: action.value } as BuilderAgent;
+        return {
+          ...a,
+          name: action.field === "name" ? action.value : a.name,
+          role: action.field === "role" ? action.value : a.role,
+          model: action.field === "model" ? action.value : a.model,
+          prompt: action.field === "prompt" ? action.value : a.prompt,
+        };
       });
       return { ...state, agents };
     }
@@ -247,12 +253,14 @@ function builderReducer(
         const criteria = a.criteria.map((c, ci) => {
           if (ci !== action.criterionIndex) return c;
           return {
-            ...c,
-            [action.field]:
+            name: action.field === "name" ? action.value : c.name,
+            weight:
               action.field === "weight"
                 ? parseFloat(action.value) || 0
-                : action.value,
-          } as BuilderCriterion;
+                : c.weight,
+            description:
+              action.field === "description" ? action.value : c.description,
+          };
         });
         return { ...a, criteria };
       });

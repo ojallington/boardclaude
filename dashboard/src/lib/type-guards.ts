@@ -13,3 +13,13 @@ export function isRepoInfo(
     typeof value.name === "string"
   );
 }
+
+/** Safely parse a JSON string and validate it's a non-null, non-array object. */
+export function parseToRecord(text: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}

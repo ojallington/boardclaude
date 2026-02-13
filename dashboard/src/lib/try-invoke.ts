@@ -7,7 +7,7 @@ import {
   extractNumber,
   extractSynthesisActionItem,
 } from "@/lib/try-synthesize";
-import { isRecord } from "@/lib/type-guards";
+import { isRecord, parseToRecord } from "@/lib/type-guards";
 import {
   WEB_AGENTS,
   getModelId,
@@ -24,11 +24,7 @@ function parseAgentJSON(text: string): Record<string, unknown> | null {
   if (jsonStr.startsWith("```")) {
     jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   }
-  try {
-    return JSON.parse(jsonStr) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
+  return parseToRecord(jsonStr);
 }
 
 // ─── Tool definitions ──────────────────────────────────────────────────────

@@ -20,7 +20,7 @@ import {
 } from "@/lib/try-agents";
 import { saveWebReview } from "@/lib/try-storage";
 import type { FetchedRepo } from "@/lib/github";
-import { isRecord } from "@/lib/type-guards";
+import { isRecord, parseToRecord } from "@/lib/type-guards";
 
 // ─── Synthesis Data Validators ──────────────────────────────────────
 
@@ -186,11 +186,7 @@ function parseJSON(text: string): Record<string, unknown> | null {
   if (jsonStr.startsWith("```")) {
     jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
   }
-  try {
-    return JSON.parse(jsonStr) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
+  return parseToRecord(jsonStr);
 }
 
 function buildAuditId(): { auditId: string; ts: string } {
