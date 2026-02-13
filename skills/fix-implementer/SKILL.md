@@ -2,10 +2,11 @@
 name: fix-implementer
 description: >
   Full orchestrator for the fix pipeline. Loads audit data, filters action items,
-  runs validation baseline, spawns fix-workers directly as team members, validates
-  batches, retries failures, updates the ledger, and reports results.
+  runs validation baseline, creates native tasks with dependencies, spawns a
+  fix-worker pool that self-organizes via TaskList, validates batches through
+  gate checkpoints, retries failures, updates the ledger, and reports results.
   Triggers on "fix", "implement", "resolve", "address findings".
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TeamCreate, TeamDelete, SendMessage
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, Task, TeamCreate, TeamDelete, SendMessage, TaskCreate, TaskUpdate, TaskList, TaskGet
 context: fork
 agent: general-purpose
 ---
@@ -14,7 +15,7 @@ agent: general-purpose
 
 ## Overview
 
-Full orchestrator that loads audit data, filters actionable items, runs validation baseline, spawns fix-workers directly as team members, validates batches, retries failures, updates the ledger, and reports results to the user. All orchestration happens in this skill runner — no fix-lead middleman.
+Full orchestrator that loads audit data, filters actionable items, runs validation baseline, creates native tasks with batch dependencies, spawns a pool of fix-workers that pull work from the shared TaskList, validates batches through gate checkpoints, retries failures, updates the ledger, and reports results to the user. All orchestration happens in this skill runner — no fix-lead middleman.
 
 ## Safety Rails
 
@@ -103,59 +104,98 @@ Analyze file dependencies to partition items into independent batches:
      Serial fallback:    ai-006 (unknown files)
    ```
 
-If `--dry-run` is set: display the batch plan to the user and stop. Do not spawn workers or modify any files.
-
 If `--serial` is set: place all items in a single serial queue (one at a time).
 
-### Step 7: Execute Batches
+### Step 6b: Create Tasks from Batch Plan
 
-For each batch:
+For each batch, create native tasks using TaskCreate:
 
-#### Parallel Execution (batch has 2+ independent items)
+**Fix tasks (one per action item):**
+```
+TaskCreate({
+  subject: "Fix {item.id}: {item.action}",
+  description: <full item details including:
+    - item id, action text, priority, effort, file_refs
+    - source agent's finding text
+    - validation baseline summary
+    - fix-worker process instructions (read context, plan, implement, validate, report)>,
+  activeForm: "Fixing {item.id}",
+  metadata: { type: "fix_item", item_id: "ai-001", priority: 1, effort: "low", file_refs: [...], batch: 1, attempt: 1 }
+})
+```
 
-1. **Spawn one fix-worker per item** using Task with:
-   - `subagent_type`: `"general-purpose"`
-   - `team_name`: current team name (CRITICAL: makes them team members)
-   - `name`: `"fix-worker-{item.id}"`
-   - `mode`: `"bypassPermissions"`
-   - Worker prompt includes:
-     - The full fix-worker agent instructions (from `agents/fix-worker.md`)
-     - The specific action item (id, action, priority, effort, file_refs, source_agents, impact)
-     - Source agent's finding text
-     - Validation baseline summary
+**Validation gate (one per batch):**
+```
+TaskCreate({
+  subject: "Validation gate: batch {N}",
+  description: "Leader-only checkpoint. Run tsc + vitest + lint. Compare against baseline. If pass: mark gate completed. If fail: revert batch files, create retry tasks.",
+  activeForm: "Validating batch {N}",
+  metadata: { type: "validation_gate", batch: N, batch_item_ids: ["ai-001", "ai-003"] }
+})
+```
 
-2. **Wait for all workers** to report or timeout (3 minutes per worker).
-   - Each worker sends a structured `FIX_REPORT_START/FIX_REPORT_END` via SendMessage.
-   - If a worker times out: revert that worker's `file_refs` via `git checkout -- <files>`, mark item as `blocked` with reason "Worker timeout".
+**Dependencies (set via TaskUpdate after creation):**
+- Gate N `blockedBy` = [all fix task IDs in batch N]
+- All fix tasks in batch N+1 `blockedBy` = [gate N task ID]
 
-3. **Run centralized validation** (tsc + vitest + lint):
-   - If validation passes: accept batch, continue to next batch.
-   - If validation fails: revert entire batch via `git checkout -- <all changed files>`, add all items from this batch to the retry queue.
+This ensures batches execute sequentially while items within a batch run in parallel.
 
-4. **Batch integrity check**: Compare workers' reported `files_changed` against `git diff --name-only`. If mismatch or overlap, revert batch and add items to retry queue.
+If `--dry-run` is set: display the task plan with batches and dependencies, then delete all tasks, TeamDelete, and stop. Do not spawn workers or modify any files.
 
-5. **Shutdown completed workers** via SendMessage shutdown requests.
+### Step 7: Spawn Worker Pool and Monitor
 
-#### Serial Execution (single item, retry, or `--serial` mode)
+#### 7a: Spawn Workers
 
-For each item:
+Spawn a **fixed pool** of workers: `min(max_batch_size, 4)` workers, or 1 if `--serial`:
 
-1. Spawn a single fix-worker (same as above, one item).
-2. Wait for the worker's report (3-minute timeout).
-3. Run centralized validation.
-4. If validation passes: accept the fix.
-5. If validation fails: revert via `git checkout -- <files>`, mark item as `blocked`.
-6. Shutdown the worker.
+```
+Task(
+  subagent_type: "fix-worker",
+  team_name: "fix-{timestamp}",
+  name: "fix-worker-{slot}",
+  mode: "bypassPermissions",
+  prompt: "You are fix-worker-{slot} on team fix-{timestamp}.
+    Pull work from the shared TaskList. Claim tasks with metadata.type == 'fix_item',
+    implement fixes, report results. See your agent instructions for the full pull loop.
+    Validation baseline: {baseline_summary}"
+)
+```
 
-### Step 8: Retry Queue
+Workers are **not** given a specific item — they self-organize by pulling from TaskList.
 
-Items that failed in a parallel batch get one more attempt serially:
+#### 7b: Leader Monitoring Loop
 
-- Each item gets **at most 2 attempts**: once in its batch, once in retry.
-- An item that fails both -> `blocked`.
-- Process retry items one at a time with per-item validation.
+The leader does NOT assign items to workers. Instead, it monitors progress and handles validation gates:
 
-**Termination condition**: All items are either accepted or blocked. No unbounded loops.
+**Loop** (runs until all tasks completed or 10-minute ceiling):
+
+1. **Poll TaskList** every 30 seconds.
+
+2. **Check validation gates**: When a gate's `blockedBy` tasks are all completed (workers finished the batch):
+   - Run centralized validation: `tsc --noEmit`, `vitest run`, `next lint`
+   - **Pass**: `TaskUpdate(gateId, status: "completed")` — this auto-unblocks the next batch's fix tasks
+   - **Fail**: Revert batch files via `git checkout -- <files>`, create retry tasks (serial, attempt: 2) if under 2-attempt limit, mark gate completed to unblock downstream
+
+3. **Worker health monitoring**:
+   - If a worker has been idle for 3+ minutes on a claimed task: send a nudge via SendMessage
+   - If still no progress at 3.5 minutes: send shutdown request, revert that task's file_refs, create a retry task
+
+4. **Termination conditions** (any of these ends the loop):
+   - All tasks (fix items + gates) are completed
+   - 10-minute overall ceiling reached — shutdown all workers, report partial results
+   - All remaining tasks are blocked with no retry options
+
+### Step 8: Retry Handling
+
+Retries are **not** a separate code path. When a validation gate fails:
+
+1. Revert the batch's changed files via `git checkout -- <files>`
+2. For each failed item with `attempt < 2`:
+   - Create a new task: same item details but `metadata.attempt: 2`, placed in a serial chain (each `blockedBy` the previous)
+   - Add a new validation gate after the retry tasks
+3. Items with `attempt >= 2` are marked `blocked` in the ledger — no retry task created.
+
+Workers pick up retry tasks automatically from TaskList, just like first-attempt tasks.
 
 ### Step 9: Re-audit (Optional — only if `--audit` or `--loop` is set)
 
@@ -179,7 +219,11 @@ If `--loop N` is set (autonomous fix-validate-audit cycles):
 
 ### Step 10: Update Ledger
 
-Read `.boardclaude/action-items.json` and update:
+Read task results from TaskList/TaskGet as the **authoritative source** (not from SendMessage parsing):
+
+For each completed fix task, read `metadata.result`, `metadata.files_changed`, `metadata.summary`, `metadata.local_validation`.
+
+Update `.boardclaude/action-items.json`:
 
 - Items where validation passed and (if `--audit` or `--loop` was used) the relevant agent's score improved: set `status: "resolved"`, set `resolved_at` to current ISO timestamp.
 - Items where fix was applied but no re-audit was run: set `status: "in_progress"` (validation passed but score delta unknown).
@@ -197,6 +241,8 @@ Read `.boardclaude/action-items.json` and update:
 - Update `stats` counters.
 - Write the updated ledger back to `.boardclaude/action-items.json`.
 
+FIX_REPORTs sent via SendMessage are kept for **real-time visibility** during the run but are not the source of truth for ledger updates.
+
 ### Step 11: Report to User
 
 Display results directly:
@@ -209,8 +255,9 @@ Items fixed:     N (resolved)
 Items blocked:   M (reverted)
 
 Execution mode: parallel|serial|mixed
-Validation:      tsc ✓/✗ | vitest ✓/✗ | lint ✓/✗
-Score delta:     A → B (+/-C)  [only if --audit or --loop was used]
+Workers:        W pool size
+Validation:      tsc OK/FAIL | vitest OK/FAIL | lint OK/FAIL
+Score delta:     A -> B (+/-C)  [only if --audit or --loop was used]
 
 Still open: R items
 Next step:  Run /bc:audit for full re-evaluation or /bc:fix again
@@ -219,15 +266,15 @@ Next step:  Run /bc:audit for full re-evaluation or /bc:fix again
 ### Step 12: Teardown
 
 1. Send shutdown requests to all fix-workers still alive
-2. Call `TeamDelete` to clean up the team
+2. Call `TeamDelete` to clean up the team (this also deletes the ephemeral TaskList)
 
 ## Error Handling
 
 - **No audit found**: Abort with message — "No audit results found. Run `/bc:audit` first."
 - **Empty action items**: Report "No actionable items found" and stop.
-- **Worker timeout (3 min)**: Revert worker's file_refs, mark item as blocked, continue.
+- **Worker timeout (3 min)**: Nudge worker. At 3.5 min: shutdown, revert file_refs, create retry task.
 - **Worker reports `cannot_fix`**: Mark item as blocked with explanation. No revert needed.
-- **Validation runner fails**: Mark current item(s) as blocked, continue to next batch.
+- **Validation gate fails**: Revert batch, create retry tasks for items under 2-attempt limit.
 - **File not found**: If a referenced file doesn't exist, mark item as blocked.
 - **All items blocked**: Report the pattern — likely a systemic issue needing human intervention.
 - **Git dirty state**: Warn but continue. Reverts may be incomplete.
@@ -285,8 +332,11 @@ Stored at `.boardclaude/action-items.json`:
 - All validation, dependency analysis, and batch orchestration happens in this skill runner
 - All source code editing happens inside fix-workers (this runner never edits source files directly)
 - No permission prompts — all spawned agents use `mode: "bypassPermissions"`
-- `--serial` means workers run one-at-a-time (still delegated via team, not inline)
-- `--dry-run` causes the runner to report its batch plan without spawning workers or modifying files
+- Workers self-organize via TaskList — the leader does NOT push items to workers
+- Validation gates are leader-only checkpoints — workers never claim gate tasks
+- The native TaskList is ephemeral (deleted with TeamDelete); the action-items.json ledger persists across sessions
+- `--serial` means 1 worker + serial task chain (still delegated via team, not inline)
+- `--dry-run` causes the runner to display the task plan with dependencies without spawning workers or modifying files
 - Default behavior: fix all open items, validate, report results, stop — no audit
 - `--audit` opts in to a single re-audit after fixes for score delta measurement
 - `--loop N` runs N autonomous iterations of (fix -> validate -> audit -> extract new items -> fix). Exits early on: no new items, score plateau (2 consecutive flat), or all items blocked
