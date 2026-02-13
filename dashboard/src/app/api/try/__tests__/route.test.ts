@@ -32,6 +32,7 @@ vi.mock("@/lib/github", () => ({
 
 vi.mock("@/lib/try-prompt", () => ({
   buildUserPrompt: vi.fn().mockReturnValue("mocked user prompt"),
+  buildCrossIterationContext: vi.fn().mockReturnValue(""),
 }));
 
 vi.mock("@/lib/rate-limit", () => ({
@@ -90,6 +91,7 @@ vi.mock("@/lib/try-agents", () => ({
     },
   ],
   EFFORT_BUDGET_MAP: { max: 20000, high: 10000, medium: 5000, low: 2000 },
+  analyzeRepoComplexity: () => 1.0,
   getAdaptiveBudget: (effort: string) => {
     const map: Record<string, number> = {
       max: 20000,
@@ -100,12 +102,15 @@ vi.mock("@/lib/try-agents", () => ({
     return map[effort] ?? 5000;
   },
   SYNTHESIS_PROMPT: "You are the synthesis agent.",
+  DEBATE_REVISION_SCHEMA:
+    "If you want to revise scores, use REVISED: <criterion>: <score>",
   buildSynthesisUserPrompt: vi.fn().mockReturnValue("synthesis prompt"),
   getModelId: vi.fn().mockReturnValue("claude-haiku-4-5-20251001"),
 }));
 
 vi.mock("@/lib/try-storage", () => ({
   saveWebReview: vi.fn().mockResolvedValue(undefined),
+  getPreviousReviewForRepo: vi.fn().mockResolvedValue(null),
 }));
 
 import { POST } from "../route";
