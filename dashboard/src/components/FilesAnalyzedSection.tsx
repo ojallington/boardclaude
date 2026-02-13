@@ -75,7 +75,7 @@ export function FilesAnalyzedSection({
                     <span className="font-mono text-gray-300 truncate">
                       {f.path}
                     </span>
-                    <span className="ml-2 shrink-0 text-gray-600">
+                    <span className="ml-2 shrink-0 text-gray-500">
                       {formatSize(f.size)}
                     </span>
                   </div>
@@ -98,7 +98,7 @@ export function FilesAnalyzedSection({
                     <span className="font-mono text-gray-300 truncate">
                       {f.path}
                     </span>
-                    <span className="ml-2 shrink-0 text-gray-600">
+                    <span className="ml-2 shrink-0 text-gray-500">
                       {formatSize(f.size)}
                     </span>
                   </div>
@@ -107,7 +107,7 @@ export function FilesAnalyzedSection({
             </div>
           )}
 
-          <p className="text-[10px] text-gray-600 italic">
+          <p className="text-[10px] text-gray-500 italic">
             Files selected by relevance scoring: entry points, config, and core
             source files prioritized.
           </p>

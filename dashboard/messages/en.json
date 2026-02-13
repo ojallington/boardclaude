@@ -5,18 +5,18 @@
   },
   "hero": {
     "heading": "BoardClaude",
-    "tagline": "We Didn\u2019t Get a Spot. So We Built the Judges.",
-    "description": "Six AI agents, each inspired by a real hackathon judge, evaluate your project from different expert perspectives. Whether you\u2019re competing or just building\u2014get the feedback that matters.",
+    "tagline": "Assemble Your Own Board of AI Judges",
+    "description": "A configurable panel of AI agents that evaluate your project from multiple expert perspectives. Six agents run in parallel with extended thinking, cross-examine divergent scores, and produce prioritized action items.",
     "installCta": "Install Plugin",
-    "demoCta": "Watch Demo",
+    "demoCta": "Try It Now",
     "resultsCta": "View Results",
     "trySubtext": "or install the CLI for full panel audits"
   },
   "story": {
-    "heading": "The Story",
-    "p1": "Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon invited developers to push the boundaries of what\u2019s possible with Claude. 500 spots. We didn\u2019t get one.",
-    "p2": "So we did the next best thing: we studied the judges. Six industry experts, each with a distinct perspective on what makes software great\u2014architecture, product thinking, AI innovation, developer experience, documentation, and community impact. We built AI representations of each one.",
-    "p3": "The result is BoardClaude: a configurable panel of AI agents that evaluate your project the way a real judging panel would. Paste a GitHub URL to try a quick review, or install the CLI for the full six-judge experience with scored dimensions, radar charts, and prioritized action items."
+    "heading": "How It Was Built",
+    "p1": "BoardClaude was built for Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon. We studied six industry experts \u2014 their public talks, writing, and professional backgrounds \u2014 and built AI representations of each evaluation perspective: architecture, product, AI innovation, frontend, documentation, and community.",
+    "p2": "We then pointed BoardClaude at itself. Over 18 iterations and 55 commits, the tool audited its own code, generated action items, and drove its composite score from 68.4 to 91.24. The same closed-loop that improved BoardClaude works on any project.",
+    "p3": "We didn\u2019t get a hackathon spot \u2014 but we built the tool anyway. The result is an open-source evaluation framework you can try right now: paste a GitHub URL, or install the CLI for the full six-agent experience."
   },
   "install": {
     "heading": "Get Started",
@@ -63,10 +63,28 @@
     "scoreProgression": "Score Progression",
     "scoreProgressionDesc": "Track improvement across iterations with delta scoring and regression detection."
   },
+  "differentiation": {
+    "heading": "Why BoardClaude?",
+    "description": "See how structured multi-agent evaluation compares to asking a single AI for feedback.",
+    "columnDirect": "Asking Claude Directly",
+    "columnBoard": "Using BoardClaude",
+    "row1Direct": "One generic perspective",
+    "row1Board": "Multiple specialized perspectives",
+    "row2Direct": "Prose-only feedback",
+    "row2Board": "Weighted composite scoring",
+    "row3Direct": "No history or tracking",
+    "row3Board": "Score tracking across iterations",
+    "row4Direct": "Ad-hoc suggestions",
+    "row4Board": "Prioritized, tracked action items",
+    "row5Direct": "Fixed evaluation criteria",
+    "row5Board": "Configurable evaluation panels",
+    "row6Direct": "Different results each time",
+    "row6Board": "Reproducible, structured output"
+  },
   "footer": {
-    "builtFor": "Inspired by the",
+    "builtFor": "Built for the",
     "hackathonName": "\u201cBuilt with Opus 4.6\u201d",
-    "hackathonSuffix": "Hackathon judges",
+    "hackathonSuffix": "Hackathon",
     "github": "GitHub"
   },
   "results": {
@@ -76,7 +94,7 @@
     "backHome": "\u2190 Home",
     "viewDetails": "View details",
     "emptyState": "No audits yet. Run your first audit with {command}",
-    "emptyCommand": "/bc:review",
+    "emptyCommand": "/bc:audit",
     "iterationLabel": "Iteration"
   },
   "auditDetail": {
@@ -129,6 +147,7 @@
     "results": "Results",
     "timeline": "Timeline",
     "boards": "Boards",
+    "story": "Story",
     "install": "Install",
     "skipToContent": "Skip to main content"
   },

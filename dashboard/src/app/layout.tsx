@@ -4,6 +4,7 @@ import Link from "next/link";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages, getTranslations } from "next-intl/server";
 import { LocaleSwitcher } from "@/components/LocaleSwitcher";
+import { MobileNav } from "@/components/MobileNav";
 
 import "./globals.css";
 
@@ -37,6 +38,7 @@ export default async function RootLayout({
   }> = [
     { href: "/try", label: t("tryIt"), highlight: true },
     { href: "/results", label: t("results") },
+    { href: "/story", label: t("story") },
     { href: "/boards", label: t("boards") },
     { href: "/#install", label: t("install") },
   ];
@@ -61,7 +63,7 @@ export default async function RootLayout({
               >
                 Board<span className="text-indigo-400">Claude</span>
               </Link>
-              <ul className="flex items-center gap-1 sm:gap-2">
+              <ul className="hidden items-center gap-1 sm:flex sm:gap-2">
                 {navLinks.map((link) => (
                   <li key={link.href}>
                     {link.external ? (
@@ -91,6 +93,7 @@ export default async function RootLayout({
                   <LocaleSwitcher />
                 </li>
               </ul>
+              <MobileNav links={navLinks} />
             </nav>
           </header>
           {children}
