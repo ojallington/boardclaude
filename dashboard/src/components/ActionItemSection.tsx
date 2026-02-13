@@ -24,11 +24,11 @@ const PRIORITY_STYLES: Record<string, string> = {
   "2": "bg-amber-900/60 text-amber-300 border-amber-700/50",
   "3": "bg-yellow-900/60 text-yellow-300 border-yellow-700/50",
   "4": "bg-gray-800/60 text-gray-300 border-gray-700/50",
-  "5": "bg-gray-800/60 text-gray-400 border-gray-700/50",
+  "5": "bg-gray-800/60 text-gray-300 border-gray-700/50",
 };
 
 const DEFAULT_PRIORITY_STYLE =
-  "bg-gray-800/60 text-gray-400 border-gray-700/50";
+  "bg-gray-800/60 text-gray-300 border-gray-700/50";
 
 function getPriorityStyle(priority: number): string {
   return PRIORITY_STYLES[String(priority)] ?? DEFAULT_PRIORITY_STYLE;

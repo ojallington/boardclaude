@@ -99,7 +99,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
   if (!result) return null;
   const verdictStyle =
     VERDICT_BADGE_STYLES[result.verdict as Verdict] ??
-    "bg-gray-800 text-gray-400 border-gray-700";
+    "bg-gray-800 text-gray-300 border-gray-700";
 
   return (
     <motion.div

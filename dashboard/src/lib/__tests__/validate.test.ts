@@ -270,7 +270,8 @@ describe("validateProjectState", () => {
   });
 
   it("rejects missing project field", () => {
-    const { project: _, ...rest } = validProjectState;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { project: _project, ...rest } = validProjectState;
     const result = validateProjectState(rest);
     expect(result.valid).toBe(false);
     expect(result.errors.some((e) => e.field === "project")).toBe(true);

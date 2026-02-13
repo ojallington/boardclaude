@@ -20,7 +20,7 @@ export function PanelSynthesisView({ result }: PanelSynthesisViewProps) {
   const { composite, highlights, action_items } = result;
   const verdictStyle =
     VERDICT_BADGE_STYLES[composite.verdict as Verdict] ??
-    "bg-gray-800 text-gray-400 border-gray-700";
+    "bg-gray-800 text-gray-300 border-gray-700";
   const gradeColor = GRADE_STYLES[composite.grade] ?? "text-gray-400";
 
   const handleCopyLink = useCallback(async () => {

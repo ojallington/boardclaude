@@ -7,6 +7,21 @@ export const EFFORT_BUDGET_MAP: Record<ThinkingEffort, number> = {
   low: 2000,
 };
 
+/**
+ * Scale thinking token budget based on repository content size.
+ * Larger repos need more thinking tokens for thorough evaluation.
+ */
+export function getAdaptiveBudget(
+  effort: ThinkingEffort,
+  contentChars: number,
+): number {
+  const base = EFFORT_BUDGET_MAP[effort];
+  if (contentChars <= 50_000) return base;
+  if (contentChars <= 200_000) return Math.round(base * 1.25);
+  if (contentChars <= 500_000) return Math.round(base * 1.5);
+  return Math.round(base * 1.75);
+}
+
 export interface WebAgentConfig {
   name: string;
   role: string;

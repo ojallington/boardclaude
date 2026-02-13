@@ -1,9 +1,61 @@
 import Link from "next/link";
+
 import { getAgentColor } from "@/lib/types";
 import { messages } from "@/lib/messages";
 import { HeroTrySection } from "@/components/HeroTrySection";
+import { getProjectState } from "@/lib/audit-loader";
 
-export default function HomePage() {
+/**
+ * Select a representative subset of score history entries for the bar chart.
+ * Always includes first and last entries, plus evenly spaced entries in between,
+ * targeting roughly 6-8 bars total for visual clarity.
+ */
+function selectRepresentativeScores(
+  scores: ReadonlyArray<{ iteration: number; score: number }>,
+  maxBars: number = 7,
+): Array<{ iteration: number; score: number }> {
+  if (scores.length === 0) return [];
+
+  if (scores.length <= maxBars) {
+    return scores.map((s) => ({ iteration: s.iteration, score: s.score }));
+  }
+
+  const result: Array<{ iteration: number; score: number }> = [];
+  const lastIndex = scores.length - 1;
+  const first = scores[0];
+  const last = scores[lastIndex];
+
+  if (!first || !last) return [];
+
+  // Always include first
+  result.push({ iteration: first.iteration, score: first.score });
+
+  // Pick evenly spaced entries between first and last
+  const innerCount = maxBars - 2;
+  for (let i = 1; i <= innerCount; i++) {
+    const idx = Math.round((i * lastIndex) / (innerCount + 1));
+    const entry = scores[idx];
+    if (entry) {
+      result.push({ iteration: entry.iteration, score: entry.score });
+    }
+  }
+
+  // Always include last
+  result.push({ iteration: last.iteration, score: last.score });
+
+  return result;
+}
+
+export default async function HomePage() {
+  const projectState = await getProjectState();
+
+  const dynamicScores =
+    projectState && projectState.score_history.length > 0
+      ? selectRepresentativeScores(projectState.score_history)
+      : null;
+
+  const progressionScores = dynamicScores ?? messages.loop.progression.scores;
+
   const { hero, story, install, howItWorks, panel, features, footer } =
     messages;
 
@@ -147,7 +199,7 @@ export default function HomePage() {
             {messages.loop.progression.label}
           </p>
           <div className="flex items-end gap-3 sm:gap-5 h-40">
-            {messages.loop.progression.scores.map((s) => (
+            {progressionScores.map((s) => (
               <div
                 key={s.iteration}
                 className="flex-1 flex flex-col items-center gap-2"

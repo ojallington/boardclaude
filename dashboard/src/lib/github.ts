@@ -211,7 +211,7 @@ interface TierLimits {
 
 export function getTierLimits(tier: "free" | "byok"): TierLimits {
   if (tier === "byok") {
-    return { maxTotalChars: 800_000, maxSourceFiles: 60 };
+    return { maxTotalChars: 1_200_000, maxSourceFiles: 60 };
   }
   return { maxTotalChars: 80_000, maxSourceFiles: 10 };
 }

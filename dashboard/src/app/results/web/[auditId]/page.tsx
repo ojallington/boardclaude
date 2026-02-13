@@ -66,7 +66,7 @@ export default async function WebReviewDetailPage({
   const { composite, highlights, action_items, agents, repo } = result;
   const verdictStyle =
     VERDICT_BADGE_STYLES[composite.verdict as Verdict] ??
-    "bg-gray-800 text-gray-400 border-gray-700";
+    "bg-gray-800 text-gray-300 border-gray-700";
   const gradeColor = GRADE_STYLES[composite.grade] ?? "text-gray-400";
 
   return (
@@ -116,7 +116,7 @@ export default async function WebReviewDetailPage({
               className={`rounded-full border px-2 py-0.5 ${
                 result.tier === "byok"
                   ? "border-indigo-700 bg-indigo-900/30 text-indigo-400"
-                  : "border-gray-700 bg-gray-800 text-gray-400"
+                  : "border-gray-700 bg-gray-800 text-gray-300"
               }`}
             >
               {result.tier === "byok" ? "Full Panel" : "Demo Mode"}
@@ -178,7 +178,7 @@ export default async function WebReviewDetailPage({
               const agentColor = getAgentColor(agent.agent);
               const agentVerdictStyle =
                 VERDICT_BADGE_STYLES[agent.verdict as Verdict] ??
-                "bg-gray-800 text-gray-400 border-gray-700";
+                "bg-gray-800 text-gray-300 border-gray-700";
               const role = AGENT_ROLES[agent.agent] ?? agent.role;
 
               return (

@@ -90,6 +90,15 @@ vi.mock("@/lib/try-agents", () => ({
     },
   ],
   EFFORT_BUDGET_MAP: { max: 20000, high: 10000, medium: 5000, low: 2000 },
+  getAdaptiveBudget: (effort: string) => {
+    const map: Record<string, number> = {
+      max: 20000,
+      high: 10000,
+      medium: 5000,
+      low: 2000,
+    };
+    return map[effort] ?? 5000;
+  },
   SYNTHESIS_PROMPT: "You are the synthesis agent.",
   buildSynthesisUserPrompt: vi.fn().mockReturnValue("synthesis prompt"),
   getModelId: vi.fn().mockReturnValue("claude-haiku-4-5-20251001"),

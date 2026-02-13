@@ -28,7 +28,7 @@ vi.mock("@/lib/try-agents", () => ({
     { name: "jason", role: "Community", systemPrompt: "You are Jason." },
   ],
   DEBATE_REVISION_SCHEMA: "REVISED: <criterion>: <score>",
-  getModelId: (_model: string, _tier: string) => "claude-opus-4-6",
+  getModelId: () => "claude-opus-4-6",
 }));
 
 // ---------------------------------------------------------------------------

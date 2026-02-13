@@ -2,6 +2,7 @@
   "audit_id": "audit-20260213-003251",
   "iteration": 16,
   "panel": "hackathon-judges",
+  "target": ".",
   "timestamp": "2026-02-13T00:32:51.000Z",
   "composite": {
     "score": 89.82,
@@ -16,7 +17,7 @@
       "integration": 93.05
     }
   },
-  "delta": {
+  "iteration_delta": {
     "previous_score": 90.13,
     "previous_iteration": 15,
     "change": -0.31

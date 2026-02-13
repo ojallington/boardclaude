@@ -133,7 +133,7 @@ export function StreamingAgentCard({
     const verdict = result.verdict as Verdict | undefined;
     const verdictStyle = verdict
       ? VERDICT_BADGE_STYLES[verdict]
-      : "bg-gray-800 text-gray-400 border-gray-700";
+      : "bg-gray-800 text-gray-300 border-gray-700";
 
     return (
       <motion.div

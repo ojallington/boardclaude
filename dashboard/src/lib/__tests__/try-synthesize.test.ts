@@ -128,7 +128,8 @@ describe("extractDivergentOpinion", () => {
   });
 
   it("returns null when topic missing", () => {
-    const { topic: _t, ...rest } = valid;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { topic: _topic, ...rest } = valid;
     expect(extractDivergentOpinion(rest)).toBeNull();
   });
 

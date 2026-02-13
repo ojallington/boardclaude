@@ -80,7 +80,7 @@ describe("getTierLimits", () => {
 
   it("returns correct limits for byok tier", () => {
     const limits = getTierLimits("byok");
-    expect(limits.maxTotalChars).toBe(800_000);
+    expect(limits.maxTotalChars).toBe(1_200_000);
     expect(limits.maxSourceFiles).toBe(60);
   });
 
