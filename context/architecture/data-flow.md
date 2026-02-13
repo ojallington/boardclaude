@@ -5,15 +5,13 @@
 
 ---
 
-## 1. Audit Pipeline (Two-Tier Delegation)
+## 1. Audit Pipeline (Single-Tier Orchestration)
 
-The core `/bc:audit` command uses a two-tier delegation model:
-- **Main agent** (launcher): Reads config, spawns coordinator, relays results. ~5-8 tool calls.
-- **Coordinator** (autonomous): Ingests codebase, spawns judges, runs debate, writes files.
+The `/bc:audit` command uses single-tier orchestration:
+- **Skill runner** (launcher): Reads config, creates team, spawns all agents directly, collects results, writes files.
+- All spawned agents use `mode: "bypassPermissions"` — no permission prompts appear.
 
-All spawned agents use `mode: "bypassPermissions"` — no permission prompts appear.
-
-### Tier 1: Main Agent (Delegate Launcher)
+### Audit Flow
 
 ```
 User runs /bc:audit [--panel name] [--effort level]
@@ -39,51 +37,15 @@ User runs /bc:audit [--panel name] [--effort level]
          |
          v
 +------------------+
-| SPAWN COORDINATOR|  Task(subagent_type: "general-purpose",
-|                  |       name: "audit-coordinator",
-|                  |       mode: "bypassPermissions")
-|                  |  Pass: coordinator instructions, panel YAML,
-|                  |        iteration metadata, CLI flags, schemas
-+--------+---------+
-         |
-         |  (main agent idles — coordinator handles everything)
-         |
-         v
-+------------------+
-| RECEIVE REPORT   |  Coordinator sends AUDIT_COMPLETE via SendMessage
-|                  |  Contains: score, grade, verdict, top items, paths
-+--------+---------+
-         |
-         v
-+------------------+
-| REPORT TO USER   |  Relay composite + grade + verdict
-|                  |  Top 3 strengths / weaknesses
-|                  |  Top 5 action items
-|                  |  Iteration delta + file paths
-+--------+---------+
-         |
-         v
-+------------------+
-|    TEARDOWN      |  Shutdown coordinator → TeamDelete
-+------------------+
-```
-
-### Tier 2: Audit Coordinator (Autonomous)
-
-```
-Coordinator receives panel config + iteration metadata
-  |
-  v
-+------------------+
-|  SETUP & INGEST  |  mkdir -p .boardclaude/audits
+|  INGEST CODEBASE |  Glob + Read codebase files
 |                  |  Load 2 most recent audit JSONs
-|                  |  Glob + Read codebase files
 |                  |  Build project summary
 +--------+---------+
          |
          v
 +------------------+
 |  SPAWN 6 JUDGES  |  Task per agent, mode: "bypassPermissions"
+|                  |  team_name: current team
 |                  |  Each receives: persona, project summary,
 |                  |    cross-iteration context, criteria, schema
 |                  |  Model routing: Opus/Sonnet per panel config
@@ -140,27 +102,25 @@ v                  v                   v
                                  |
                                  v
                          +----------------+
-                         | SEND REPORT    |
-                         | to launcher    |
-                         | via SendMessage|
+                         | REPORT TO USER |
+                         | Composite score|
+                         | Top 3 strengths|
+                         | Top 5 actions  |
                          +-------+--------+
                                  |
                                  v
                          +----------------+
-                         | SHUTDOWN       |
-                         | judges +       |
-                         | synthesis      |
+                         | TEARDOWN       |
+                         | Shutdown judges|
+                         | + synthesis    |
+                         | TeamDelete     |
                          +----------------+
 ```
 
 ### State Machine
 
 ```
-IDLE ──/bc:audit──> DELEGATE ──> [coordinator runs autonomously] ──> REPORT ──> COMPLETE
-                                                                        |
-                                  coordinator internally:          back to IDLE
-                                  INGEST → PANEL_AUDIT → DEBATE →
-                                  SYNTHESIZE → WRITE → REPORT_BACK
+IDLE ──/bc:audit──> INGEST ──> PANEL_AUDIT ──> DEBATE ──> SYNTHESIZE ──> WRITE ──> REPORT ──> IDLE
 ```
 
 ---
@@ -342,133 +302,129 @@ User runs /bc:merge branch-a
 
 ---
 
-## 3. Implementation Loop (Closed Loop)
+## 3. Fix Pipeline (Pull-Based Worker Pool)
 
-The audit-to-improvement pipeline. Closes the gap between evaluation and action.
+The `/bc:fix` command uses native TaskCreate/TaskList for coordination. Workers self-organize around a shared task board.
 
-### Full Loop Flow
+### Full Fix Flow
 
 ```
-User runs /bc:audit
+User runs /bc:fix [--max N] [--serial] [--dry-run] [--audit] [--loop N]
   |
   v
 +------------------+
-|   AUDIT PIPELINE |  (See Section 1 above)
-|   6 agents +     |  Produces structured evaluation JSON
-|   synthesis       |
+|  LOAD AUDIT +    |  Read state.json -> latest audit
+|  LEDGER          |  Load/create action-items.json
+|                  |  Filter: open, priority, effort
 +--------+---------+
          |
          v
 +------------------+
-| EXTRACT ACTION   |  Synthesis identifies action items
-| ITEMS            |  Assign: priority, effort, file_refs
-|                  |  Write to .boardclaude/action-items.json
+|  CREATE TEAM     |  TeamCreate("fix-{timestamp}")
 +--------+---------+
          |
          v
 +------------------+
-| ACTION ITEMS     |  Persistent ledger
-| LEDGER           |  Tracks: open, in_progress, resolved,
-|                  |  blocked, wont_fix, chronic
-+--------+---------+
-         |
-         | User runs /bc:fix
-         v
-+------------------+
-| FILTER ITEMS     |  priority <= 3
-|                  |  effort: low | medium
-|                  |  status: open (chronic items first)
+|  VALIDATION      |  tsc --noEmit, vitest run, next lint
+|  BASELINE        |  Record pass/fail counts
 +--------+---------+
          |
          v
 +------------------+
-| VALIDATION       |  Run validation-runner (baseline)
-| BASELINE         |  Record: types, tests, lint, format
-+--------+---------+
-         |
-    +----+----+
-    |         |
-    v         | (for each item, sequentially)
-+--------+    |
-| READ   |    |
-| CONTEXT |   |
-| for item|   |
-+--------+    |
-    |         |
-    v         |
-+--------+    |
-| IMPLEMENT|  |
-| FIX      |  |
-+--------+    |
-    |         |
-    v         |
-+------------------+
-| VALIDATE FIX     |  Run validation-runner (post-fix)
-|                  |  Compare against baseline
-+--------+---------+
-    |              |
-   PASS           FAIL
-    |              |
-    v              v
-+----------+  +----------+
-| STAGE    |  | REVERT   |
-| Mark:    |  | Mark:    |
-| in_prog  |  | blocked  |
-+----------+  +----------+
-    |
-    | (after all items)
-    v
-+------------------+
-| RE-AUDIT         |  Run /bc:audit to measure delta
+|  DEPENDENCY      |  Build conflict graph from file_refs
+|  ANALYSIS        |  Greedy graph coloring -> batches
 +--------+---------+
          |
          v
 +------------------+
-| RECONCILE LEDGER |
-|                  |
-| Score improved?  |
-|   YES: resolved  |
-|   NO: iterations |
-|       _open++    |
-|   3+: chronic    |
+|  CREATE TASKS    |  TaskCreate per item + validation gate per batch
+|  (native)        |  Set blockedBy dependencies:
+|                  |    Gate N blocked by batch N fix tasks
+|                  |    Batch N+1 tasks blocked by gate N
++--------+---------+
+         |
+         |  --dry-run? -> display plan, cleanup, stop
+         |
+         v
++------------------+
+|  SPAWN WORKER    |  min(max_batch_size, 4) fix-workers
+|  POOL            |  Workers pull from TaskList autonomously
+|                  |  subagent_type: "fix-worker"
++--------+---------+
+         |
+         |  Workers self-organize:
+         |  TaskList -> claim lowest-ID pending task ->
+         |  implement fix -> TaskUpdate(completed) ->
+         |  loop back to TaskList
+         |
+    +----+----+----+----+
+    |    |    |    |    |
+    v    v    v    v    |
+  fix-  fix-  fix-  fix-|
+  wkr1  wkr2  wkr3  wkr4
+    |    |    |    |    |
+    +----+----+----+----+
+         |
+         v
++------------------+
+| LEADER MONITOR   |  Poll TaskList every 30s
+| LOOP             |  When gate's blockedBy all done:
+|                  |    Run centralized validation
+|                  |    Pass -> mark gate completed
+|                  |    Fail -> revert, create retry tasks
+|                  |  Worker health: nudge 3m, kill 3.5m
+|                  |  Exit: all done or 10m ceiling
 +--------+---------+
          |
          v
 +------------------+
-| REPORT           |
-| Items fixed: N   |
-| Score delta: +X  |
-| Items remaining: M
-| Cost: $Y         |
+|  UPDATE LEDGER   |  Read results from task metadata
+|                  |  Update action-items.json
+|                  |  (resolved, in_progress, blocked)
++--------+---------+
+         |
+         v
++------------------+
+|  REPORT          |  Items fixed/blocked/remaining
+|                  |  Validation status
+|                  |  Score delta (if --audit)
++--------+---------+
+         |
+         v
++------------------+
+|  TEARDOWN        |  Shutdown workers
+|                  |  TeamDelete (cleans up tasks)
 +------------------+
 ```
 
-### Budget Safety Branch
+### Validation Gate Pattern
 
 ```
-Before each fix:
-  Check running API cost
-    |
-    +-- Under budget checkpoint? → Proceed
-    |
-    +-- Approaching checkpoint? → ABORT
-        Report: "Budget limit approaching. X items fixed, Y remaining."
-        Save partial progress to ledger.
+Batch 1 tasks:     [fix-ai-001] [fix-ai-003]
+                        |             |
+                        v             v
+                   +---gate-1---+
+                        |
+                        v  (leader runs tsc/vitest/lint)
+                       PASS?
+                      /     \
+                    YES      NO
+                     |        |
+                     v        v
+               Batch 2    Revert batch 1 files
+               unblocked  Create retry tasks (attempt 2)
 ```
 
-### Chronic Item Escalation
+### Task State Transitions
 
 ```
-After ledger reconciliation:
-  For each open item:
-    iterations_open >= 3?
-      |
-      YES → Flag as "chronic"
-      |     Synthesis highlights in next audit
-      |     /bc:fix prioritizes in next run
-      |     May indicate architectural issue
-      |
-      NO  → Continue normal tracking
+pending ──(worker claims)──> in_progress ──(worker finishes)──> completed
+                                  |                                  |
+                           (timeout/kill)                    (leader reads
+                                  |                          task metadata)
+                                  v                                  |
+                            revert files,                            v
+                            create retry task                  ledger update
 ```
 
 ---
@@ -501,6 +457,7 @@ After ledger reconciliation:
   |     +-- screenshots/              # Visual regression screenshots
   |
   +-- action-items.json               # Persistent action items ledger
+  |                                   # (survives TeamDelete, unlike TaskList)
   |
   +-- worktrees/                       # Git worktree directories
         +-- dashboard-recharts/        # Created by /bc:fork
@@ -510,25 +467,34 @@ After ledger reconciliation:
 ### Data Dependencies
 
 ```
-panels/*.yaml ─────> Audit Launcher ─────> agents/audit-coordinator.md
-    (config)           (skill)                  (coordinator)
-                          |                          |
-                          v                          v
-                   .boardclaude/state.json    agents/*.md (personas)
-                          |                          |
-                          v                          v
-                   Audit Coordinator          Agent Team (6 judges)
-                   (autonomous)               (parallel, bypassPermissions)
-                          |                          |
-                          v                          v
-                   Synthesis Agent            evaluations via SendMessage
-                   (bypassPermissions)               |
-                          |                          |
-                   +------+------+                   |
-                   |             |                   |
-                   v             v                   |
-            audits/*.json  audits/*.md          debate transcript
-                   |
+panels/*.yaml ─────> Audit Skill Runner
+    (config)           (single-tier)
+                          |
+                          v
+                   .boardclaude/state.json
+                          |
+                          +──────────────────────+
+                          |                      |
+                          v                      v
+                   agents/*.md (personas)   agents/fix-worker.md
+                          |                      |
+                          v                      v
+                   Agent Team (6 judges)    Fix Worker Pool
+                   (parallel, push-based)   (pull-based, TaskList)
+                          |                      |
+                          v                      v
+                   evaluations via          task metadata
+                   SendMessage              (authoritative)
+                          |                      |
+                          v                      v
+                   Synthesis Agent          Validation Gates
+                   (bypassPermissions)      (leader-only)
+                          |                      |
+                   +------+------+               |
+                   |             |               |
+                   v             v               v
+            audits/*.json  audits/*.md    action-items.json
+                   |                      (persistent ledger)
                    v
             state.json (updated)
             timeline.json (appended)
