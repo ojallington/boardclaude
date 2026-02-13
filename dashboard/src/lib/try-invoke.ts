@@ -12,12 +12,16 @@ import {
   WEB_AGENTS,
   getModelId,
   getAdaptiveBudget,
+  analyzeRepoComplexity,
   type WebAgentConfig,
 } from "@/lib/try-agents";
 import type { SSESender } from "@/lib/types";
 
 /** Repo file used for tool execution. */
 export type RepoFile = { path: string; content: string };
+
+/** Cache for search_codebase results shared across agents in one invocation. */
+type ToolResultCache = Map<string, string>;
 
 function parseAgentJSON(text: string): Record<string, unknown> | null {
   let jsonStr = text.trim();
@@ -72,9 +76,15 @@ const CODEBASE_TOOLS: Anthropic.Messages.Tool[] = [
 function executeSearchCodebase(
   files: RepoFile[],
   input: Record<string, unknown>,
+  cache?: ToolResultCache,
 ): string {
   const pattern = String(input.pattern ?? "");
   const fileGlob = input.file_glob ? String(input.file_glob) : undefined;
+  const cacheKey = `search:${pattern}|${fileGlob ?? ""}`;
+
+  const cached = cache?.get(cacheKey);
+  if (cached !== undefined) return cached;
+
   const maxResults = 25;
 
   try {
@@ -101,9 +111,12 @@ function executeSearchCodebase(
       if (results.length >= maxResults) break;
     }
 
-    return results.length > 0
-      ? `Found ${results.length} match(es):\n${results.join("\n")}`
-      : `No matches found for: ${pattern}`;
+    const result =
+      results.length > 0
+        ? `Found ${results.length} match(es):\n${results.join("\n")}`
+        : `No matches found for: ${pattern}`;
+    cache?.set(cacheKey, result);
+    return result;
   } catch {
     return `Invalid regex pattern: ${pattern}`;
   }
@@ -129,10 +142,11 @@ function executeTool(
   name: string,
   input: Record<string, unknown>,
   files: RepoFile[],
+  cache?: ToolResultCache,
 ): string {
   switch (name) {
     case "search_codebase":
-      return executeSearchCodebase(files, input);
+      return executeSearchCodebase(files, input, cache);
     case "read_file":
       return executeReadFile(files, input);
     default:
@@ -156,11 +170,17 @@ async function invokeAgentWithTools(
   files: RepoFile[],
   send: SSESender,
   index: number,
+  cache: ToolResultCache,
+  complexity?: number,
 ): Promise<string> {
   const modelId = getModelId(agent.model, tier);
   const useThinking = tier === "byok" && agent.model === "opus";
   const contentChars = files.reduce((sum, f) => sum + f.content.length, 0);
-  const budgetTokens = getAdaptiveBudget(agent.effort, contentChars);
+  const budgetTokens = getAdaptiveBudget(
+    agent.effort,
+    contentChars,
+    complexity,
+  );
 
   const msgs: Anthropic.Messages.MessageParam[] = [
     {
@@ -214,6 +234,7 @@ async function invokeAgentWithTools(
         block.name,
         block.input as Record<string, unknown>,
         files,
+        cache,
       );
       toolResults.push({
         type: "tool_result",
@@ -267,6 +288,8 @@ export async function invokeAgents(
   send: SSESender,
   files: RepoFile[] = [],
 ): Promise<TryAgentResult[]> {
+  const cache: ToolResultCache = new Map();
+  const complexity = analyzeRepoComplexity(files);
   const agentPromises = WEB_AGENTS.map(async (agent, index) => {
     await send("agent_start", { agent: agent.name, index });
 
@@ -283,6 +306,8 @@ export async function invokeAgents(
           files,
           send,
           index,
+          cache,
+          complexity,
         );
       } else {
         // Single-turn: standard invocation
@@ -292,7 +317,11 @@ export async function invokeAgents(
           (sum, f) => sum + f.content.length,
           0,
         );
-        const budgetTokens = getAdaptiveBudget(agent.effort, contentChars);
+        const budgetTokens = getAdaptiveBudget(
+          agent.effort,
+          contentChars,
+          complexity,
+        );
         const response = await client.messages.create({
           model: modelId,
           max_tokens: useThinking ? budgetTokens + 6000 : 2048,
