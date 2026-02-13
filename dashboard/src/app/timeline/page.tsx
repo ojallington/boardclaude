@@ -5,6 +5,7 @@ import { getTimelineEnriched } from "@/lib/audit-loader";
 import { messages } from "@/lib/messages";
 import { AgentScoreProgressionLoader } from "@/components/AgentScoreProgressionLoader";
 import { TimelineEventCard } from "@/components/TimelineEventCard";
+import { KeyboardHints } from "@/components/KeyboardHints";
 
 export const metadata: Metadata = {
   title: messages.timeline.title,
@@ -115,6 +116,8 @@ async function TimelineContent() {
           })}
         </ol>
       </div>
+
+      <KeyboardHints />
     </main>
   );
 }

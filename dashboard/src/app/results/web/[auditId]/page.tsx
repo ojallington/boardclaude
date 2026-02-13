@@ -77,7 +77,7 @@ export default async function WebReviewDetailPage({
       <nav className="mb-6">
         <Link
           href="/results"
-          className="text-sm text-gray-400 transition-colors hover:text-gray-300"
+          className="text-sm text-gray-300 transition-colors hover:text-gray-200"
         >
           &larr; Back to Results
         </Link>

@@ -1,168 +1,114 @@
 {
-  "audit_id": "audit-20260213-003251",
-  "iteration": 16,
-  "timestamp": "2026-02-13T00:32:51.000Z",
+  "audit_id": "audit-20260213-014400",
+  "iteration": 17,
+  "timestamp": "2026-02-13T01:44:00.000Z",
   "action_items": [
     {
       "priority": 1,
-      "action": "Extract parseToRecord helper to type-guards.ts, replace 4 JSON.parse casts in try-invoke.ts:28, try-synthesize.ts:190, try-storage.ts:97/201",
-      "impact": "Eliminates 4 unsafe type assertions, centralizes JSON parsing safety",
-      "source_agents": [
-        "boris",
-        "lydia"
-      ],
+      "action": "Replace toLocaleString('en-US') in StreamingAgentCard.tsx:254 with Intl.DateTimeFormat(undefined, ...) or next-intl useFormatter",
+      "impact": "Closes chronic 4+ iteration i18n gap flagged by 3 agents",
+      "source_agents": ["boris", "lydia", "jason"],
       "effort": "low",
       "status": "resolved",
       "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Added parseToRecord to type-guards.ts, replaced JSON.parse casts in try-invoke.ts, try-synthesize.ts, and try-storage.ts with safe validation"
+      "iterations_open": 5,
+      "resolution": "Replaced toLocaleString('en-US') with Intl.DateTimeFormat(undefined, ...) for locale-aware date formatting"
     },
     {
       "priority": 2,
-      "action": "Fix install CTA in TryPageClient.tsx to use href='/#install' and change nav Install link from GitHub repo to /#install",
-      "impact": "Fixes broken conversion paths at highest-intent moments",
-      "source_agents": [
-        "cat"
-      ],
+      "action": "Fix remaining text-gray-400 on bg-gray-800 instances by replacing with text-gray-300 for WCAG AA 4.5:1 contrast",
+      "impact": "Closes persistent contrast accessibility gap",
+      "source_agents": ["lydia", "ado"],
       "effort": "low",
       "status": "resolved",
-      "chronic": false,
-      "iterations_open": 1,
-      "resolution": "Changed TryPageClient.tsx CTA to href='/#install', changed nav Install link from external GitHub URL to internal /#install"
+      "chronic": true,
+      "iterations_open": 2,
+      "resolution": "Replaced text-gray-400 with text-gray-300 on dark backgrounds across 10 files for WCAG AA compliance"
     },
     {
       "priority": 3,
-      "action": "Replace toLocaleString('en-US') in timeline/page.tsx:190 with locale-aware date formatting",
-      "impact": "Fixes chronic i18n inconsistency across 3+ iterations",
-      "source_agents": [
-        "jason"
-      ],
+      "action": "Internationalize skip-to-content text by replacing hardcoded English with i18n message key from next-intl",
+      "impact": "Ensures a11y landmark is localized for all 7 supported locales",
+      "source_agents": ["ado", "jason"],
       "effort": "low",
       "status": "resolved",
-      "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Replaced hardcoded 'en-US' with Intl.DateTimeFormat(undefined, ...) for locale-aware formatting"
+      "chronic": false,
+      "iterations_open": 1,
+      "resolution": "Added nav.skipToContent key to all 7 locale message files, replaced hardcoded text in layout.tsx with t('skipToContent')"
     },
     {
       "priority": 4,
-      "action": "Create try-storage.test.ts with integration tests for saveWebReview, listWebReviews, getWebReview, getPreviousReviewForRepo",
-      "impact": "Closes last untested module gap (254 lines)",
-      "source_agents": [
-        "boris"
-      ],
-      "effort": "medium",
-      "status": "resolved",
+      "action": "Add score progression screenshot or GIF to README showing dashboard improvement visualization",
+      "impact": "Visual proof of improvement loop in first README scroll; closes chronic 4+ iteration gap",
+      "source_agents": ["ado"],
+      "effort": "low",
+      "status": "open",
       "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Created try-storage.test.ts with 15 tests covering all 4 public functions plus getShareableUrl"
+      "iterations_open": 5
     },
     {
       "priority": 5,
-      "action": "Replace type assertions in boards/build/page.tsx reducer (lines 211, 255) with explicit field-by-field construction",
-      "impact": "Removes 2 unsafe casts the compiler cannot verify",
-      "source_agents": [
-        "boris",
-        "lydia"
-      ],
-      "effort": "medium",
-      "status": "resolved",
-      "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Replaced both 'as BuilderAgent' and 'as BuilderCriterion' casts with explicit field-by-field object construction"
-    },
-    {
-      "priority": 6,
-      "action": "Dynamically load score_history from state.json on landing page instead of static values in messages.ts",
-      "impact": "Shows real 17-iteration improvement arc instead of stale snapshots",
-      "source_agents": [
-        "cat",
-        "ado"
-      ],
-      "effort": "medium",
-      "status": "resolved",
-      "chronic": true,
-      "iterations_open": 3,
-      "resolution": "Made HomePage async server component, imported getProjectState, displays real score_history with fallback to static data"
-    },
-    {
-      "priority": 7,
-      "action": "Add axe-core automated WCAG testing to CI",
-      "impact": "Catches accessibility regressions automatically, closes 3-iteration gap",
-      "source_agents": [
-        "jason",
-        "ado"
-      ],
-      "effort": "medium",
-      "status": "resolved",
-      "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Added jest-axe dependency, created accessibility.test.tsx with 10 axe-core tests, added explicit CI step for accessibility testing"
-    },
-    {
-      "priority": 8,
-      "action": "Extract shared timeline rendering into TimelineEventCard component, move VERDICT_STYLES to ui-constants.ts",
-      "impact": "Reduces ~120 lines of duplication",
-      "source_agents": [
-        "lydia"
-      ],
+      "action": "Refactor validate.ts to structural construction instead of 7 raw 'as T' type assertions",
+      "impact": "Eliminates 7 terminal type assertions in production validation code",
+      "source_agents": ["lydia"],
       "effort": "medium",
       "status": "resolved",
       "chronic": false,
       "iterations_open": 1,
-      "resolution": "Created TimelineEventCard.tsx component, moved VERDICT_STYLES/VERDICT_DOT to ui-constants.ts, updated timeline/page.tsx and TimelineInline.tsx"
+      "resolution": "Added isVerdict type guard, replaced 5 'as Verdict' casts with isVerdict() calls, replaced post-validation 'as T' returns with properly typed construction"
     },
     {
-      "priority": 9,
-      "action": "Audit 28 text-gray-400 occurrences for WCAG AA contrast, replace failing instances with text-gray-300",
-      "impact": "Ensures body text meets 4.5:1 contrast ratio",
-      "source_agents": [
-        "lydia",
-        "ado"
-      ],
+      "priority": 6,
+      "action": "Add type narrowing in StreamingAgentCard.tsx to remove 'value as number' and 'as Verdict' casts",
+      "impact": "Removes 2 remaining UI-layer type assertions",
+      "source_agents": ["lydia"],
+      "effort": "low",
+      "status": "resolved",
+      "chronic": false,
+      "iterations_open": 1,
+      "resolution": "Added inline isValidVerdict type guard and typeof number check to eliminate both type assertions"
+    },
+    {
+      "priority": 7,
+      "action": "Add 'What to do next' guidance section after Try It Now results in TryPageClient.tsx",
+      "impact": "Converts post-evaluation engagement into concrete next steps",
+      "source_agents": ["cat"],
       "effort": "medium",
       "status": "resolved",
-      "chronic": true,
-      "iterations_open": 3,
-      "resolution": "Fixed 10 instances of text-gray-400 on bg-gray-800 backgrounds across 7 files, improving contrast from ~3.9:1 to ~7.5:1"
+      "chronic": false,
+      "iterations_open": 1,
+      "resolution": "Added 3-option guidance section (Review Another, Install CLI, Build Custom Board) after completed results with i18n support"
     },
     {
-      "priority": 10,
-      "action": "Implement adaptive effort budgets in try-invoke.ts scaling thinking tokens to content size",
-      "impact": "Better utilizes Opus adaptive thinking based on repo complexity",
-      "source_agents": [
-        "thariq"
-      ],
-      "effort": "high",
-      "status": "resolved",
-      "chronic": true,
-      "iterations_open": 4,
-      "resolution": "Added getAdaptiveBudget() to try-agents.ts that scales thinking tokens 1x-1.75x based on content size, integrated into both tool-enabled and single-turn paths in try-invoke.ts"
-    },
-    {
-      "priority": 11,
-      "action": "Create examples/demo-repo/ with before/after audit JSONs showing improvement cycle",
-      "impact": "Closes chronic documentation-to-proof gap",
-      "source_agents": [
-        "ado"
-      ],
-      "effort": "high",
-      "status": "resolved",
-      "chronic": true,
-      "iterations_open": 3,
-      "resolution": "Created examples/demo-repo/ with before-audit.json (iter 0, 68.4), after-audit.json (iter 15, 90.13), and score-progression.json showing full 17-iteration arc"
-    },
-    {
-      "priority": 12,
-      "action": "Increase BYOK maxTotalChars from 800K to 1.2M in github.ts getTierLimits",
-      "impact": "Agents see 50% more repository content",
-      "source_agents": [
-        "thariq"
-      ],
+      "priority": 8,
+      "action": "Document keyboard shortcuts for interactive pages in help overlay or footer",
+      "impact": "Improves power-user discoverability; closes chronic 3+ iteration gap",
+      "source_agents": ["jason"],
       "effort": "low",
       "status": "resolved",
       "chronic": true,
-      "iterations_open": 3,
-      "resolution": "Changed maxTotalChars from 800_000 to 1_200_000 in getTierLimits, updated test expectation"
+      "iterations_open": 4,
+      "resolution": "Created KeyboardHints.tsx component with collapsible shortcut reference, added keyboard i18n keys to all 7 locale files, integrated into timeline page"
+    },
+    {
+      "priority": 9,
+      "action": "Implement complexity-aware adaptive budgets using file-type distribution and language complexity",
+      "impact": "Better utilizes Opus adaptive thinking for structurally complex repos",
+      "source_agents": ["thariq"],
+      "effort": "high",
+      "status": "open",
+      "chronic": false,
+      "iterations_open": 1
+    },
+    {
+      "priority": 10,
+      "action": "Add shared search result cache across agents to reduce redundant regex scans",
+      "impact": "Reduces redundant file scanning across 4 tool-enabled agents",
+      "source_agents": ["thariq"],
+      "effort": "medium",
+      "status": "open",
+      "chronic": false,
+      "iterations_open": 1
     }
   ]
 }

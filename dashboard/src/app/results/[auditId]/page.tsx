@@ -110,7 +110,7 @@ export default async function AuditDetailPage({
       <nav className="mb-8">
         <Link
           href="/results"
-          className="text-sm text-gray-400 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
+          className="text-sm text-gray-300 transition-colors hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
         >
           &larr; Back to Results
         </Link>
@@ -337,7 +337,7 @@ export default async function AuditDetailPage({
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <p
-                        className={`text-sm ${isResolved ? "text-gray-400 line-through" : "text-gray-200"}`}
+                        className={`text-sm ${isResolved ? "text-gray-300 line-through" : "text-gray-200"}`}
                       >
                         {item.action}
                       </p>

@@ -10,6 +10,7 @@ import {
   formatTimestamp,
 } from "@/lib/ui-constants";
 import { ResultsSubNav, type ResultsView } from "./ResultsSubNav";
+import { KeyboardHints } from "./KeyboardHints";
 
 function AuditCard({ audit }: { audit: AuditSummary }) {
   const { audit_id, timestamp, panel, composite, iteration } = audit;
@@ -151,7 +152,7 @@ export function ResultsPageClient({
         <nav className="mb-4">
           <Link
             href="/"
-            className="text-sm text-gray-400 transition-colors hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
+            className="text-sm text-gray-300 transition-colors hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:rounded"
           >
             {messages.results.backHome}
           </Link>
@@ -209,6 +210,8 @@ export function ResultsPageClient({
           ))}
         </div>
       )}
+
+      <KeyboardHints />
     </>
   );
 }

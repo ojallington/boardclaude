@@ -129,7 +129,8 @@
     "results": "Ergebnisse",
     "timeline": "Zeitleiste",
     "boards": "Panels",
-    "install": "Installieren"
+    "install": "Installieren",
+    "skipToContent": "Zum Hauptinhalt springen"
   },
   "timeline": {
     "title": "Audit-Zeitleiste - BoardClaude",
@@ -244,5 +245,16 @@
   },
   "localeSwitcher": {
     "label": "Sprache"
+  },
+  "keyboard": {
+    "heading": "Tastaturkürzel",
+    "tab": "Tab",
+    "enter": "Enter",
+    "space": "Leertaste",
+    "escape": "Escape",
+    "skipToContent": "Zum Hauptinhalt springen",
+    "expandCard": "Karte erweitern/reduzieren",
+    "navigate": "Zwischen Elementen navigieren",
+    "close": "Dialoge schließen"
   }
 }
