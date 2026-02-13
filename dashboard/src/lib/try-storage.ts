@@ -2,6 +2,32 @@ import { promises as fs } from "fs";
 import path from "path";
 import type { TryPanelResult, TryResultSummary } from "./types";
 import { validateTryPanelResult } from "./validate";
+import { isRecord, isRepoInfo } from "./type-guards";
+
+/** Safely parse an unknown value into a TryResultSummary, returning null on failure. */
+function asTryResultSummary(value: unknown): TryResultSummary | null {
+  if (!isRecord(value)) return null;
+  if (typeof value.audit_id !== "string") return null;
+  if (!isRepoInfo(value.repo)) return null;
+  if (!isRecord(value.composite)) return null;
+  if (typeof value.composite.score !== "number") return null;
+  if (typeof value.composite.grade !== "string") return null;
+  if (typeof value.composite.verdict !== "string") return null;
+  if (value.tier !== "free" && value.tier !== "byok") return null;
+  if (typeof value.timestamp !== "string") return null;
+  return {
+    audit_id: value.audit_id,
+    repo: { owner: value.repo.owner, name: value.repo.name },
+    composite: {
+      score: value.composite.score,
+      grade: value.composite.grade as TryResultSummary["composite"]["grade"],
+      verdict: value.composite
+        .verdict as TryResultSummary["composite"]["verdict"],
+    },
+    tier: value.tier,
+    timestamp: value.timestamp,
+  };
+}
 
 // ─── Redis (Upstash) for production persistence ─────────────────────────────
 
@@ -92,11 +118,9 @@ export async function listWebReviews(): Promise<TryResultSummary[]> {
     const summaries: TryResultSummary[] = [];
     for (const entry of raw) {
       try {
-        const parsed =
-          typeof entry === "string"
-            ? (JSON.parse(entry) as TryResultSummary)
-            : (entry as TryResultSummary);
-        summaries.push(parsed);
+        const data = typeof entry === "string" ? JSON.parse(entry) : entry;
+        const parsed = asTryResultSummary(data);
+        if (parsed) summaries.push(parsed);
       } catch {
         // Skip malformed entries
       }
@@ -196,11 +220,10 @@ export async function getPreviousReviewForRepo(
     const raw = await kv.lrange(REDIS_INDEX_KEY, 0, 99);
     for (const entry of raw) {
       try {
-        const parsed =
-          typeof entry === "string"
-            ? (JSON.parse(entry) as TryResultSummary)
-            : (entry as TryResultSummary);
+        const data = typeof entry === "string" ? JSON.parse(entry) : entry;
+        const parsed = asTryResultSummary(data);
         if (
+          parsed &&
           parsed.repo.owner === owner &&
           parsed.repo.name === name &&
           parsed.audit_id !== excludeAuditId

@@ -187,12 +187,12 @@ async function TimelineContent() {
 
                   <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
                     <time dateTime={event.timestamp}>
-                      {new Date(event.timestamp).toLocaleString("en-US", {
+                      {new Intl.DateTimeFormat(undefined, {
                         month: "short",
                         day: "numeric",
                         hour: "2-digit",
                         minute: "2-digit",
-                      })}
+                      }).format(new Date(event.timestamp))}
                     </time>
                     <span>
                       {event.agents} {messages.timeline.viewAudit ? "" : ""}

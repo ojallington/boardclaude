@@ -36,5 +36,8 @@ jobs:
       - name: Tests
         run: npm test
 
+      - name: Accessibility (axe-core)
+        run: npx vitest run --reporter=verbose src/components/__tests__/accessibility.test.tsx
+
       - name: Build
         run: npm run build
