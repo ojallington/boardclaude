@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 
-import { cpSync, existsSync, readFileSync, statSync } from "node:fs";
+import {
+  cpSync,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  statSync,
+  symlinkSync,
+} from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -50,6 +59,14 @@ ${bold("AFTER INSTALL")}
 `);
 }
 
+function symlinkOrCopy(linkPath, symlinkTarget, copySource) {
+  try {
+    symlinkSync(symlinkTarget, linkPath);
+  } catch {
+    copyFileSync(copySource, linkPath);
+  }
+}
+
 function install(targetArg) {
   const targetDir = resolve(targetArg || ".");
 
@@ -83,6 +100,36 @@ function install(targetArg) {
     cpSync(src, dest, { recursive: true });
     console.log(green(`  \u2713 ${dir}/`));
     copied++;
+  }
+
+  // Create .claude/commands/ and .claude/agents/ so Claude Code discovers them
+  const claudeCmdsDir = join(targetDir, ".claude", "commands");
+  const claudeAgentsDir = join(targetDir, ".claude", "agents");
+  mkdirSync(claudeCmdsDir, { recursive: true });
+  mkdirSync(claudeAgentsDir, { recursive: true });
+
+  // Symlink commands with bc: prefix
+  const cmdsDir = join(targetDir, "commands");
+  if (existsSync(cmdsDir)) {
+    for (const file of readdirSync(cmdsDir)) {
+      if (!file.endsWith(".md")) continue;
+      const linkPath = join(claudeCmdsDir, `bc:${file}`);
+      const symlinkTarget = `../../commands/${file}`;
+      symlinkOrCopy(linkPath, symlinkTarget, join(cmdsDir, file));
+    }
+    console.log(green(`  ✓ .claude/commands/ (bc:* slash commands)`));
+  }
+
+  // Symlink agents (no prefix needed)
+  const agDir = join(targetDir, "agents");
+  if (existsSync(agDir)) {
+    for (const file of readdirSync(agDir)) {
+      if (!file.endsWith(".md")) continue;
+      const linkPath = join(claudeAgentsDir, file);
+      const symlinkTarget = `../../agents/${file}`;
+      symlinkOrCopy(linkPath, symlinkTarget, join(agDir, file));
+    }
+    console.log(green(`  ✓ .claude/agents/ (custom agents)`));
   }
 
   console.log("");
