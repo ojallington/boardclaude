@@ -123,7 +123,7 @@ Produce valid JSON matching this exact schema:
 
 ### Reporting Protocol
 
-When sending your synthesis report to the coordinator, wrap it in delimiters:
+When sending your synthesis report to the team lead, wrap it in delimiters:
 
 ```
 SYNTHESIS_REPORT_START
@@ -133,7 +133,7 @@ SYNTHESIS_REPORT_END
 
 Send via SendMessage EXACTLY ONCE. Do not send partial results before the final report.
 
-If the coordinator indicates that some agents timed out, note the `timed_out_agents` in the report and use the provided `effective_weights` for composite calculation instead of the default panel weights.
+If the team lead indicates that some agents timed out, note the `timed_out_agents` in the report and use the provided `effective_weights` for composite calculation instead of the default panel weights.
 
 ## How to Identify Consensus
 

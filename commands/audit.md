@@ -18,27 +18,23 @@ synthesis agent merges all findings into a unified report.
 - `--target <path|url>` -- Path to project or GitHub URL (default: current directory).
 - `--previous <audit-id>` -- Path to previous audit for delta comparison.
 
-## Architecture: Two-Tier Delegation
+## Architecture: Single-Tier Orchestration
 
-The audit uses a two-tier delegation model to keep the main agent lightweight:
+The audit uses a single-tier orchestration model where the skill runner directly manages all agents:
 
 ```
-MAIN AGENT (delegate launcher, ~5-8 tool calls)
+SKILL RUNNER (full orchestrator)
   |
-  v
-AUDIT COORDINATOR (autonomous, bypassPermissions)
+  +---> 6 JUDGE AGENTS (team members, bypassPermissions, parallel)
   |
-  +---> 6 JUDGE AGENTS (autonomous, bypassPermissions, parallel)
-  |
-  +---> SYNTHESIS AGENT (autonomous, bypassPermissions)
+  +---> SYNTHESIS AGENT (team member, bypassPermissions)
 ```
 
-- **Main agent**: Reads config, creates team, spawns coordinator, relays results. Never ingests codebase.
-- **Coordinator**: Ingests codebase, spawns judges, orchestrates debate, runs synthesis, writes files.
-- **Judges**: Evaluate independently, send JSON to coordinator.
-- **Synthesis**: Merges all evaluations into unified report.
+- **Skill runner**: Reads config, creates team, ingests codebase, spawns judges directly, orchestrates debate, runs synthesis, writes files, displays results.
+- **Judges**: Evaluate independently, send JSON to skill runner via SendMessage.
+- **Synthesis**: Merges all evaluations into unified report, sends back via SendMessage.
 
-All spawned agents use `mode: "bypassPermissions"` — no permission prompts appear.
+All spawned agents use `mode: "bypassPermissions"` and `team_name` — they are proper team members that can communicate via SendMessage.
 
 ## Execution Steps
 
@@ -46,39 +42,34 @@ All spawned agents use `mode: "bypassPermissions"` — no permission prompts app
 
 2. **Check prerequisites**: Ensure `.boardclaude/` directory exists. If not, prompt user to run `/bc:init` first. Create `audits/` subdirectory if missing.
 
-3. **Load state**: Read `.boardclaude/state.json` for iteration number, latest audit ID, score history. This metadata is passed to the coordinator.
+3. **Load state**: Read `.boardclaude/state.json` for iteration number, latest audit ID, score history.
 
 4. **Create team**: `TeamCreate("audit-{timestamp}")` for this audit run.
 
-5. **Spawn audit coordinator**: Launch the coordinator as an autonomous teammate via Task with `mode: "bypassPermissions"`. Pass it:
-   - Full `agents/audit-coordinator.md` instructions
-   - Panel config YAML (inline)
-   - Iteration metadata and CLI flags
-   - Output schemas
+5. **Ingest codebase**: Use Glob + Read to discover and read key project files. Build a comprehensive project summary (~2000-4000 tokens) for judges.
 
-   The coordinator then autonomously:
-   - Ingests the target codebase (Glob + Read + Grep)
-   - Loads cross-iteration context (2 most recent audit JSONs)
-   - Spawns 6 judge agents (all with `mode: "bypassPermissions"`)
-   - Collects evaluations using `EVAL_REPORT_START/EVAL_REPORT_END` delimiters (5 min/agent timeout, 3 min nudge, minimum 4/6 agents required, weight redistribution for timeouts)
-   - Runs debate, applies score revisions
-   - Spawns synthesis agent (with `mode: "bypassPermissions"`), collects via `SYNTHESIS_REPORT_START/SYNTHESIS_REPORT_END`
-   - Writes audit JSON, MD, state.json, timeline.json, action-items.json
-   - Sends structured completion report via SendMessage wrapped in `AUDIT_COMPLETE_START/AUDIT_COMPLETE_END`
+6. **Load cross-iteration context**: Read the 2 most recent audit JSONs for trend comparison.
 
-6. **Wait for completion**: The main agent idles until the coordinator reports via `AUDIT_COMPLETE_START/AUDIT_COMPLETE_END` delimiters. No manual delegation needed — the coordinator handles everything autonomously. Timeout: 15 minutes wall clock. If `AUDIT_FAILED` is received instead (< 4 judges reported), relay the error to the user and teardown.
+7. **Spawn 6 judge agents**: Launch all judges in parallel via Task with `mode: "bypassPermissions"` and `team_name: "audit-{timestamp}"`. Each judge receives:
+   - Full agent persona from `agents/{name}.md`
+   - Codebase summary
+   - Evaluation criteria and weights
+   - Previous audit context
+   - Output schema
 
-7. **Collect results**: Parse the coordinator's delimited `AUDIT_COMPLETE_START/END` block to extract composite score, grade, verdict, top items, file paths, timed_out_agents, and effective_weights.
+8. **Collect evaluations**: Parse `EVAL_REPORT_START/EVAL_REPORT_END` delimited JSON from each judge. 3-minute nudge, 5-minute per-agent timeout. Minimum 4/6 agents required. Weight redistribution for timeouts.
 
-8. **Display results**: Show the summary to the user including:
-   - Composite score with grade
-   - Per-agent score breakdown
-   - Top 3 action items
-   - Iteration delta if applicable
-   - Path to full report files
-   - Dashboard link: `To view in the dashboard, run: cd dashboard && npm run dev` then open `http://localhost:3000/results`
+9. **Run debate**: Identify divergent score pairs, exchange positions between agents, apply bounded score revisions.
 
-9. **Teardown**: Send shutdown requests to coordinator, then `TeamDelete`.
+10. **Spawn synthesis agent**: Launch synthesis with all evaluations, debate transcript, weights, and output schema. Collect via `SYNTHESIS_REPORT_START/SYNTHESIS_REPORT_END`.
+
+11. **Calculate & validate**: Verify composite calculation, map grade and verdict.
+
+12. **Write output files**: Audit JSON, audit MD, state.json, timeline.json, action-items.json — all to `.boardclaude/audits/` and `.boardclaude/`.
+
+13. **Display results**: Show composite score, grade, verdict, top strengths/weaknesses, action items, delta, and file paths.
+
+14. **Teardown**: Shutdown all team members + TeamDelete.
 
 ## Agent Report Schema
 
@@ -104,7 +95,7 @@ Each agent outputs:
 
 ## Personal Panel Mode
 
-When the panel type is `personal` (e.g., `--panel personal-oscar`), the coordinator adds a deliberation phase:
+When the panel type is `personal` (e.g., `--panel personal-oscar`), the skill runner adds a deliberation phase:
 
 1. **Round 1 — Independent assessment**: Same as professional panels. Each agent scores independently.
 
@@ -123,12 +114,11 @@ The synthesis also identifies the single most important action item.
 
 ## Notes
 
-- The main agent stays lightweight (~5-8 tool calls, minimal context usage)
-- All codebase ingestion happens inside the coordinator agent
+- All codebase ingestion happens inside the skill runner
 - No permission prompts — all spawned agents use `mode: "bypassPermissions"`
 - Agent Teams use approximately 7x more tokens than standard sessions
 - Opus agents (boris, cat, thariq, lydia) cost more but provide deeper analysis
-- Sonnet agents (ado, jason, coordinator, synthesis) are cost-effective for structured work
+- Sonnet agents (ado, jason, synthesis) are cost-effective for structured work
 - Use `--effort low` for quick baseline checks, `--effort max` for final audits
 
 $ARGUMENTS
