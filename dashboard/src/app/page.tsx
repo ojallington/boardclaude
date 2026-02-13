@@ -56,8 +56,16 @@ export default async function HomePage() {
 
   const progressionScores = dynamicScores ?? messages.loop.progression.scores;
 
-  const { hero, story, install, howItWorks, panel, features, footer } =
-    messages;
+  const {
+    hero,
+    story,
+    install,
+    howItWorks,
+    panel,
+    features,
+    differentiation,
+    footer,
+  } = messages;
 
   return (
     <main id="main-content" className="min-h-screen bg-gray-950 text-gray-100">
@@ -72,21 +80,53 @@ export default async function HomePage() {
         <p className="mt-6 max-w-2xl text-lg text-gray-300 leading-relaxed">
           {hero.description}
         </p>
+        <div className="mt-8 flex flex-col sm:flex-row items-center gap-4">
+          <Link
+            href="/try"
+            className="rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white hover:bg-indigo-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+          >
+            {hero.demoCta}
+          </Link>
+          <Link
+            href="/results"
+            className="rounded-lg border border-gray-700 px-6 py-3 text-base font-semibold text-gray-200 hover:border-gray-500 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+          >
+            {hero.resultsCta}
+          </Link>
+        </div>
       </section>
 
-      {/* The Story */}
-      <section className="px-6 pb-20 max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">{story.heading}</h2>
-        <div className="space-y-5">
-          {story.paragraphs.map((paragraph) => (
-            <p
-              key={paragraph.slice(0, 40)}
-              className="text-gray-300 leading-relaxed text-lg"
+      {/* How It Works */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-12">
+          {howItWorks.heading}
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {howItWorks.steps.map((step) => (
+            <div
+              key={step.number}
+              className="rounded-xl border border-gray-800 bg-gray-900/50 p-8"
             >
-              {paragraph}
-            </p>
+              <span className="text-sm font-mono text-indigo-400">
+                {step.number}
+              </span>
+              <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
+              <p className="mt-3 text-gray-300 leading-relaxed">
+                {step.description}
+              </p>
+            </div>
           ))}
         </div>
+      </section>
+
+      {/* Try It Now */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
+        <h2 className="text-3xl font-bold mb-4">Try It Now</h2>
+        <p className="text-gray-300 mb-8 text-lg max-w-2xl mx-auto">
+          Paste a public GitHub repo URL and get an instant AI code review. No
+          install required.
+        </p>
+        <HeroTrySection />
       </section>
 
       {/* The Panel */}
@@ -113,39 +153,6 @@ export default async function HomePage() {
         <p className="mt-6 text-xs text-gray-500 max-w-xl mx-auto italic">
           {panel.disclaimer}
         </p>
-      </section>
-
-      {/* Try It Now */}
-      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-4">Try It Now</h2>
-        <p className="text-gray-300 mb-8 text-lg max-w-2xl mx-auto">
-          Paste a public GitHub repo URL and get an instant AI code review. No
-          install required.
-        </p>
-        <HeroTrySection />
-      </section>
-
-      {/* How It Works */}
-      <section className="px-6 pb-20 max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">
-          {howItWorks.heading}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {howItWorks.steps.map((step) => (
-            <div
-              key={step.number}
-              className="rounded-xl border border-gray-800 bg-gray-900/50 p-8"
-            >
-              <span className="text-sm font-mono text-indigo-400">
-                {step.number}
-              </span>
-              <h3 className="mt-2 text-xl font-semibold">{step.title}</h3>
-              <p className="mt-3 text-gray-300 leading-relaxed">
-                {step.description}
-              </p>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* Self-Improvement Loop */}
@@ -241,6 +248,61 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Why BoardClaude? */}
+      <section className="px-6 pb-20 max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          {differentiation.heading}
+        </h2>
+        <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-12">
+          {differentiation.description}
+        </p>
+        <div className="rounded-xl border border-gray-800 bg-gray-900/50 overflow-hidden">
+          <div className="grid grid-cols-2">
+            <div className="px-6 py-4 border-b border-r border-gray-800 bg-gray-900/80">
+              <span className="text-sm font-semibold text-gray-400">
+                {differentiation.columnDirect}
+              </span>
+            </div>
+            <div className="px-6 py-4 border-b border-gray-800 bg-gray-900/80">
+              <span className="text-sm font-semibold text-indigo-400">
+                {differentiation.columnBoard}
+              </span>
+            </div>
+            {differentiation.rows.map((row) => (
+              <div key={row.board} className="contents">
+                <div className="px-6 py-4 border-b border-r border-gray-800 text-sm text-gray-400">
+                  {row.direct}
+                </div>
+                <div className="px-6 py-4 border-b border-gray-800 text-sm text-gray-100">
+                  {row.board}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* The Story */}
+      <section className="px-6 pb-20 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-8">{story.heading}</h2>
+        <div className="space-y-5">
+          {story.paragraphs.map((paragraph) => (
+            <p
+              key={paragraph.slice(0, 40)}
+              className="text-gray-300 leading-relaxed text-lg"
+            >
+              {paragraph}
+            </p>
+          ))}
+          <Link
+            href="/story"
+            className="inline-block mt-2 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
+          >
+            Read the full build story &rarr;
+          </Link>
+        </div>
+      </section>
+
       {/* Install */}
       <section
         id="install"
@@ -286,6 +348,12 @@ export default async function HomePage() {
             className="text-gray-300 hover:text-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
           >
             Results
+          </Link>
+          <Link
+            href="/story"
+            className="text-gray-300 hover:text-gray-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
+          >
+            Story
           </Link>
         </div>
       </footer>

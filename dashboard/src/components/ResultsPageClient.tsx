@@ -51,7 +51,7 @@ function AuditCard({ audit }: { audit: AuditSummary }) {
           </span>
         </div>
       </div>
-      <div className="mt-4 flex items-center gap-1 text-xs text-gray-600 transition-colors group-hover:text-indigo-400">
+      <div className="mt-4 flex items-center gap-1 text-xs text-gray-500 transition-colors group-hover:text-indigo-400">
         <span>{messages.results.viewDetails}</span>
         <svg
           className="h-3 w-3 transition-transform group-hover:translate-x-0.5"
@@ -115,7 +115,7 @@ function WebReviewCard({ review }: { review: TryResultSummary }) {
           </span>
         </div>
       </div>
-      <div className="mt-4 flex items-center gap-1 text-xs text-gray-600 transition-colors group-hover:text-indigo-400">
+      <div className="mt-4 flex items-center gap-1 text-xs text-gray-500 transition-colors group-hover:text-indigo-400">
         <span>{messages.results.viewDetails}</span>
         <svg
           className="h-3 w-3 transition-transform group-hover:translate-x-0.5"

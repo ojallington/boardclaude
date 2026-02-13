@@ -28,9 +28,9 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
             <p className="text-sm font-medium capitalize text-gray-300">
               {agent}
             </p>
-            <p className="text-xs text-gray-600">{role}</p>
+            <p className="text-xs text-gray-500">{role}</p>
           </div>
-          <span className="text-xs text-gray-600">
+          <span className="text-xs text-gray-500">
             {messages.tryIt.agentProgress.pending}
           </span>
         </div>
@@ -67,7 +67,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
           <div className="h-2 w-3/4 animate-pulse rounded bg-gray-800" />
           <div className="h-2 w-1/2 animate-pulse rounded bg-gray-800" />
         </div>
-        <p className="mt-2 text-xs text-gray-600">
+        <p className="mt-2 text-xs text-gray-500">
           {toolUseCount
             ? `Investigating codebase (${toolUseCount} tool calls)...`
             : messages.tryIt.agentProgress.running}
@@ -85,7 +85,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
             <p className="text-sm font-medium capitalize text-gray-500">
               {agent}
             </p>
-            <p className="text-xs text-gray-600">{role}</p>
+            <p className="text-xs text-gray-500">{role}</p>
           </div>
           <span className="text-xs text-red-500">
             ({messages.tryIt.agentProgress.error.toLowerCase()})
@@ -213,7 +213,7 @@ export function PanelAgentCard({ progress }: PanelAgentCardProps) {
                 </div>
               )}
 
-              <p className="text-[10px] text-gray-600">
+              <p className="text-[10px] text-gray-500">
                 Model: {result.model_used}
               </p>
             </div>

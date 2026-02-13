@@ -16,21 +16,21 @@ export const messages = {
   // ─── Landing page ──────────────────────────────────────────────────
   hero: {
     heading: "BoardClaude",
-    tagline: "We Didn\u2019t Get a Spot. So We Built the Judges.",
+    tagline: "Assemble Your Own Board of AI Judges",
     description:
-      "Six AI agents, each inspired by a real hackathon judge, evaluate your project from different expert perspectives. Whether you\u2019re competing or just building\u2014get the feedback that matters.",
+      "A configurable panel of AI agents that evaluate your project from multiple expert perspectives. Six agents run in parallel with extended thinking, cross-examine divergent scores, and produce prioritized action items.",
     installCta: "Install Plugin",
-    demoCta: "Watch Demo",
+    demoCta: "Try It Now",
     resultsCta: "View Results",
     trySubtext: "or install the CLI for full panel audits",
   },
 
   story: {
-    heading: "The Story",
+    heading: "How It Was Built",
     paragraphs: [
-      "Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon invited developers to push the boundaries of what\u2019s possible with Claude. 500 spots. We didn\u2019t get one.",
-      "So we did the next best thing: we studied the judges. Six industry experts, each with a distinct perspective on what makes software great\u2014architecture, product thinking, AI innovation, developer experience, documentation, and community impact. We built AI representations of each one.",
-      "The result is BoardClaude: a configurable panel of AI agents that evaluate your project the way a real judging panel would. Paste a GitHub URL to try a quick review, or install the CLI for the full six-judge experience with scored dimensions, radar charts, and prioritized action items.",
+      "BoardClaude was built for Anthropic\u2019s \u201cBuilt with Opus 4.6\u201d hackathon. We studied six industry experts \u2014 their public talks, writing, and professional backgrounds \u2014 and built AI representations of each evaluation perspective: architecture, product, AI innovation, frontend, documentation, and community.",
+      "We then pointed BoardClaude at itself. Over 18 iterations and 55 commits, the tool audited its own code, generated action items, and drove its composite score from 68.4 to 91.24. The same closed-loop that improved BoardClaude works on any project.",
+      "We didn\u2019t get a hackathon spot \u2014 but we built the tool anyway. The result is an open-source evaluation framework you can try right now: paste a GitHub URL, or install the CLI for the full six-agent experience.",
     ],
   },
 
@@ -172,11 +172,63 @@ export const messages = {
     ],
   },
 
+  differentiation: {
+    heading: "Why BoardClaude?",
+    description:
+      "See how structured multi-agent evaluation compares to asking a single AI for feedback.",
+    columnDirect: "Asking Claude Directly",
+    columnBoard: "Using BoardClaude",
+    rows: [
+      {
+        direct: "One generic perspective",
+        board: "Multiple specialized perspectives",
+      },
+      {
+        direct: "Prose-only feedback",
+        board: "Weighted composite scoring",
+      },
+      {
+        direct: "No history or tracking",
+        board: "Score tracking across iterations",
+      },
+      {
+        direct: "Ad-hoc suggestions",
+        board: "Prioritized, tracked action items",
+      },
+      {
+        direct: "Fixed evaluation criteria",
+        board: "Configurable evaluation panels",
+      },
+      {
+        direct: "Different results each time",
+        board: "Reproducible, structured output",
+      },
+    ],
+  },
+
   footer: {
-    builtFor: "Inspired by the",
+    builtFor: "Built for the",
     hackathonName: "\u201cBuilt with Opus 4.6\u201d",
-    hackathonSuffix: "Hackathon judges",
+    hackathonSuffix: "Hackathon",
     github: "GitHub",
+  },
+
+  // ─── Story page ──────────────────────────────────────────────────────
+  storyPage: {
+    title: "The Build Story - BoardClaude",
+    description:
+      "How BoardClaude was built: 18 iterations, 5 phases, 68.4 to 91.24.",
+    heading: "The Build Story",
+    subheading: "18 iterations of self-improvement, scored by our own judges.",
+    statsHeading: "By the Numbers",
+    phasesHeading: "Five Phases",
+    researchHeading: "The Research Stage",
+    researchDescription:
+      "Before writing code, we built 24 reference documents covering judge profiles, Opus 4.6 capabilities, system architecture, tech stack patterns, and competitive strategy.",
+    agentsHeading: "The Agents",
+    chartHeading: "Score Progression",
+    finaleScore: "68.4 \u2192 91.24",
+    finaleText: "From scaffold to strong pass. The data tells the story.",
   },
 
   // ─── Results page ──────────────────────────────────────────────────
@@ -187,7 +239,7 @@ export const messages = {
     backHome: "\u2190 Home",
     viewDetails: "View details",
     emptyState: "No audits yet. Run your first audit with {command}",
-    emptyCommand: "/bc:review",
+    emptyCommand: "/bc:audit",
     iterationLabel: "Iteration",
   },
 
@@ -268,6 +320,7 @@ export const messages = {
     home: "BoardClaude",
     tryIt: "Try It",
     results: "Results",
+    story: "Story",
     timeline: "Timeline",
     boards: "Boards",
   },

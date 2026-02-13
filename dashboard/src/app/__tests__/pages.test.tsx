@@ -37,6 +37,11 @@ vi.mock("@/lib/audit-loader", () => ({
   getProjectState: vi.fn().mockResolvedValue(null),
 }));
 
+// Mock StoryScoreChart (client component with Recharts) to avoid heavy imports
+vi.mock("@/components/story/StoryScoreChart", () => ({
+  StoryScoreChart: () => <div data-testid="story-score-chart">ScoreChart</div>,
+}));
+
 // ─── Tests ──────────────────────────────────────────────────────────
 
 describe("Page smoke tests", () => {
@@ -66,7 +71,7 @@ describe("Page smoke tests", () => {
 
     // Should contain key structural elements
     expect(html).toContain("BoardClaude");
-    expect(html).toContain("The Story");
+    expect(html).toContain("How It Was Built");
     expect(html).toContain("The Panel");
     expect(html).toContain("How It Works");
     expect(html).toContain("Features");
@@ -118,6 +123,13 @@ describe("Page smoke tests", () => {
     expect(Array.isArray(messages.loop.steps)).toBe(true);
     expect(messages.loop.progression).toBeDefined();
     expect(messages.loop.cta).toBeDefined();
+  });
+
+  it("story page module exports a default function and metadata", async () => {
+    const mod = await import("../story/page");
+    expect(mod.default).toBeDefined();
+    expect(typeof mod.default).toBe("function");
+    expect(mod.metadata).toBeDefined();
   });
 
   it("each panel agent has required key, fullName, and role fields", async () => {

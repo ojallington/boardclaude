@@ -15,7 +15,11 @@ export function AgentScoreMiniBar({ scores }: AgentScoreMiniBarProps) {
   const total = scores.reduce((sum, s) => sum + s.composite, 0);
 
   return (
-    <div className="flex h-6 w-full overflow-hidden rounded-md">
+    <div
+      className="flex h-6 w-full overflow-hidden rounded-md"
+      role="img"
+      aria-label={`Agent scores: ${scores.map((s) => `${s.agent} ${s.composite}`).join(", ")}`}
+    >
       {scores.map((s) => {
         const widthPct = total > 0 ? (s.composite / total) * 100 : 0;
         return (
