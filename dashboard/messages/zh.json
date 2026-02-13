@@ -129,7 +129,8 @@
     "results": "\u7ed3\u679c",
     "timeline": "\u65f6\u95f4\u7ebf",
     "boards": "\u9762\u677f",
-    "install": "\u5b89\u88c5"
+    "install": "\u5b89\u88c5",
+    "skipToContent": "\u8df3\u5230\u4e3b\u8981\u5185\u5bb9"
   },
   "timeline": {
     "title": "\u5ba1\u8ba1\u65f6\u95f4\u7ebf - BoardClaude",
@@ -244,5 +245,16 @@
   },
   "localeSwitcher": {
     "label": "\u8bed\u8a00"
+  },
+  "keyboard": {
+    "heading": "\u952e\u76d8\u5feb\u6377\u952e",
+    "tab": "Tab",
+    "enter": "Enter",
+    "space": "Space",
+    "escape": "Escape",
+    "skipToContent": "\u8df3\u8f6c\u5230\u4e3b\u8981\u5185\u5bb9",
+    "expandCard": "\u5c55\u5f00/\u6298\u53e0\u5361\u7247",
+    "navigate": "\u5728\u5143\u7d20\u95f4\u5bfc\u822a",
+    "close": "\u5173\u95ed\u5bf9\u8bdd\u6846"
   }
 }

@@ -129,7 +129,8 @@
     "results": "Results",
     "timeline": "Timeline",
     "boards": "Boards",
-    "install": "Install"
+    "install": "Install",
+    "skipToContent": "Skip to main content"
   },
   "timeline": {
     "title": "Audit Timeline - BoardClaude",
@@ -244,5 +245,16 @@
   },
   "localeSwitcher": {
     "label": "Language"
+  },
+  "keyboard": {
+    "heading": "Keyboard Shortcuts",
+    "tab": "Tab",
+    "enter": "Enter",
+    "space": "Space",
+    "escape": "Escape",
+    "skipToContent": "Skip to main content",
+    "expandCard": "Expand/collapse card",
+    "navigate": "Navigate between elements",
+    "close": "Close dialogs"
   }
 }

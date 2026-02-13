@@ -17,7 +17,7 @@ export function ResultsSubNav({ active, onChange }: ResultsSubNavProps) {
         className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
           active === "list"
             ? "bg-gray-800 text-gray-100"
-            : "text-gray-400 hover:text-gray-200"
+            : "text-gray-300 hover:text-gray-200"
         }`}
       >
         {messages.resultsSubNav.list}
@@ -27,7 +27,7 @@ export function ResultsSubNav({ active, onChange }: ResultsSubNavProps) {
         className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
           active === "timeline"
             ? "bg-gray-800 text-gray-100"
-            : "text-gray-400 hover:text-gray-200"
+            : "text-gray-300 hover:text-gray-200"
         }`}
       >
         {messages.resultsSubNav.timeline}
@@ -37,7 +37,7 @@ export function ResultsSubNav({ active, onChange }: ResultsSubNavProps) {
         className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
           active === "web"
             ? "bg-gray-800 text-gray-100"
-            : "text-gray-400 hover:text-gray-200"
+            : "text-gray-300 hover:text-gray-200"
         }`}
       >
         {messages.resultsSubNav.web}

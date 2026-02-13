@@ -42,6 +42,21 @@ const VALID_GRADES: Grade[] = [
   "F",
 ];
 
+// Type guard functions to avoid unsafe type assertions
+function isVerdict(value: unknown): value is Verdict {
+  return (
+    typeof value === "string" &&
+    (VALID_VERDICTS as readonly string[]).includes(value)
+  );
+}
+
+function isGrade(value: unknown): value is Grade {
+  return (
+    typeof value === "string" &&
+    (VALID_GRADES as readonly string[]).includes(value)
+  );
+}
+
 export function validateAgentEvaluation(
   data: unknown,
 ): ValidationResult<AgentEvaluation> {
@@ -154,7 +169,7 @@ export function validateAgentEvaluation(
   }
 
   // Verdict
-  if (!VALID_VERDICTS.includes(obj.verdict as Verdict)) {
+  if (!isVerdict(obj.verdict)) {
     errors.push({
       field: "verdict",
       message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -163,6 +178,7 @@ export function validateAgentEvaluation(
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as AgentEvaluation) : null,
     errors,
   };
@@ -188,7 +204,8 @@ export function validateSynthesisReport(
 
   // Required string fields
   for (const field of ["audit_id", "panel", "target", "timestamp"] as const) {
-    if (typeof obj[field] !== "string" || (obj[field] as string).length === 0) {
+    const value = obj[field];
+    if (typeof value !== "string" || value.length === 0) {
       errors.push({ field, message: "Must be a non-empty string" });
     }
   }
@@ -247,7 +264,7 @@ export function validateSynthesisReport(
           message: "Must be a number between 0 and 100",
         });
       }
-      if (!VALID_VERDICTS.includes(rawAgent.verdict as Verdict)) {
+      if (!isVerdict(rawAgent.verdict)) {
         errors.push({
           field: `agents[${i}].verdict`,
           message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -267,13 +284,13 @@ export function validateSynthesisReport(
         message: "Must be a number between 0 and 100",
       });
     }
-    if (!VALID_GRADES.includes(comp.grade as Grade)) {
+    if (!isGrade(comp.grade)) {
       errors.push({
         field: "composite.grade",
         message: `Must be one of: ${VALID_GRADES.join(", ")}`,
       });
     }
-    if (!VALID_VERDICTS.includes(comp.verdict as Verdict)) {
+    if (!isVerdict(comp.verdict)) {
       errors.push({
         field: "composite.verdict",
         message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -304,6 +321,7 @@ export function validateSynthesisReport(
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as SynthesisReport) : null,
     errors,
   };
@@ -404,6 +422,7 @@ export function validateProjectState(
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as ProjectState) : null,
     errors,
   };
@@ -477,6 +496,7 @@ export function validateTimeline(data: unknown): ValidationResult<Timeline> {
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as Timeline) : null,
     errors,
   };
@@ -548,6 +568,7 @@ export function validateActionItemsLedger(
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as ActionItemsLedger) : null,
     errors,
   };
@@ -635,13 +656,13 @@ export function validateTryPanelResult(
         message: "Must be a number between 0 and 100",
       });
     }
-    if (!VALID_GRADES.includes(comp.grade as Grade)) {
+    if (!isGrade(comp.grade)) {
       errors.push({
         field: "composite.grade",
         message: `Must be one of: ${VALID_GRADES.join(", ")}`,
       });
     }
-    if (!VALID_VERDICTS.includes(comp.verdict as Verdict)) {
+    if (!isVerdict(comp.verdict)) {
       errors.push({
         field: "composite.verdict",
         message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -722,6 +743,7 @@ export function validateTryPanelResult(
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as TryPanelResult) : null,
     errors,
   };
@@ -779,14 +801,14 @@ export function validateTryResult(data: unknown): ValidationResult<TryResult> {
     errors.push({ field: "composite", message: "Must be a number" });
   }
 
-  if (!VALID_GRADES.includes(obj.grade as Grade)) {
+  if (!isGrade(obj.grade)) {
     errors.push({
       field: "grade",
       message: `Must be one of: ${VALID_GRADES.join(", ")}`,
     });
   }
 
-  if (!VALID_VERDICTS.includes(obj.verdict as Verdict)) {
+  if (!isVerdict(obj.verdict)) {
     errors.push({
       field: "verdict",
       message: `Must be one of: ${VALID_VERDICTS.join(", ")}`,
@@ -819,6 +841,7 @@ export function validateTryResult(data: unknown): ValidationResult<TryResult> {
 
   return {
     valid: errors.length === 0,
+    // Safe cast: all fields validated above, TypeScript can't infer structural match
     data: errors.length === 0 ? (raw as TryResult) : null,
     errors,
   };

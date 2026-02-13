@@ -129,7 +129,8 @@
     "results": "\u7d50\u679c",
     "timeline": "\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3",
     "boards": "\u30dc\u30fc\u30c9",
-    "install": "\u30a4\u30f3\u30b9\u30c8\u30fc\u30eb"
+    "install": "\u30a4\u30f3\u30b9\u30c8\u30fc\u30eb",
+    "skipToContent": "\u30e1\u30a4\u30f3\u30b3\u30f3\u30c6\u30f3\u30c4\u3078\u30b9\u30ad\u30c3\u30d7"
   },
   "timeline": {
     "title": "\u76e3\u67fb\u30bf\u30a4\u30e0\u30e9\u30a4\u30f3 - BoardClaude",
@@ -244,5 +245,16 @@
   },
   "localeSwitcher": {
     "label": "\u8a00\u8a9e"
+  },
+  "keyboard": {
+    "heading": "\u30ad\u30fc\u30dc\u30fc\u30c9\u30b7\u30e7\u30fc\u30c8\u30ab\u30c3\u30c8",
+    "tab": "Tab",
+    "enter": "Enter",
+    "space": "Space",
+    "escape": "Escape",
+    "skipToContent": "\u30e1\u30a4\u30f3\u30b3\u30f3\u30c6\u30f3\u30c4\u3078\u30b9\u30ad\u30c3\u30d7",
+    "expandCard": "\u30ab\u30fc\u30c9\u3092\u5c55\u958b/\u6298\u308a\u305f\u305f\u3080",
+    "navigate": "\u8981\u7d20\u9593\u3092\u79fb\u52d5",
+    "close": "\u30c0\u30a4\u30a2\u30ed\u30b0\u3092\u9589\u3058\u308b"
   }
 }

@@ -160,27 +160,47 @@ export function TryPageClient() {
             </div>
           </div>
 
-          {/* Result CTAs */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <button
-              onClick={handleTryAnother}
-              className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-            >
-              {messages.tryIt.resultCtas.tryAnother}
-            </button>
-            <Link
-              href="/#install"
-              className="rounded-lg border border-indigo-600/50 bg-indigo-950/30 px-6 py-2.5 text-sm font-medium text-indigo-300 transition-colors hover:bg-indigo-950/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-            >
-              {messages.tryIt.resultCtas.installCli}
-            </Link>
-            <Link
-              href="/boards"
-              className="rounded-lg border border-gray-700 bg-gray-800 px-6 py-2.5 text-sm font-medium text-gray-200 transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
-            >
-              {messages.tryIt.resultCtas.buildBoard}
-            </Link>
-          </div>
+          {/* What to do next */}
+          <section className="mt-8 rounded-xl border border-gray-800 bg-gray-900/50 p-6">
+            <h3 className="mb-4 text-lg font-semibold text-gray-100">
+              What to do next
+            </h3>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <button
+                onClick={handleTryAnother}
+                className="flex flex-col items-start rounded-lg border border-gray-700 bg-gray-800 p-4 text-left transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+              >
+                <span className="text-sm font-medium text-gray-200">
+                  {messages.tryIt.resultCtas.tryAnother}
+                </span>
+                <span className="mt-1 text-xs text-gray-400">
+                  Evaluate another repository
+                </span>
+              </button>
+              <Link
+                href="/#install"
+                className="flex flex-col items-start rounded-lg border border-indigo-600/50 bg-indigo-950/30 p-4 text-left transition-colors hover:bg-indigo-950/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+              >
+                <span className="text-sm font-medium text-indigo-300">
+                  {messages.tryIt.resultCtas.installCli}
+                </span>
+                <span className="mt-1 text-xs text-indigo-400/70">
+                  Get the full 6-agent experience
+                </span>
+              </Link>
+              <Link
+                href="/boards/build"
+                className="flex flex-col items-start rounded-lg border border-gray-700 bg-gray-800 p-4 text-left transition-colors hover:bg-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
+              >
+                <span className="text-sm font-medium text-gray-200">
+                  {messages.tryIt.resultCtas.buildBoard}
+                </span>
+                <span className="mt-1 text-xs text-gray-400">
+                  Create your own evaluation panel
+                </span>
+              </Link>
+            </div>
+          </section>
         </>
       )}
     </div>

@@ -55,7 +55,7 @@ function AgentTooltip({ active, payload, label }: CustomTooltipProps) {
               className="inline-block h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="capitalize text-gray-400">{entry.dataKey}</span>
+            <span className="capitalize text-gray-300">{entry.dataKey}</span>
             <span className="ml-auto font-semibold text-gray-200">
               {entry.value}
             </span>

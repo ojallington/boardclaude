@@ -370,7 +370,7 @@ export default function BuilderPage() {
       <div className="mb-8">
         <Link
           href="/boards"
-          className="text-sm text-gray-400 transition-colors hover:text-gray-200"
+          className="text-sm text-gray-300 transition-colors hover:text-gray-200"
         >
           &larr; {messages.builder.backToTemplates}
         </Link>

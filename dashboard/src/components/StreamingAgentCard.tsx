@@ -130,7 +130,12 @@ export function StreamingAgentCard({
 
   // Complete state
   if (phase === "complete" && result) {
-    const verdict = result.verdict as Verdict | undefined;
+    const isValidVerdict = (v: unknown): v is Verdict =>
+      typeof v === "string" &&
+      ["STRONG_PASS", "PASS", "MARGINAL", "FAIL"].includes(v);
+    const verdict: Verdict | undefined = isValidVerdict(result.verdict)
+      ? result.verdict
+      : undefined;
     const verdictStyle = verdict
       ? VERDICT_BADGE_STYLES[verdict]
       : "bg-gray-800 text-gray-300 border-gray-700";
@@ -187,13 +192,16 @@ export function StreamingAgentCard({
         {/* Score bars */}
         {result.scores && (
           <div className="mt-4 space-y-2">
-            {Object.entries(result.scores).map(([key, value]) => (
-              <ScoreBar
-                key={key}
-                label={formatDimension(key)}
-                score={value as number}
-              />
-            ))}
+            {Object.entries(result.scores).map(([key, value]) => {
+              const numValue = typeof value === "number" ? value : 0;
+              return (
+                <ScoreBar
+                  key={key}
+                  label={formatDimension(key)}
+                  score={numValue}
+                />
+              );
+            })}
           </div>
         )}
 
@@ -251,12 +259,12 @@ export function StreamingAgentCard({
           <span>{result.files_analyzed} files analyzed</span>
           {result.timestamp && (
             <time>
-              {new Date(result.timestamp).toLocaleString("en-US", {
+              {new Intl.DateTimeFormat(undefined, {
                 month: "short",
                 day: "numeric",
                 hour: "2-digit",
                 minute: "2-digit",
-              })}
+              }).format(new Date(result.timestamp))}
             </time>
           )}
         </div>

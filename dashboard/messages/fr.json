@@ -129,7 +129,8 @@
     "results": "R\u00e9sultats",
     "timeline": "Chronologie",
     "boards": "Panneaux",
-    "install": "Installer"
+    "install": "Installer",
+    "skipToContent": "Aller au contenu principal"
   },
   "timeline": {
     "title": "Chronologie des Audits - BoardClaude",
@@ -244,5 +245,16 @@
   },
   "localeSwitcher": {
     "label": "Langue"
+  },
+  "keyboard": {
+    "heading": "Raccourcis Clavier",
+    "tab": "Tab",
+    "enter": "Entrée",
+    "space": "Espace",
+    "escape": "Échap",
+    "skipToContent": "Passer au contenu principal",
+    "expandCard": "Développer/réduire la carte",
+    "navigate": "Naviguer entre les éléments",
+    "close": "Fermer les dialogues"
   }
 }
