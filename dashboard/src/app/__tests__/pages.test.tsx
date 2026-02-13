@@ -71,8 +71,7 @@ describe("Page smoke tests", () => {
 
     // Should contain key structural elements
     expect(html).toContain("BoardClaude");
-    expect(html).toContain("How It Was Built");
-    expect(html).toContain("The Panel");
+    expect(html).toContain("One Engine, Unlimited Perspectives");
     expect(html).toContain("How It Works");
     expect(html).toContain("Features");
     expect(html).toContain("Get Started");
@@ -87,7 +86,7 @@ describe("Page smoke tests", () => {
       "story",
       "install",
       "howItWorks",
-      "panel",
+      "useCases",
       "features",
       "footer",
       "loop",
@@ -108,11 +107,9 @@ describe("Page smoke tests", () => {
     expect(messages.install.hintCommand).toBeDefined();
     expect(messages.howItWorks.heading).toBeDefined();
     expect(Array.isArray(messages.howItWorks.steps)).toBe(true);
-    expect(messages.panel.heading).toBeDefined();
-    expect(messages.panel.description).toBeDefined();
-    expect(messages.panel.disclaimer).toBeDefined();
-    expect(Array.isArray(messages.panel.agents)).toBe(true);
-    expect(messages.panel.agents.length).toBe(6);
+    expect(messages.useCases.heading).toBeDefined();
+    expect(messages.useCases.subheading).toBeDefined();
+    expect(messages.useCases.viewAll).toBeDefined();
     expect(messages.features.heading).toBeDefined();
     expect(Array.isArray(messages.features.items)).toBe(true);
     expect(messages.footer.builtFor).toBeDefined();
@@ -130,29 +127,5 @@ describe("Page smoke tests", () => {
     expect(mod.default).toBeDefined();
     expect(typeof mod.default).toBe("function");
     expect(mod.metadata).toBeDefined();
-  });
-
-  it("each panel agent has required key, fullName, and role fields", async () => {
-    const { messages } = await import("@/lib/messages");
-    const expectedAgentKeys = [
-      "boris",
-      "cat",
-      "thariq",
-      "lydia",
-      "ado",
-      "jason",
-    ];
-
-    for (const agent of messages.panel.agents) {
-      expect(typeof agent.key).toBe("string");
-      expect(typeof agent.fullName).toBe("string");
-      expect(typeof agent.role).toBe("string");
-      expect(agent.key.length).toBeGreaterThan(0);
-      expect(agent.fullName.length).toBeGreaterThan(0);
-      expect(agent.role.length).toBeGreaterThan(0);
-    }
-
-    const actualKeys = messages.panel.agents.map((a) => a.key);
-    expect(actualKeys).toEqual(expectedAgentKeys);
   });
 });

@@ -422,216 +422,415 @@ export const TEMPLATES: TemplateData[] = [
     scoring: { scale: 100, passing_threshold: 70, iteration_target: 85 },
   },
   {
-    slug: "personal-shipper",
-    name: "Personal Shipper",
-    type: "personal",
+    slug: "customer-archetypes",
+    name: "Customer Archetype Testing",
+    type: "professional",
     version: "1.0.0",
     description:
-      "Personal accountability panel with four agents: The Shipper enforces delivery, The Strategist checks business alignment, The Realist audits time and energy, The Visionary ensures long-term value. The Shipper has VETO POWER.",
+      "Four simulated customer archetypes stress-test your product from radically different perspectives: enterprise buyer, indie developer, non-technical PM, and security-first CTO.",
     agents: [
       {
-        name: "The Shipper",
-        role: "Anti-scope-creep enforcer",
-        weight: 0.35,
-        model: "sonnet",
-        veto_power: true,
-        criteria: [
-          {
-            name: "completeness",
-            weight: 0.4,
-            description: "Is the project at definition of done?",
-          },
-          {
-            name: "time_efficiency",
-            weight: 0.3,
-            description: "Time spent vs progress made",
-          },
-          {
-            name: "scope_discipline",
-            weight: 0.3,
-            description: "No scope creep, no shiny object chasing",
-          },
-        ],
-      },
-      {
-        name: "The Strategist",
-        role: "Business alignment checker",
+        name: "Maya",
+        role: "Enterprise IT Director",
         weight: 0.25,
         model: "sonnet",
         criteria: [
           {
-            name: "strategic_alignment",
-            weight: 0.4,
-            description: "Does this serve stated business/career goals?",
+            name: "enterprise_readiness",
+            weight: 0.3,
+            description: "SSO, audit logs, SLAs, compliance certifications",
           },
           {
-            name: "portfolio_value",
+            name: "integration",
             weight: 0.3,
-            description: "Would a potential client be impressed?",
+            description:
+              "API quality, webhook support, fits existing tool stack",
           },
           {
-            name: "network_potential",
-            weight: 0.3,
-            description: "Networking and visibility value",
+            name: "scalability",
+            weight: 0.2,
+            description: "Handles 500+ users, multi-team, multi-region",
+          },
+          {
+            name: "vendor_risk",
+            weight: 0.2,
+            description: "Company stability, data portability, exit strategy",
           },
         ],
       },
       {
-        name: "The Realist",
-        role: "Time and energy auditor",
+        name: "Dev",
+        role: "Solo Indie Developer",
         weight: 0.25,
         model: "sonnet",
         criteria: [
           {
-            name: "realistic_estimation",
-            weight: 0.4,
-            description: "Are time estimates accurate? (Hint: 2x them)",
+            name: "time_to_value",
+            weight: 0.35,
+            description: "Working in <5 minutes, minimal config, clear docs",
           },
           {
-            name: "sustainability",
-            weight: 0.3,
-            description: "Is this pace maintainable? Burnout risk?",
+            name: "pricing",
+            weight: 0.25,
+            description: "Free tier, pay-as-you-grow, no enterprise tax",
           },
           {
-            name: "resource_management",
-            weight: 0.3,
-            description: "Budget and resource usage tracking",
+            name: "extensibility",
+            weight: 0.2,
+            description: "Open source, plugin system, hackable",
+          },
+          {
+            name: "community",
+            weight: 0.2,
+            description:
+              "Active community, good examples, responsive maintainers",
           },
         ],
       },
       {
-        name: "The Visionary",
-        role: "Long-term alignment checker",
-        weight: 0.15,
+        name: "Jordan",
+        role: "Non-technical PM",
+        weight: 0.25,
         model: "sonnet",
         criteria: [
           {
-            name: "pride_test",
+            name: "usability",
             weight: 0.35,
-            description: "Would you be proud to show this publicly?",
+            description: "Intuitive UI, no jargon, self-explanatory workflows",
           },
           {
-            name: "learning_value",
-            weight: 0.35,
-            description: "Teaches skills that compound over time",
+            name: "reporting",
+            weight: 0.25,
+            description:
+              "Dashboards, export to slides, stakeholder-ready output",
           },
           {
-            name: "door_opening",
-            weight: 0.3,
-            description: "Opens doors for future opportunities",
+            name: "collaboration",
+            weight: 0.2,
+            description: "Team sharing, comments, notifications, permissions",
+          },
+          {
+            name: "onboarding",
+            weight: 0.2,
+            description: "Guided setup, templates, interactive tutorials",
+          },
+        ],
+      },
+      {
+        name: "Kenji",
+        role: "Security-first CTO",
+        weight: 0.25,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "security",
+            weight: 0.35,
+            description:
+              "Encryption, auth, vulnerability management, pen-test results",
+          },
+          {
+            name: "compliance",
+            weight: 0.25,
+            description: "SOC 2, GDPR, HIPAA readiness, data residency",
+          },
+          {
+            name: "architecture",
+            weight: 0.2,
+            description:
+              "Clean design, no single points of failure, disaster recovery",
+          },
+          {
+            name: "transparency",
+            weight: 0.2,
+            description: "Open roadmap, incident history, honest communication",
           },
         ],
       },
     ],
     scoring: { scale: 100, passing_threshold: 70, iteration_target: 85 },
-    hasDebate: true,
-    hasContext: true,
   },
   {
-    slug: "personal-oscar",
-    name: "Oscar's Shipping Board",
-    type: "personal",
+    slug: "stakeholder-alignment",
+    name: "Stakeholder Alignment",
+    type: "professional",
     version: "1.0.0",
     description:
-      "Personal accountability panel designed for a solo developer's specific goals, constraints, and patterns. Same four-agent structure as Personal Shipper, customized with real context.",
+      "Four executive perspectives evaluate a proposal before it reaches the real boardroom: CFO on ROI, Engineering Lead on feasibility, Legal on compliance, and Head of UX on user impact.",
     agents: [
       {
-        name: "The Shipper",
-        role: "Anti-scope-creep enforcer",
-        weight: 0.35,
+        name: "CFO",
+        role: "ROI & Budget",
+        weight: 0.3,
         model: "sonnet",
-        veto_power: true,
         criteria: [
           {
-            name: "completeness",
-            weight: 0.4,
-            description: "Is the project at definition of done?",
+            name: "roi",
+            weight: 0.35,
+            description: "Expected return vs investment, payback period",
           },
           {
-            name: "time_efficiency",
-            weight: 0.3,
-            description: "Time spent vs progress made",
+            name: "budget_fit",
+            weight: 0.25,
+            description: "Fits current budget cycle, no surprise costs",
           },
           {
-            name: "scope_discipline",
-            weight: 0.3,
-            description: "No scope creep, no shiny object chasing",
+            name: "revenue_impact",
+            weight: 0.2,
+            description: "Revenue uplift or cost savings, measurable outcomes",
+          },
+          {
+            name: "financial_risk",
+            weight: 0.2,
+            description: "Downside exposure, sunk cost risk, contingency plan",
           },
         ],
       },
       {
-        name: "The Strategist",
-        role: "Business alignment checker",
+        name: "Eng Lead",
+        role: "Technical Feasibility",
         weight: 0.25,
         model: "sonnet",
         criteria: [
           {
-            name: "strategic_alignment",
-            weight: 0.4,
-            description: "Does this serve stated goals?",
+            name: "feasibility",
+            weight: 0.3,
+            description: "Can we build this with current team and stack?",
           },
           {
-            name: "portfolio_value",
+            name: "timeline",
             weight: 0.3,
-            description: "Portfolio and reputation value",
+            description: "Realistic delivery estimate, dependency mapping",
           },
           {
-            name: "network_potential",
-            weight: 0.3,
-            description: "Networking and visibility value",
+            name: "tech_debt",
+            weight: 0.2,
+            description: "Impact on existing systems, migration complexity",
+          },
+          {
+            name: "maintainability",
+            weight: 0.2,
+            description: "Long-term ownership cost, operational burden",
           },
         ],
       },
       {
-        name: "The Realist",
-        role: "Time and energy auditor",
+        name: "Legal",
+        role: "Compliance & Risk",
+        weight: 0.2,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "regulatory",
+            weight: 0.35,
+            description: "GDPR, CCPA, industry-specific regulation compliance",
+          },
+          {
+            name: "liability",
+            weight: 0.25,
+            description: "Contractual risk, IP exposure, third-party liability",
+          },
+          {
+            name: "data_governance",
+            weight: 0.2,
+            description: "Data handling, retention policies, user consent",
+          },
+          {
+            name: "reputation_risk",
+            weight: 0.2,
+            description: "Brand risk, public perception, ethical concerns",
+          },
+        ],
+      },
+      {
+        name: "Head of UX",
+        role: "User Impact",
         weight: 0.25,
         model: "sonnet",
         criteria: [
           {
-            name: "realistic_estimation",
-            weight: 0.4,
-            description: "Time estimates at 2x actual",
-          },
-          {
-            name: "sustainability",
+            name: "user_value",
             weight: 0.3,
-            description: "Sustainable pace, burnout risk",
+            description:
+              "Solves a real user pain point, measurable improvement",
           },
           {
-            name: "resource_management",
-            weight: 0.3,
-            description: "Budget and resource tracking",
-          },
-        ],
-      },
-      {
-        name: "The Visionary",
-        role: "Long-term alignment checker",
-        weight: 0.15,
-        model: "sonnet",
-        criteria: [
-          {
-            name: "pride_test",
-            weight: 0.35,
-            description: "Would you show this to Boris Cherny?",
+            name: "accessibility",
+            weight: 0.25,
+            description:
+              "WCAG compliance, inclusive design, assistive tech support",
           },
           {
-            name: "learning_value",
-            weight: 0.35,
-            description: "Transferable, compounding skills",
+            name: "experience_quality",
+            weight: 0.25,
+            description: "Intuitive flows, consistent patterns, delight factor",
           },
           {
-            name: "door_opening",
-            weight: 0.3,
-            description: "Opens doors for opportunities",
+            name: "research_backing",
+            weight: 0.2,
+            description:
+              "User research evidence, validated assumptions, metrics",
           },
         ],
       },
     ],
     scoring: { scale: 100, passing_threshold: 70, iteration_target: 85 },
-    hasDebate: true,
-    hasContext: true,
+  },
+  {
+    slug: "content-review",
+    name: "Content Review Board",
+    type: "professional",
+    version: "1.0.0",
+    description:
+      "Five editorial perspectives review content before publication: SEO, brand voice, accessibility, factual accuracy, and reader engagement. Works for blog posts, docs, landing pages, or marketing copy.",
+    agents: [
+      {
+        name: "SEO Analyst",
+        role: "Search & Discovery",
+        weight: 0.2,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "keywords",
+            weight: 0.3,
+            description: "Target keyword usage, density, placement in headings",
+          },
+          {
+            name: "structure",
+            weight: 0.3,
+            description: "H1/H2 hierarchy, meta description, internal linking",
+          },
+          {
+            name: "search_intent",
+            weight: 0.2,
+            description: "Matches user search intent, answers the query",
+          },
+          {
+            name: "technical_seo",
+            weight: 0.2,
+            description: "Schema markup, canonical URLs, page speed impact",
+          },
+        ],
+      },
+      {
+        name: "Brand Editor",
+        role: "Voice & Tone",
+        weight: 0.25,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "voice_consistency",
+            weight: 0.3,
+            description: "Matches brand voice guidelines, consistent tone",
+          },
+          {
+            name: "clarity",
+            weight: 0.3,
+            description:
+              "Clear, concise writing, no jargon without explanation",
+          },
+          {
+            name: "grammar",
+            weight: 0.2,
+            description:
+              "Grammar, spelling, punctuation, style guide adherence",
+          },
+          {
+            name: "narrative",
+            weight: 0.2,
+            description: "Compelling structure, strong lead, clear CTA",
+          },
+        ],
+      },
+      {
+        name: "A11y Reviewer",
+        role: "Accessibility",
+        weight: 0.2,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "alt_text",
+            weight: 0.3,
+            description: "Descriptive alt text for all images and media",
+          },
+          {
+            name: "readability",
+            weight: 0.3,
+            description:
+              "Reading level appropriate for audience, plain language",
+          },
+          {
+            name: "color_contrast",
+            weight: 0.2,
+            description: "Text contrast ratios, not relying on color alone",
+          },
+          {
+            name: "structure",
+            weight: 0.2,
+            description: "Semantic headings, lists, tables for screen readers",
+          },
+        ],
+      },
+      {
+        name: "Fact Checker",
+        role: "Accuracy & Sources",
+        weight: 0.2,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "accuracy",
+            weight: 0.35,
+            description:
+              "All claims verifiable, statistics sourced, no hallucination",
+          },
+          {
+            name: "citations",
+            weight: 0.25,
+            description: "Sources linked, authoritative references, recency",
+          },
+          {
+            name: "bias",
+            weight: 0.2,
+            description: "Balanced perspective, no misleading framing",
+          },
+          {
+            name: "currency",
+            weight: 0.2,
+            description: "Information is current, no outdated claims or data",
+          },
+        ],
+      },
+      {
+        name: "Reader",
+        role: "Engagement & Value",
+        weight: 0.15,
+        model: "sonnet",
+        criteria: [
+          {
+            name: "engagement",
+            weight: 0.3,
+            description: "Would a reader finish this? Hook, pacing, payoff",
+          },
+          {
+            name: "actionability",
+            weight: 0.3,
+            description:
+              "Reader leaves with something they can use immediately",
+          },
+          {
+            name: "uniqueness",
+            weight: 0.2,
+            description: "Offers a perspective not found in the top 10 results",
+          },
+          {
+            name: "shareability",
+            weight: 0.2,
+            description:
+              "Would someone share this? Quotable lines, strong visuals",
+          },
+        ],
+      },
+    ],
+    scoring: { scale: 100, passing_threshold: 70, iteration_target: 85 },
   },
 ];
 
