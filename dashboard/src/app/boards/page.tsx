@@ -2,24 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { TEMPLATES } from "@/lib/templates";
 import { messages } from "@/lib/messages";
+import { getAgentColor, getAgentColorByIndex } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: messages.boards.title,
   description: messages.boards.description,
 };
 
-const AGENT_COLORS: Record<string, string> = {
-  boris: "#3b82f6",
-  cat: "#8b5cf6",
-  thariq: "#06b6d4",
-  lydia: "#f59e0b",
-  ado: "#10b981",
-  jason: "#ef4444",
-};
-
-function getAgentDotColor(name: string): string {
-  const lower = name.toLowerCase();
-  return AGENT_COLORS[lower] ?? "#6b7280";
+function getAgentDotColor(name: string, index: number): string {
+  const named = getAgentColor(name.toLowerCase());
+  return named !== "#6b7280" ? named : getAgentColorByIndex(index);
 }
 
 export default function BoardsPage() {
@@ -144,14 +136,14 @@ function TemplateCard({
 
       {/* Agent pills */}
       <div className="mt-4 flex flex-wrap gap-2">
-        {template.agents.map((agent) => (
+        {template.agents.map((agent, i) => (
           <span
             key={agent.name}
             className="flex items-center gap-1.5 rounded-full border border-gray-800 bg-gray-900/80 px-3 py-1 text-xs font-medium text-gray-300"
           >
             <span
               className="inline-block h-2 w-2 rounded-full"
-              style={{ backgroundColor: getAgentDotColor(agent.name) }}
+              style={{ backgroundColor: getAgentDotColor(agent.name, i) }}
             />
             {agent.name}
             <span className="text-gray-500">

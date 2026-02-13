@@ -1,7 +1,8 @@
 import Link from "next/link";
 
-import { getAgentColor } from "@/lib/types";
+import { getAgentColor, getAgentColorByIndex } from "@/lib/types";
 import { messages } from "@/lib/messages";
+import { TEMPLATES } from "@/lib/templates";
 import { HeroTrySection } from "@/components/HeroTrySection";
 import { getProjectState } from "@/lib/audit-loader";
 
@@ -56,12 +57,17 @@ export default async function HomePage() {
 
   const progressionScores = dynamicScores ?? messages.loop.progression.scores;
 
+  const useCaseTemplates = TEMPLATES.filter((t) =>
+    ["customer-archetypes", "stakeholder-alignment", "content-review"].includes(
+      t.slug,
+    ),
+  );
+
   const {
     hero,
-    story,
     install,
     howItWorks,
-    panel,
+    useCases,
     features,
     differentiation,
     footer,
@@ -129,30 +135,60 @@ export default async function HomePage() {
         <HeroTrySection />
       </section>
 
-      {/* The Panel */}
-      <section className="px-6 pb-20 max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl font-bold mb-4">{panel.heading}</h2>
-        <p className="text-gray-300 mb-10 text-lg max-w-2xl mx-auto">
-          {panel.description}
+      {/* Use Cases */}
+      <section className="px-6 pb-20 max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-4">
+          {useCases.heading}
+        </h2>
+        <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-12">
+          {useCases.subheading}
         </p>
-        <div className="flex flex-wrap justify-center gap-4">
-          {panel.agents.map((agent) => (
-            <div
-              key={agent.key}
-              className="flex items-center gap-3 rounded-full border border-gray-800 bg-gray-900/50 px-5 py-2.5"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {useCaseTemplates.map((template) => (
+            <Link
+              key={template.slug}
+              href="/boards"
+              className="group rounded-xl border border-gray-800 bg-gray-900/50 p-6 transition-colors hover:border-gray-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950"
             >
-              <span
-                className="inline-block h-3 w-3 rounded-full shrink-0"
-                style={{ backgroundColor: getAgentColor(agent.key) }}
-              />
-              <span className="font-medium">{agent.fullName}</span>
-              <span className="text-sm text-gray-300">{agent.role}</span>
-            </div>
+              <h3 className="text-lg font-semibold group-hover:text-indigo-300 transition-colors">
+                {template.name}
+              </h3>
+              <p className="mt-2 text-sm text-gray-300 leading-relaxed line-clamp-2">
+                {template.description}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {template.agents.map((agent, i) => (
+                  <span
+                    key={agent.name}
+                    className="flex items-center gap-1 rounded-full border border-gray-800 bg-gray-900/80 px-2.5 py-0.5 text-xs text-gray-300"
+                  >
+                    <span
+                      className="inline-block h-1.5 w-1.5 rounded-full"
+                      style={{
+                        backgroundColor:
+                          getAgentColor(agent.name.toLowerCase()) !== "#6b7280"
+                            ? getAgentColor(agent.name.toLowerCase())
+                            : getAgentColorByIndex(i),
+                      }}
+                    />
+                    {agent.name}
+                    <span className="text-gray-500">
+                      {(agent.weight * 100).toFixed(0)}%
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </Link>
           ))}
         </div>
-        <p className="mt-6 text-xs text-gray-500 max-w-xl mx-auto italic">
-          {panel.disclaimer}
-        </p>
+        <div className="mt-8 text-center">
+          <Link
+            href="/boards"
+            className="text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
+          >
+            {useCases.viewAll} &rarr;
+          </Link>
+        </div>
       </section>
 
       {/* Self-Improvement Loop */}
@@ -160,8 +196,12 @@ export default async function HomePage() {
         <h2 className="text-3xl font-bold text-center mb-4">
           {messages.loop.heading}
         </h2>
-        <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-12">
+        <p className="text-gray-300 text-lg text-center max-w-2xl mx-auto mb-8">
           {messages.loop.description}
+        </p>
+        <p className="text-sm text-gray-500 text-center mb-12 italic">
+          Born from code review &mdash; we pointed BoardClaude at itself and
+          drove the score from 68.4 to 91.24 over 18 iterations.
         </p>
 
         {/* Loop diagram */}
@@ -283,27 +323,6 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* The Story */}
-      <section className="px-6 pb-20 max-w-3xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">{story.heading}</h2>
-        <div className="space-y-5">
-          {story.paragraphs.map((paragraph) => (
-            <p
-              key={paragraph.slice(0, 40)}
-              className="text-gray-300 leading-relaxed text-lg"
-            >
-              {paragraph}
-            </p>
-          ))}
-          <Link
-            href="/story"
-            className="inline-block mt-2 text-indigo-400 hover:text-indigo-300 transition-colors text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded"
-          >
-            Read the full build story &rarr;
-          </Link>
         </div>
       </section>
 

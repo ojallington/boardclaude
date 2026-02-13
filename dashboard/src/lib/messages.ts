@@ -10,15 +10,15 @@ export const messages = {
   site: {
     title: "BoardClaude - Multi-Perspective Project Evaluation",
     description:
-      "Assemble a board of AI agents that evaluate your project from multiple expert perspectives.",
+      "Configurable AI agent panels that evaluate anything from multiple expert perspectives.",
   },
 
   // ─── Landing page ──────────────────────────────────────────────────
   hero: {
     heading: "BoardClaude",
-    tagline: "Assemble Your Own Board of AI Judges",
+    tagline: "Your Ideas, Judged by Every Perspective",
     description:
-      "A configurable panel of AI agents that evaluate your project from multiple expert perspectives. Six agents run in parallel with extended thinking, cross-examine divergent scores, and produce prioritized action items.",
+      "A configurable panel of AI agents \u2014 each with their own expertise, criteria, and scoring weights \u2014 to evaluate anything. Code. Products. Content. Proposals. Configure the panel. Run the audit. Iterate until every perspective passes.",
     installCta: "Install Plugin",
     demoCta: "Try It Now",
     resultsCta: "View Results",
@@ -49,69 +49,30 @@ export const messages = {
     steps: [
       {
         number: "01",
-        title: "Paste a GitHub URL",
+        title: "Define Your Panel",
         description:
-          "Try it online with one agent, or install the CLI and configure a full panel of judges.",
+          "Choose a template or configure your own agents, criteria, and weights.",
       },
       {
         number: "02",
         title: "Run the Audit",
         description:
-          "Six AI agents evaluate in parallel. Each scores independently with extended thinking.",
+          "Each agent evaluates independently with extended thinking. Divergent scores trigger cross-examination.",
       },
       {
         number: "03",
-        title: "Get Actionable Results",
+        title: "Iterate to Convergence",
         description:
-          "Composite scores, radar charts, strengths, weaknesses, and prioritized fixes.",
+          "Address action items, re-audit, watch scores climb. Stop when every agent hits STRONG_PASS.",
       },
     ],
   },
 
-  panel: {
-    heading: "The Panel",
-    description:
-      "Six AI agents, each inspired by the public work and expertise of a real hackathon judge.",
-    disclaimer:
-      "AI representations inspired by the public work and expertise of the real judges. Not affiliated with or endorsed by them.",
-    agents: [
-      {
-        name: "Boris",
-        fullName: "Boris Cherny",
-        role: "Architecture & Verification",
-        key: "boris",
-      },
-      {
-        name: "Cat",
-        fullName: "Cat Wu",
-        role: "Product & User Impact",
-        key: "cat",
-      },
-      {
-        name: "Thariq",
-        fullName: "Thariq Shihipar",
-        role: "AI Innovation & Systems",
-        key: "thariq",
-      },
-      {
-        name: "Lydia",
-        fullName: "Lydia Hallie",
-        role: "Frontend & Developer Experience",
-        key: "lydia",
-      },
-      {
-        name: "Ado",
-        fullName: "Ado Kukic",
-        role: "Documentation & Developer Relations",
-        key: "ado",
-      },
-      {
-        name: "Jason",
-        fullName: "Jason",
-        role: "Community Impact & Integration",
-        key: "jason",
-      },
-    ],
+  useCases: {
+    heading: "One Engine, Unlimited Perspectives",
+    subheading:
+      "Code review is just one panel. The same architecture works for any domain where multiple perspectives matter.",
+    viewAll: "Browse all templates",
   },
 
   loop: {
@@ -159,7 +120,7 @@ export const messages = {
       {
         title: "Configurable Panels",
         description:
-          "YAML configs for any evaluation scenario \u2014 code review, startup pitch, hackathon judging.",
+          "YAML configs for any evaluation scenario \u2014 customer archetypes, stakeholder alignment, content review, and more.",
       },
       {
         title: "Try Online",

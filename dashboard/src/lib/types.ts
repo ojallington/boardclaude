@@ -816,6 +816,23 @@ export function getAgentColor(agent: string): string {
   return "#6b7280";
 }
 
+/** Ordered color palette for generic agent coloring (non-named agents). */
+export const AGENT_PALETTE = [
+  "#3b82f6",
+  "#8b5cf6",
+  "#06b6d4",
+  "#f59e0b",
+  "#10b981",
+  "#ef4444",
+  "#ec4899",
+  "#14b8a6",
+] as const;
+
+/** Get a color by index, cycling through the palette. */
+export function getAgentColorByIndex(index: number): string {
+  return AGENT_PALETTE[index % AGENT_PALETTE.length] ?? "#6b7280";
+}
+
 /** Convert a numeric score (0-100) to a letter grade. */
 export function getGrade(score: number): Grade {
   if (score >= 95) return "A+";
