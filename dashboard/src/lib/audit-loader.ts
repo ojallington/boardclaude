@@ -209,7 +209,11 @@ export async function getTimelineEnriched(): Promise<EnrichedTimeline | null> {
   const timeline = await getTimelineForDisplay();
   if (!timeline || timeline.events.length === 0) return null;
 
-  const events = timeline.events;
+  // Filter to audit-type events only (excludes "fix" events that lack composite/iteration)
+  const events = timeline.events.filter(
+    (e) => e.type === "audit" || e.composite !== undefined,
+  );
+  if (events.length === 0) return null;
 
   // Load all audits and raw action items in parallel
   const [audits, items] = await Promise.all([
