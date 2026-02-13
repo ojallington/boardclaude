@@ -89,6 +89,16 @@ npm run dev
 
 > Live dashboard: [boardclaude.com](https://boardclaude.com)
 
+## Score Progression
+
+BoardClaude audits itself and uses the results to improve. Here's the actual score progression across 18 iterations:
+
+<p align="center">
+  <img src="docs/score-progression.svg" alt="BoardClaude score progression: 68.4 (C+) to 91.24 (A) across 18 iterations" width="700">
+</p>
+
+Each iteration runs 6 agents in parallel, identifies action items, implements fixes, validates with `tsc` + `eslint`, and re-audits. The dip at iteration 7 reflects a major architecture migration that temporarily reduced scores before recovering stronger.
+
 ## Example Output
 
 BoardClaude's first self-audit scored **68.4 / 100 (C+, MARGINAL)** with 6 agents finding real issues:

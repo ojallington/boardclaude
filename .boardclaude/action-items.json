@@ -42,9 +42,10 @@
       "impact": "Visual proof of improvement loop in first README scroll; closes chronic 4+ iteration gap",
       "source_agents": ["ado"],
       "effort": "low",
-      "status": "open",
+      "status": "resolved",
       "chronic": true,
-      "iterations_open": 5
+      "iterations_open": 5,
+      "resolution": "Generated score-progression.svg showing 18-iteration improvement chart, added Score Progression section to README.md"
     },
     {
       "priority": 5,
@@ -96,9 +97,10 @@
       "impact": "Better utilizes Opus adaptive thinking for structurally complex repos",
       "source_agents": ["thariq"],
       "effort": "high",
-      "status": "open",
+      "status": "resolved",
       "chronic": false,
-      "iterations_open": 1
+      "iterations_open": 1,
+      "resolution": "Added analyzeRepoComplexity() with language weights and diversity/size factors, getAdaptiveBudget() now accepts optional complexity multiplier"
     },
     {
       "priority": 10,
@@ -106,9 +108,10 @@
       "impact": "Reduces redundant file scanning across 4 tool-enabled agents",
       "source_agents": ["thariq"],
       "effort": "medium",
-      "status": "open",
+      "status": "resolved",
       "chronic": false,
-      "iterations_open": 1
+      "iterations_open": 1,
+      "resolution": "Added ToolResultCache (Map<string, string>) shared across all agents in invokeAgents(), caches search_codebase results by pattern+glob key"
     }
   ]
 }

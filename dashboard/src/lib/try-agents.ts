@@ -7,19 +7,78 @@ export const EFFORT_BUDGET_MAP: Record<ThinkingEffort, number> = {
   low: 2000,
 };
 
+/** Language complexity weights by file extension. */
+const LANG_WEIGHTS: Record<string, number> = {
+  ts: 1.0,
+  tsx: 1.0,
+  rs: 1.0,
+  go: 1.0,
+  js: 0.8,
+  jsx: 0.8,
+  py: 0.8,
+  md: 0.3,
+  json: 0.3,
+  yaml: 0.3,
+  yml: 0.3,
+  css: 0.4,
+  html: 0.4,
+};
+
 /**
- * Scale thinking token budget based on repository content size.
- * Larger repos need more thinking tokens for thorough evaluation.
+ * Analyze repository file distribution to produce a complexity multiplier (1.0–1.5).
+ * Considers language diversity, language complexity weights, and average file size.
+ */
+export function analyzeRepoComplexity(
+  files: Array<{ path: string; content: string }>,
+): number {
+  if (files.length === 0) return 1.0;
+
+  const extCounts = new Map<string, number>();
+  let totalWeightedScore = 0;
+  let totalChars = 0;
+
+  for (const f of files) {
+    const ext = f.path.split(".").pop()?.toLowerCase() ?? "";
+    extCounts.set(ext, (extCounts.get(ext) ?? 0) + 1);
+    totalWeightedScore += LANG_WEIGHTS[ext] ?? 0.5;
+    totalChars += f.content.length;
+  }
+
+  // Diversity factor: more distinct extensions = more complex (capped at 1.2)
+  const diversityFactor = Math.min(1.0 + extCounts.size * 0.02, 1.2);
+
+  // Avg language weight (0.3–1.0 range mapped to 1.0–1.15)
+  const avgWeight = totalWeightedScore / files.length;
+  const langFactor = 1.0 + avgWeight * 0.15;
+
+  // Avg file size factor: larger files = more complex (capped at 1.15)
+  const avgSize = totalChars / files.length;
+  const sizeFactor = Math.min(1.0 + avgSize / 50_000, 1.15);
+
+  const raw = diversityFactor * langFactor * sizeFactor;
+  return Math.min(Math.max(raw, 1.0), 1.5);
+}
+
+/**
+ * Scale thinking token budget based on repository content size
+ * and optional complexity multiplier from analyzeRepoComplexity().
  */
 export function getAdaptiveBudget(
   effort: ThinkingEffort,
   contentChars: number,
+  complexityMultiplier?: number,
 ): number {
   const base = EFFORT_BUDGET_MAP[effort];
-  if (contentChars <= 50_000) return base;
-  if (contentChars <= 200_000) return Math.round(base * 1.25);
-  if (contentChars <= 500_000) return Math.round(base * 1.5);
-  return Math.round(base * 1.75);
+  let scaled: number;
+  if (contentChars <= 50_000) scaled = base;
+  else if (contentChars <= 200_000) scaled = Math.round(base * 1.25);
+  else if (contentChars <= 500_000) scaled = Math.round(base * 1.5);
+  else scaled = Math.round(base * 1.75);
+
+  if (complexityMultiplier !== undefined && complexityMultiplier > 1.0) {
+    scaled = Math.round(scaled * complexityMultiplier);
+  }
+  return scaled;
 }
 
 export interface WebAgentConfig {
