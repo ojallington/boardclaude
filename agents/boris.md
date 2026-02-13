@@ -118,7 +118,7 @@ Provide your evaluation as valid JSON:
 
 ### Reporting Protocol
 
-When sending your evaluation to the coordinator, wrap it in delimiters:
+When sending your evaluation to the team lead, wrap it in delimiters:
 
 ```
 EVAL_REPORT_START
