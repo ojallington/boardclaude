@@ -205,20 +205,24 @@ export default async function HomePage() {
           <p className="text-sm text-gray-300 mb-4">
             {messages.loop.progression.label}
           </p>
-          <div className="flex items-end gap-3 sm:gap-5 h-40">
+          <div className="flex gap-3 sm:gap-5 h-48">
             {progressionScores.map((s) => (
               <div
                 key={s.iteration}
-                className="flex-1 flex flex-col items-center gap-2"
+                className="flex-1 flex flex-col items-center"
               >
-                <span className="text-sm font-bold tabular-nums text-indigo-300">
+                <span className="text-sm font-bold tabular-nums text-indigo-300 mb-1 shrink-0">
                   {s.score}
                 </span>
-                <div
-                  className="w-full rounded-t-md bg-gradient-to-t from-indigo-600 to-indigo-400 transition-all"
-                  style={{ height: `${(s.score / 100) * 100}%` }}
-                />
-                <span className="text-xs text-gray-500">#{s.iteration}</span>
+                <div className="flex-1 w-full relative">
+                  <div
+                    className="absolute bottom-0 inset-x-0 rounded-t-md bg-gradient-to-t from-indigo-600 to-indigo-400"
+                    style={{ height: `${s.score}%` }}
+                  />
+                </div>
+                <span className="text-xs text-gray-500 mt-1 shrink-0">
+                  #{s.iteration}
+                </span>
               </div>
             ))}
           </div>

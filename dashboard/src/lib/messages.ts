@@ -126,11 +126,13 @@ export const messages = {
     progression: {
       label: "Real score progression from this project:",
       scores: [
-        { iteration: 0, score: 68 },
-        { iteration: 1, score: 81 },
-        { iteration: 2, score: 84 },
-        { iteration: 4, score: 87 },
-        { iteration: 6, score: 91 },
+        { iteration: 0, score: 68.4 },
+        { iteration: 3, score: 86.2 },
+        { iteration: 6, score: 90.8 },
+        { iteration: 9, score: 83.51 },
+        { iteration: 11, score: 83.91 },
+        { iteration: 14, score: 88.83 },
+        { iteration: 17, score: 91.24 },
       ],
     },
     cta: "Each cycle finds new issues, fixes them, and proves the improvement with data.",
